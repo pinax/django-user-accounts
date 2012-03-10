@@ -2,4 +2,15 @@
 django-user-accounts: user accounts for Django
 ==============================================
 
-@@@ todo
+Provides user accounts to a Django project.
+
+Requirements
+============
+
+* Django 1.4
+* django-appconf (included in ``install_requires``)
+
+Documentation
+=============
+
+See http://django-user-accounts.readthedocs.org/
