@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -10,9 +10,7 @@ setup(
     long_description = open("README.rst").read(),
     license = "MIT",
     url = "http://github.com/pinax/django-user-accounts",
-    packages = [
-        "account",
-    ],
+    packages = find_packages(),
     classifiers = [
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
