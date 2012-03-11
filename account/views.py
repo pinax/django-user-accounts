@@ -26,12 +26,6 @@ class LoginView(FormView):
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
     
-    def get_context_data(self, **kwargs):
-        ctx = kwargs
-        if self.disabled():
-            del ctx["form"]
-        return ctx
-    
     def form_valid(self, form):
         self.login_user(form)
         return redirect(self.get_success_url())
