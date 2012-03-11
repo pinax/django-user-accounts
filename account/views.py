@@ -14,19 +14,6 @@ class SignupView(FormView):
     
     template_name = "account/signup.html"
     form_class = SignupForm
-    
-    def get(self, *args, **kwargs):
-        if self.disabled():
-            return HttpResponseNotFound()
-        return super(SignupView, self).get(*args, **kwargs)
-    
-    def post(self, *args, **kwargs):
-        if self.disabled():
-            return HttpResponseNotFound()
-        return super(SignupView, self).post(*args, **kwargs)
-    
-    def disabled(self):
-        return settings.ACCOUNT_SIGNUP_DISABLED
 
 
 class LoginView(FormView):
@@ -38,11 +25,6 @@ class LoginView(FormView):
         if self.request.user.is_authenticated():
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
-    
-    def post(self, *args, **kwargs):
-        if self.disabled():
-            return HttpResponseForbidden()
-        return super(LoginView, self).post(*args, **kwargs)
     
     def get_context_data(self, **kwargs):
         ctx = kwargs
@@ -56,9 +38,6 @@ class LoginView(FormView):
     
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL)
-    
-    def disabled(self):
-        return settings.ACCOUNT_LOGIN_DISABLED
     
     def login_user(self, form):
         auth.login(self.request, form.user)
