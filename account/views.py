@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.base import TemplateView, TemplateResponseMixin, View
+from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
@@ -138,19 +138,23 @@ class LoginView(FormView):
         )
 
 
-class LogoutView(TemplateView):
+class LogoutView(TemplateResponseMixin, View):
     
     template_name = "account/logout.html"
     
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated():
             return redirect(self.get_redirect_url())
-        return self.render_to_response({})
+        ctx = self.get_context_data()
+        return self.render_to_response(ctx)
     
     def post(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             auth.logout(self.request)
         return redirect(self.get_redirect_url())
+    
+    def get_context_data(self):
+        return {}
     
     def get_redirect_url(self):
         return default_redirect(self.request, settings.ACCOUNT_LOGOUT_REDIRECT_URL)
