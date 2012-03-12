@@ -37,10 +37,20 @@ class SignupCode(models.Model):
         return cls._default_manager.filter(email=email).exists()
     
     @classmethod
-    def create(cls, email, expiry):
-        expiry = timezone.now() + datetime.timedelta(hours=expiry)
-        code = random_token([email])
-        return cls(code=code, email=email, max_uses=1, expiry=expiry)
+    def create(cls, **kwargs):
+        expiry = timezone.now() + datetime.timedelta(hours=kwargs.get("expiry", 24))
+        email = kwargs.get("email")
+        code = kwargs.get("code")
+        if not code:
+            code = random_token([email]) if email else random_token()
+        params = {
+            "code": code,
+            "max_uses": kwargs.get("max_uses", 1),
+            "expiry": expiry
+        }
+        if email:
+            params["email"] = email
+        return cls(**params)
     
     @classmethod
     def check(cls, code):
