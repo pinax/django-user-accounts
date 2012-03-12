@@ -146,6 +146,13 @@ class EmailConfirmation(models.Model):
     
     objects = EmailConfirmationManager()
     
+    class Meta:
+        verbose_name = _("email confirmation")
+        verbose_name_plural = _("email confirmations")
+    
+    def __unicode__(self):
+        return u"confirmation for %s" % self.email_address
+    
     @classmethod
     def create(cls, email_address):
         key = random_token([email_address.email])
@@ -186,10 +193,3 @@ class EmailConfirmation(models.Model):
         self.sent = timezone.now()
         self.save()
         signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
-    
-    def __unicode__(self):
-        return u"confirmation for %s" % self.email_address
-    
-    class Meta:
-        verbose_name = _("email confirmation")
-        verbose_name_plural = _("email confirmations")
