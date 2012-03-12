@@ -1,9 +1,11 @@
 import datetime
+import operator
 
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -19,6 +21,12 @@ from account.utils import random_token
 
 class SignupCode(models.Model):
     
+    class AlreadyExists(Exception):
+        pass
+    
+    class InvalidCode(Exception):
+        pass
+    
     code = models.CharField(max_length=64, unique=True)
     max_uses = models.PositiveIntegerField(default=0)
     expiry = models.DateTimeField(null=True, blank=True)
@@ -30,23 +38,34 @@ class SignupCode(models.Model):
     use_count = models.PositiveIntegerField(editable=False, default=0)
     
     def __unicode__(self):
-        return u"%s [%s]" % (self.email, self.code)
+        if self.email:
+            return u"%s [%s]" % (self.email, self.code)
+        else:
+            return self.code
     
     @classmethod
-    def exists(cls, email):
-        return cls._default_manager.filter(email=email).exists()
+    def exists(cls, code=None, email=None):
+        checks = []
+        if code:
+            checks.append(Q(code=code))
+        if email:
+            checks.append(Q(email=code))
+        return cls._default_manager.filter(reduce(operator.or_, checks)).exists()
     
     @classmethod
     def create(cls, **kwargs):
+        email, code = kwargs.get("email"), kwargs.get("code")
+        if kwargs.get("check_exists", True) and cls.exists(code=code, email=email):
+            raise cls.AlreadyExists()
         expiry = timezone.now() + datetime.timedelta(hours=kwargs.get("expiry", 24))
-        email = kwargs.get("email")
-        code = kwargs.get("code")
         if not code:
             code = random_token([email]) if email else random_token()
         params = {
             "code": code,
             "max_uses": kwargs.get("max_uses", 1),
-            "expiry": expiry
+            "expiry": expiry,
+            "inviter": kwargs.get("inviter"),
+            "notes": kwargs.get("notes", "")
         }
         if email:
             params["email"] = email
