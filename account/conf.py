@@ -5,7 +5,7 @@ from appconf import AppConf
 
 class AccountAppConf(AppConf):
     
-    OPEN_SIGNUP = False
+    OPEN_SIGNUP = True
     SIGNUP_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL = "/"
     LOGOUT_REDIRECT_URL = "/"
