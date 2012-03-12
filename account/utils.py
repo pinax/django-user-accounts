@@ -1,4 +1,8 @@
+import hashlib
+import random
 import urlparse
+
+from account.conf import settings
 
 
 def default_redirect(request, fallback_url, **kwargs):
@@ -18,3 +22,14 @@ def default_redirect(request, fallback_url, **kwargs):
     else:
         redirect_to = fallback_url
     return redirect_to
+
+
+def user_display(user):
+    return settings.ACCOUNT_USER_DISPLAY(user)
+
+
+def random_token(extra=None, hash_func=hashlib.sha256):
+    if extra is None:
+        extra = []
+    bits = extra + [str(random.SystemRandom().getrandbits(512))]
+    return hash_func("".join(bits)).hexdigest()

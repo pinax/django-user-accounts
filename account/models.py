@@ -1,17 +1,18 @@
 import datetime
-import hashlib
-import random
 
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
+from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
+from account.utils import random_token
 
 
 class SignupCode(models.Model):
@@ -36,8 +37,7 @@ class SignupCode(models.Model):
     @classmethod
     def create(cls, email, expiry):
         expiry = timezone.now() + datetime.timedelta(hours=expiry)
-        bits = [email, str(random.SystemRandom().getrandbits(512))]
-        code = hashlib.sha256("".join(bits)).hexdigest()
+        code = random_token([email])
         return cls(code=code, email=email, max_uses=1, expiry=expiry)
     
     @classmethod
@@ -97,3 +97,58 @@ class SignupCodeResult(models.Model):
     def save(self, **kwargs):
         super(SignupCodeResult, self).save(**kwargs)
         self.signup_code.calculate_use_count()
+
+
+class EmailAddress(models.Model):
+    
+    user = models.ForeignKey(User)
+    email = models.EmailField()
+    verified = models.BooleanField(default=False)
+    primary = models.BooleanField(default=False)
+    
+    objects = EmailAddressManager()
+    
+    class Meta:
+        verbose_name = _("email address")
+        verbose_name_plural = _("email addresses")
+        unique_together = [("user", "email")]
+    
+    def __unicode__(self):
+        return u"%s (%s)" % (self.email, self.user)
+    
+    def set_as_primary(self, conditional=False):
+        old_primary = EmailAddress.objects.get_primary(self.user)
+        if old_primary:
+            if conditional:
+                return False
+            old_primary.primary = False
+            old_primary.save()
+        self.primary = True
+        self.save()
+        self.user.email = self.email
+        self.user.save()
+        return True
+    
+    def send_confirmation(self):
+        EmailConfirmation.objects.send_confirmation(self)
+
+
+class EmailConfirmation(models.Model):
+    
+    email_address = models.ForeignKey(EmailAddress)
+    sent = models.DateTimeField()
+    confirmation_key = models.CharField(max_length=64, unique=True)
+    
+    objects = EmailConfirmationManager()
+    
+    def key_expired(self):
+        expiration_date = self.sent + datetime.timedelta(days=settings.ACCOUNT_EMAIL_CONFIRMATION_DAYS)
+        return expiration_date <= timezone.now()
+    key_expired.boolean = True
+    
+    def __unicode__(self):
+        return u"confirmation for %s" % self.email_address
+    
+    class Meta:
+        verbose_name = _("email confirmation")
+        verbose_name_plural = _("email confirmations")
