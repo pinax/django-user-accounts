@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "django-user-accounts",
-    version = "0.9b1.dev1",
+    version = "1.0b1.dev1",
     author = "Brian Rosner",
     author_email = "brosner@gmail.com",
     description = "a Django user account app",
