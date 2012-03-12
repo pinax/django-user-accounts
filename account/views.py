@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from account import signals
 from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
-from account.models import EmailAddress, EmailConfirmation
+from account.models import SignupCode, EmailAddress, EmailConfirmation
 from account.utils import default_redirect, user_display
 
 
@@ -18,6 +18,7 @@ class SignupView(FormView):
     
     template_name = "account/signup.html"
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
+    template_name_signup_closed = "account/signup_closed.html"
     form_class = SignupForm
     messages = {
         "email_confirmation_sent": {
@@ -27,13 +28,44 @@ class SignupView(FormView):
         "logged_in": {
             "level": messages.SUCCESS,
             "text": _("Successfully logged in as %(user)s")
+        },
+        "invalid_signup_code": {
+            "level": messages.WARNING,
+            "text": _("The code %(code)s is invalid")
         }
     }
+    
+    def __init__(self, *args, **kwargs):
+        kwargs["signup_code"] = None
+        super(SignupView, self).__init__(*args, **kwargs)
     
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
+        try:
+            code = self.request.GET.get("code")
+            self.signup_code = SignupCode.check(code)
+        except SignupCode.InvalidCode:
+            if not settings.ACCOUNT_OPEN_SIGNUP:
+                return self.closed(code=code)
+            else:
+                if self.messages.get("invalid_signup_code"):
+                    messages.add_message(
+                        self.request,
+                        self.messages["invalid_signup_code"]["level"],
+                        self.messages["invalid_signup_code"]["text"] % {
+                            "code": code
+                        }
+                    )
+        if not settings.ACCOUNT_OPEN_SIGNUP and self.signup_code is None:
+            return self.closed()
         return super(SignupView, self).get(*args, **kwargs)
+    
+    def get_initial(self):
+        initial = super(SignupView, self).get_initial()
+        if self.signup_code:
+            initial["code"] = self.signup_code.code
+        return initial
     
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
@@ -49,6 +81,9 @@ class SignupView(FormView):
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
         new_user.save()
+        signup_code = form.cleaned_data.get("code")
+        if signup_code:
+            signup_code.use(new_user)
         EmailAddress.objects.add_email(new_user, form.cleaned_data["email"])
         self.after_signup(new_user)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
@@ -112,6 +147,16 @@ class SignupView(FormView):
         user.backend = "django.contrib.auth.backends.ModelBackend"
         auth.login(self.request, user)
         self.request.session.set_expiry(0)
+    
+    def closed(self, code=None):
+        response_kwargs = {
+            "request": self.request,
+            "template": self.template_name_signup_closed,
+            "context": {
+                "code": code,
+            }
+        }
+        return self.response_class(**response_kwargs)
 
 
 class LoginView(FormView):

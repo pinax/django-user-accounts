@@ -6,6 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import auth
 from django.contrib.auth.models import User
 
+from account.conf import settings
+from account.models import SignupCode
+
 
 alnum_re = re.compile(r"^\w+$")
 
@@ -27,6 +30,11 @@ class SignupForm(forms.Form):
         widget=forms.PasswordInput(render_value=False)
     )
     email = forms.EmailField(widget=forms.TextInput(), required=True)
+    code = forms.CharField(
+        max_length=64,
+        required=False,
+        widget=forms.HiddenInput()
+    )
     
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
@@ -44,6 +52,19 @@ class SignupForm(forms.Form):
         except User.DoesNotExist:
             return value
         raise forms.ValidationError(_("A user is registered with this email address."))
+    
+    def clean_code(self):
+        try:
+            signup_code = SignupCode.check(self.cleaned_data.get("code"))
+        except SignupCode.InvalidCode:
+            if not settings.ACCOUNT_OPEN_SIGNUP:
+                raise forms.ValidationError(_("Signup code is invalid."))
+            else:
+                return None
+        else:
+            if not settings.ACCOUNT_OPEN_SIGNUP and signup_code is None:
+                raise forms.ValidationError(_("Code is required to signup."))
+            return signup_code
     
     def clean(self):
         if "password1" in self.cleaned_data and "password2" in self.cleaned_data:

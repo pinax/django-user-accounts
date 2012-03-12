@@ -62,7 +62,7 @@ class SignupCode(models.Model):
             code = random_token([email]) if email else random_token()
         params = {
             "code": code,
-            "max_uses": kwargs.get("max_uses", 1),
+            "max_uses": kwargs.get("max_uses", 0),
             "expiry": expiry,
             "inviter": kwargs.get("inviter"),
             "notes": kwargs.get("notes", "")
@@ -77,18 +77,17 @@ class SignupCode(models.Model):
             try:
                 signup_code = cls._default_manager.get(code=code)
             except cls.DoesNotExist:
-                return False
+                raise cls.InvalidCode()
             else:
-                # check max uses
-                if signup_code.max_uses and signup_code.max_uses < signup_code.use_count + 1:
-                    return False
+                if signup_code.max_uses and signup_code.max_uses <= signup_code.use_count:
+                    raise cls.InvalidCode()
                 else:
-                    if signup_code.expiry and datetime.datetime.now() > signup_code.expiry:
-                        return False
+                    if signup_code.expiry and timezone.now() > signup_code.expiry:
+                        raise cls.InvalidCode()
                     else:
                         return signup_code
         else:
-            return False
+            return None
     
     def calculate_use_count(self):
         self.use_count = self.signupcoderesult_set.count()
