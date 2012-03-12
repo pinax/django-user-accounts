@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
+from account import signals
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 from account.utils import random_token
@@ -130,21 +131,30 @@ class EmailAddress(models.Model):
         return True
     
     def send_confirmation(self):
-        EmailConfirmation.objects.send_confirmation(self)
+        return EmailConfirmation.objects.send_confirmation(self)
 
 
 class EmailConfirmation(models.Model):
     
     email_address = models.ForeignKey(EmailAddress)
     sent = models.DateTimeField()
-    confirmation_key = models.CharField(max_length=64, unique=True)
+    key = models.CharField(max_length=64, unique=True)
     
     objects = EmailConfirmationManager()
     
     def key_expired(self):
-        expiration_date = self.sent + datetime.timedelta(days=settings.ACCOUNT_EMAIL_CONFIRMATION_DAYS)
+        expiration_date = self.sent + datetime.timedelta(days=settings.ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS)
         return expiration_date <= timezone.now()
     key_expired.boolean = True
+    
+    def confirm(self):
+        if not self.key_expired() and not self.email_address.verified:
+            email_address = self.email_address
+            email_address.verified = True
+            email_address.set_as_primary(conditional=True)
+            email_address.save()
+            signals.email_confirmed.send(sender=self.__class__, email_address=email_address)
+            return email_address
     
     def __unicode__(self):
         return u"confirmation for %s" % self.email_address

@@ -35,33 +35,20 @@ class EmailAddressManager(models.Manager):
 
 class EmailConfirmationManager(models.Manager):
     
-    def confirm_email(self, confirmation_key):
-        try:
-            confirmation = self.get(confirmation_key=confirmation_key)
-        except self.model.DoesNotExist:
-            return None
-        if not confirmation.key_expired():
-            email_address = confirmation.email_address
-            email_address.verified = True
-            email_address.set_as_primary(conditional=True)
-            email_address.save()
-            signals.email_confirmed.send(sender=self.model, email_address=email_address)
-            return email_address
-    
     def send_confirmation(self, email_address):
-        confirmation_key = random_token([email_address.email])
+        key = random_token([email_address.email])
         current_site = Site.objects.get_current()
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         activate_url = u"%s://%s%s" % (
             protocol,
             unicode(current_site.domain),
-            reverse("account_confirm_email", args=[confirmation_key])
+            reverse("account_confirm_email", args=[key])
         )
         ctx = {
             "user": email_address.user,
             "activate_url": activate_url,
             "current_site": current_site,
-            "confirmation_key": confirmation_key,
+            "key": key,
         }
         subject = render_to_string("account/email/email_confirmation_subject.txt", ctx)
         subject = "".join(subject.splitlines()) # remove superfluous line breaks
@@ -70,7 +57,7 @@ class EmailConfirmationManager(models.Manager):
         confirmation = self.create(
             email_address=email_address,
             sent=timezone.now(),
-            confirmation_key=confirmation_key
+            key=key
         )
         signals.email_confirmation_sent.send(
             sender=self.model,

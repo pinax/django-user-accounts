@@ -1,7 +1,7 @@
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
+from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
@@ -10,17 +10,17 @@ from django.contrib.auth.models import User
 from account import signals
 from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
-from account.models import EmailAddress
+from account.models import EmailAddress, EmailConfirmation
 from account.utils import default_redirect, user_display
 
 
 class SignupView(FormView):
     
     template_name = "account/signup.html"
-    template_name_verification_sent = "account/verification_sent.html"
+    template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
     form_class = SignupForm
     messages = {
-        "email_verification_sent": {
+        "email_confirmation_sent": {
             "level": messages.INFO,
             "text": _("Confirmation email sent to %(email)s")
         },
@@ -46,12 +46,22 @@ class SignupView(FormView):
     
     def form_valid(self, form):
         new_user = self.create_user(form, commit=False)
-        if settings.ACCOUNT_EMAIL_VERIFICATION:
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
         new_user.save()
         EmailAddress.objects.add_email(new_user, form.cleaned_data["email"])
         self.after_signup(new_user)
-        if settings.ACCOUNT_EMAIL_REQUIRE_CONFIRMATION:
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+            response_kwargs = {
+                "request": self.request,
+                "template": self.template_name_email_confirmation_sent,
+                "context": {
+                    "email": form.cleaned_data["email"],
+                    "success_url": self.get_success_url(),
+                }
+            }
+            return self.response_class(**response_kwargs)
+        else:
             if self.messages.get("email_confirmation_sent"):
                 messages.add_message(
                     self.request,
@@ -60,16 +70,6 @@ class SignupView(FormView):
                         "email": form.cleaned_data["email"]
                     }
                 )
-            response_kwargs = {
-                "request": self.request,
-                "template": self.template_name_verification_sent,
-                "context": {
-                    "email": form.cleaned_data["email"],
-                    "success_url": self.get_success_url(),
-                }
-            }
-            return self.response_class(**response_kwargs)
-        else:
             self.login_user(new_user)
             if self.messages.get("logged_in"):
                 messages.add_message(
@@ -154,3 +154,65 @@ class LogoutView(TemplateView):
     
     def get_redirect_url(self):
         return default_redirect(self.request, settings.ACCOUNT_LOGOUT_REDIRECT_URL)
+
+
+class ConfirmEmailView(TemplateResponseMixin, View):
+    
+    messages = {
+        "email_confirmed": {
+            "level": messages.SUCCESS,
+            "text": _("You have confirmed %(email)s")
+        }
+    }
+    
+    def get_template_names(self):
+        return {
+            "GET": ["account/email_confirm.html"],
+            "POST": ["account/email_confirmed.html"],
+        }[self.request.method]
+    
+    def get(self, *args, **kwargs):
+        self.object = confirmation = self.get_object()
+        ctx = self.get_context_data()
+        return self.render_to_response(ctx)
+    
+    def post(self, *args, **kwargs):
+        self.object = confirmation = self.get_object()
+        confirmation.confirm()
+        redirect_url = self.get_redirect_url()
+        if not redirect_url:
+            ctx = self.get_context_data()
+            return self.render_to_response(ctx)
+        if self.messages.get("email_confirmed"):
+            messages.add_message(
+                self.request,
+                self.messages["email_confirmed"]["level"],
+                self.messages["email_confirmed"]["text"] % {
+                    "email": confirmation.email_address.email
+                }
+            )
+        return redirect(redirect_url)
+    
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        try:
+            return queryset.get(key=self.kwargs["key"].lower())
+        except EmailConfirmation.DoesNotExist:
+            raise Http404()
+    
+    def get_queryset(self):
+        return EmailConfirmation.objects.select_related(depth=1)
+    
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        ctx["confirmation"] = self.object
+        return ctx
+    
+    def get_redirect_url(self):
+        if self.request.user.is_authenticated():
+            if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
+                return settings.ACCOUNT_LOGIN_REDIRECT_URL
+            return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
+        else:
+            return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
