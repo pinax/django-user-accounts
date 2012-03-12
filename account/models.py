@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -131,16 +132,24 @@ class EmailAddress(models.Model):
         return True
     
     def send_confirmation(self):
-        return EmailConfirmation.objects.send_confirmation(self)
+        confirmation = EmailConfirmation.create(self)
+        confirmation.send()
+        return confirmation
 
 
 class EmailConfirmation(models.Model):
     
     email_address = models.ForeignKey(EmailAddress)
-    sent = models.DateTimeField()
+    created = models.DateTimeField(default=timezone.now())
+    sent = models.DateTimeField(null=True)
     key = models.CharField(max_length=64, unique=True)
     
     objects = EmailConfirmationManager()
+    
+    @classmethod
+    def create(cls, email_address):
+        key = random_token([email_address.email])
+        return cls._default_manager.create(email_address=email_address, key=key)
     
     def key_expired(self):
         expiration_date = self.sent + datetime.timedelta(days=settings.ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS)
@@ -155,6 +164,28 @@ class EmailConfirmation(models.Model):
             email_address.save()
             signals.email_confirmed.send(sender=self.__class__, email_address=email_address)
             return email_address
+    
+    def send(self):
+        current_site = Site.objects.get_current()
+        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        activate_url = u"%s://%s%s" % (
+            protocol,
+            unicode(current_site.domain),
+            reverse("account_confirm_email", args=[self.key])
+        )
+        ctx = {
+            "user": self.email_address.user,
+            "activate_url": activate_url,
+            "current_site": current_site,
+            "key": self.key,
+        }
+        subject = render_to_string("account/email/email_confirmation_subject.txt", ctx)
+        subject = "".join(subject.splitlines()) # remove superfluous line breaks
+        message = render_to_string("account/email/email_confirmation_message.txt", ctx)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email_address.email])
+        self.sent = timezone.now()
+        self.save()
+        signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
     
     def __unicode__(self):
         return u"confirmation for %s" % self.email_address
