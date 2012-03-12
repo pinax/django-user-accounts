@@ -183,6 +183,9 @@ class ConfirmEmailView(TemplateResponseMixin, View):
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
         confirmation.confirm()
+        user = confirmation.email_address.user
+        user.is_active = True
+        user.save()
         redirect_url = self.get_redirect_url()
         if not redirect_url:
             ctx = self.get_context_data()
@@ -206,7 +209,9 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             raise Http404()
     
     def get_queryset(self):
-        return EmailConfirmation.objects.select_related(depth=1)
+        qs = EmailConfirmation.objects.all()
+        qs = qs.select_related("email_address__user")
+        return qs
     
     def get_context_data(self, **kwargs):
         ctx = kwargs
