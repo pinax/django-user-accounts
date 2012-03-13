@@ -201,7 +201,6 @@ class LoginView(FormView):
             "redirect_field_name": redirect_field_name,
             "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
         })
-        print ctx
         return ctx
     
     def form_valid(self, form):
