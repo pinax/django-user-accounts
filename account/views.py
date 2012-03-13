@@ -20,6 +20,7 @@ class SignupView(FormView):
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
     form_class = SignupForm
+    redirect_field_name = "next"
     messages = {
         "email_confirmation_sent": {
             "level": messages.INFO,
@@ -66,6 +67,15 @@ class SignupView(FormView):
         if self.signup_code:
             initial["code"] = self.signup_code.code
         return initial
+    
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        redirect_field_name = self.get_redirect_field_name()
+        ctx.update({
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+        })
+        return ctx
     
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
@@ -130,6 +140,9 @@ class SignupView(FormView):
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_SIGNUP_REDIRECT_URL)
     
+    def get_redirect_field_name(self):
+        return self.redirect_field_name
+    
     def create_user(self, form, commit=True):
         user = User()
         username = form.cleaned_data.get("username")
@@ -174,11 +187,22 @@ class LoginView(FormView):
     
     template_name = "account/login.html"
     form_class = LoginUsernameForm
+    redirect_field_name = "next"
     
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        redirect_field_name = self.get_redirect_field_name()
+        ctx.update({
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+        })
+        print ctx
+        return ctx
     
     def form_valid(self, form):
         self.login_user(form)
@@ -186,6 +210,9 @@ class LoginView(FormView):
     
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL)
+    
+    def get_redirect_field_name(self):
+        return self.redirect_field_name
     
     def login_user(self, form):
         auth.login(self.request, form.user)
