@@ -22,3 +22,4 @@ Contents
  templates
  signals
  changelog
+ migration
