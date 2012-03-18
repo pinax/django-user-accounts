@@ -20,11 +20,15 @@ We've also taken the opportunity to update the schema to take advantage of
 much saner defaults. Here is SQL (tested on PostgreSQL only) to convert from
 Pinax to django-user-accounts::
 
-    ALTER TABLE "emailconfirmation_emailaddress" RENAME TO "account_emailaddress";
-    ALTER TABLE "emailconfirmation_emailconfirmation" RENAME TO "account_emailconfirmation";
     ALTER TABLE "signup_codes_signupcode" RENAME TO "account_signupcode";
     ALTER TABLE "signup_codes_signupcoderesult" RENAME TO "account_signupcoderesult";
+    ALTER TABLE "emailconfirmation_emailaddress" RENAME TO "account_emailaddress";
+    ALTER TABLE "emailconfirmation_emailconfirmation" RENAME TO "account_emailconfirmation";
     DROP TABLE "account_passwordreset";
+    ALTER TABLE "account_signupcode" ALTER COLUMN "code" TYPE varchar(64);
+    ALTER TABLE "account_signupcode" ADD CONSTRAINT "account_signupcode_code_key" UNIQUE ("code");
+    ALTER TABLE "account_emailconfirmation" RENAME COLUMN "confirmation_key" TO "key";
+    ALTER TABLE "account_emailconfirmation" ALTER COLUMN "key" TYPE varchar(64);
     -- @@@ more ...
 
 URL changes
