@@ -1,15 +1,16 @@
 from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.base import TemplateResponseMixin, View, TemplateView
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 
 from account import signals
 from account.conf import settings
-from account.forms import SignupForm, LoginUsernameForm
+from account.forms import SignupForm, LoginUsernameForm, ChangePasswordForm
 from account.models import SignupCode, EmailAddress, EmailConfirmation
 from account.utils import default_redirect, user_display
 
@@ -242,6 +243,8 @@ class LogoutView(TemplateResponseMixin, View):
         return default_redirect(self.request, settings.ACCOUNT_LOGOUT_REDIRECT_URL)
 
 
+
+
 class ConfirmEmailView(TemplateResponseMixin, View):
     
     messages = {
@@ -307,3 +310,34 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
         else:
             return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
+
+class ChangePasswordView(FormView):
+    template_name = "account/password_change.html"
+    form_class = ChangePasswordForm
+    def get_success_url(self):
+        return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
+
+    def change_password(self, form):
+        user = self.request.user
+        form.save(user)
+        messages.add_message(self.request, messages.SUCCESS,
+            _(u"Password successfully changed.")
+        )
+        signals.password_changed.send(sender=ChangePasswordForm, user=user)
+
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instantiating the form.
+        """
+        kwargs = {'user': self.request.user, 'initial': self.get_initial()}
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+        return kwargs
+
+    def form_valid(self, form):
+        self.change_password(form)
+        return redirect(self.get_success_url())
+

@@ -132,3 +132,39 @@ class LoginEmailForm(LoginForm):
             "email": self.cleaned_data["email"],
             "password": self.cleaned_data["password"],
         }
+
+class UserForm(forms.Form):
+    
+    def __init__(self, user=None, *args, **kwargs):
+        self.user = user
+        super(UserForm, self).__init__(*args, **kwargs)
+
+class ChangePasswordForm(UserForm):
+    
+    oldpassword = forms.CharField(
+        label = _("Current Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password1 = forms.CharField(
+        label = _("New Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password2 = forms.CharField(
+        label = _("New Password (again)"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+
+    def clean_oldpassword(self):
+        if not self.user.check_password(self.cleaned_data.get("oldpassword")):
+            raise forms.ValidationError(_("Please type your current password."))
+        return self.cleaned_data["oldpassword"]
+    
+    def clean_password2(self):
+        if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
+            if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
+                raise forms.ValidationError(_("You must type the same password each time."))
+        return self.cleaned_data["password2"]
+    
+    def save(self, user):
+        user.set_password(self.cleaned_data["password1"])
+        user.save()
