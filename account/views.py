@@ -143,8 +143,8 @@ class SignupView(FormView):
     def get_redirect_field_name(self):
         return self.redirect_field_name
     
-    def create_user(self, form, commit=True):
-        user = User()
+    def create_user(self, form, commit=True, **kwargs):
+        user = User(**kwargs)
         username = form.cleaned_data.get("username")
         if username is None:
             username = self.generate_username(form)
