@@ -10,6 +10,7 @@ class AccountAppConf(AppConf):
     LOGIN_REDIRECT_URL = "/"
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "/"
+    PASSWORD_RESET_REDIRECT_URL = "account_login"
     USER_DISPLAY = lambda user: user.username
     EMAIL_CONFIRMATION_REQUIRED = False
     EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
