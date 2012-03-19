@@ -39,19 +39,15 @@ class SignupForm(forms.Form):
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
             raise forms.ValidationError(_("Usernames can only contain letters, numbers and underscores."))
-        try:
-            User.objects.get(username__iexact=self.cleaned_data["username"])
-        except User.DoesNotExist:
+        qs = User.objects.filter(username__iexact=self.cleaned_data["username"])
+        if not qs.exists():
             return self.cleaned_data["username"]
         raise forms.ValidationError(_("This username is already taken. Please choose another."))
     
     def clean_email(self):
         value = self.cleaned_data["email"]
-        try:
-            EmailAddress.objects.get(email__iexact=value)
-        except EmailAddress.DoesNotExist:
-            return value
-        if not settings.ACCOUNT_EMAIL_UNIQUE:
+        qs = EmailAddress.objects.filter(email__iexact=value)
+        if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
             return value
         raise forms.ValidationError(_("A user is registered with this email address."))
     
