@@ -1,13 +1,18 @@
 import re
 
 from django import forms
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from django.utils.http import int_to_base36
 
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site
 
 from account.conf import settings
-from account.models import SignupCode
+from account.models import SignupCode, EmailAddress, PasswordReset
 
 
 alnum_re = re.compile(r"^\w+$")
@@ -132,3 +137,97 @@ class LoginEmailForm(LoginForm):
             "email": self.cleaned_data["email"],
             "password": self.cleaned_data["password"],
         }
+
+class UserForm(forms.Form):
+    
+    def __init__(self, user=None, *args, **kwargs):
+        self.user = user
+        super(UserForm, self).__init__(*args, **kwargs)
+
+class ChangePasswordForm(UserForm):
+    
+    oldpassword = forms.CharField(
+        label = _("Current Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password1 = forms.CharField(
+        label = _("New Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password2 = forms.CharField(
+        label = _("New Password (again)"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+
+    def clean_oldpassword(self):
+        if not self.user.check_password(self.cleaned_data.get("oldpassword")):
+            raise forms.ValidationError(_("Please type your current password."))
+        return self.cleaned_data["oldpassword"]
+    
+    def clean_password2(self):
+        if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
+            if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
+                raise forms.ValidationError(_("You must type the same password each time."))
+        return self.cleaned_data["password2"]
+    
+    def save(self, user):
+        user.set_password(self.cleaned_data["password1"])
+        user.save()
+
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label=_("Email"), required=True)
+
+    def clean_email(self):
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+            if not EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'], verified=True).count():
+                raise forms.ValidationError(_("Email address not verified for any user account"))
+        else:
+            if not User.objects.filter(email__iexact=self.cleaned_data['email']).count():
+                raise forms.ValidationError(_("Email address not found for any user account"))
+        return self.cleaned_data['email']
+
+    def save(self, **kwargs):
+        email = self.cleaned_data['email']
+        token_generator = kwargs.get("token_generator", default_token_generator)
+
+        for user in User.objects.filter(email__iexact=email):
+            temp_key = token_generator.make_token(user)
+
+            password_reset = PasswordReset(user=user, temp_key=temp_key)
+            password_reset.save()
+
+            current_site = Site.objects.get_current()
+            domain = unicode(current_site.domain)
+
+            subject = _("Password reset email sent")
+            message = render_to_string("account/password_reset_key_message.txt", {
+                "user": user,
+                "uid": int_to_base36(user.id),
+                "temp_key": temp_key,
+                "domain": domain,
+            })
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        return email
+
+class PasswordResetKeyForm(forms.Form):
+    password1 = forms.CharField(
+        label = _("New Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password2 = forms.CharField(
+        label = _("New Password (again)"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+
+    def clean_password2(self):
+        if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
+            if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
+                raise forms.ValidationError(_("You must type the same password each time."))
+        return self.cleaned_data["password2"]
+
+    def save(self, user, key):
+        # set the new user password
+        user.set_password(self.cleaned_data["password1"])
+        user.save()
+        # mark password reset object as reset
+        PasswordReset.objects.filter(temp_key=key).update(reset=True)
