@@ -1,9 +1,10 @@
 .. _changelog:
 
-ChangeLog
+CHANGELOG
 =========
 
-0.9
+1.0
 ---
 
 * initial release
+* if migrating from Pinax; see :ref:`migration`

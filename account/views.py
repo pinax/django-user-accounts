@@ -264,11 +264,15 @@ class ConfirmEmailView(TemplateResponseMixin, View):
     
     def get(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
+        if confirmation.email_address.user != self.request.user:
+            raise Http404()
         ctx = self.get_context_data()
         return self.render_to_response(ctx)
     
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
+        if confirmation.email_address.user != self.request.user:
+            raise Http404()
         confirmation.confirm()
         user = confirmation.email_address.user
         user.is_active = True
