@@ -31,6 +31,11 @@ Pinax to django-user-accounts::
     ALTER TABLE "account_emailconfirmation" ALTER COLUMN "key" TYPE varchar(64);
     -- @@@ more ...
 
+If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
+
+    ALTER TABLE "account_emailaddress" ADD CONSTRAINT "account_emailaddress_email_key" UNIQUE ("email");
+    ALTER TABLE "emailconfirmation_emailaddress" DROP CONSTRAINT "emailconfirmation_emailaddress_user_id_email_key";
+
 URL changes
 ===========
 
@@ -45,6 +50,20 @@ from the traditional function-based, but has the benefit of being much more
 flexible.
 
 @@@ todo: table of changes
+
+Settings changes
+================
+
+We have cleaned up settings and set saner defaults used by
+django-user-accounts.
+
+===========================================  ===============================
+Pinax                                        django-user-accounts
+===========================================  ===============================
+``ACCOUNT_OPEN_SIGNUP = True``               ``ACCOUNT_OPEN_SIGNUP = True``
+``ACCOUNT_UNIQUE_EMAIL = False``             ``ACCOUNT_EMAIL_UNIQUE = True``
+``EMAIL_CONFIRMATION_UNIQUE_EMAIL = False``  *removed*
+===========================================  ===============================
 
 General changes
 ===============

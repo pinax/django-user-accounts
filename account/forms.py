@@ -7,7 +7,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 
 from account.conf import settings
-from account.models import SignupCode
+from account.models import SignupCode, EmailAddress
 
 
 alnum_re = re.compile(r"^\w+$")
@@ -48,8 +48,10 @@ class SignupForm(forms.Form):
     def clean_email(self):
         value = self.cleaned_data["email"]
         try:
-            User.objects.get(email__iexact=value)
-        except User.DoesNotExist:
+            EmailAddress.objects.get(email__iexact=value)
+        except EmailAddress.DoesNotExist:
+            return value
+        if not settings.ACCOUNT_EMAIL_UNIQUE:
             return value
         raise forms.ValidationError(_("A user is registered with this email address."))
     

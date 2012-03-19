@@ -1,7 +1,6 @@
 import datetime
 import operator
 
-from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -14,6 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
 from account import signals
+from account.conf import settings
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 from account.utils import random_token
@@ -132,7 +132,7 @@ class SignupCodeResult(models.Model):
 class EmailAddress(models.Model):
     
     user = models.ForeignKey(User)
-    email = models.EmailField()
+    email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(default=False)
     primary = models.BooleanField(default=False)
     
@@ -141,7 +141,8 @@ class EmailAddress(models.Model):
     class Meta:
         verbose_name = _("email address")
         verbose_name_plural = _("email addresses")
-        unique_together = [("user", "email")]
+        if not settings.ACCOUNT_EMAIL_UNIQUE:
+            unique_together = [("user", "email")]
     
     def __unicode__(self):
         return u"%s (%s)" % (self.email, self.user)
