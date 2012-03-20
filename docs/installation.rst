@@ -30,6 +30,13 @@ Installation
 Dependencies
 ============
 
+``django.contrib.auth``
+-----------------------
+
+This is bundled with Django. It is enabled by default with all new Django
+projects, but if you adding django-user-accounts to an existing project you
+need to make sure ``django.contrib.auth`` is installed.
+
 django-appconf_
 ---------------
 
