@@ -185,7 +185,7 @@ If you want to get rid of username you'll need to do some extra work:
        {% user_display request.user %}
 
 
-Allow non-unqiue email addresses
+Allow non-unique email addresses
 ================================
 
 If your site requires that you support non-unique email addresses globally
