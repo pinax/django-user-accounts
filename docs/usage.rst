@@ -7,6 +7,20 @@ Usage
 This document covers the usage of django-user-accounts. It assumes you've
 read :ref:`installation`.
 
+django-user-accounts has very good default behavior when handling user
+accounts. It has been designed to be customizable in many aspects. By default
+this app will:
+
+* enable username authentication
+* provide default views and forms for sign up, log in, password reset and
+  account management
+* handle log out with POST
+* require unique email addresses globally
+* require email verification for performing password resets
+
+The rest of this document will cover how you can tweak the default behavior
+of django-user-accounts.
+
 Using email address for authentication
 ======================================
 
@@ -92,3 +106,20 @@ If you want to get rid of username you'll need to do some extra work:
    
        {% load account_tags %}
        {% user_display request.user %}
+
+
+Allow non-unqiue email addresses
+================================
+
+If your site requires that you support non-unique email addresses globally
+you can tweak the behavior to allow this.
+
+Set ``ACCOUNT_EMAIL_UNIQUE`` to ``False``. If you have already setup the
+tables for django-user-accounts you will need to migrate the
+``account_emailaddress`` table::
+
+   ALTER TABLE "account_emailaddress" ADD CONSTRAINT "account_emailaddress_user_id_email_key" UNIQUE ("user_id", "email");
+   ALTER TABLE "account_emailaddress" DROP CONSTRAINT "account_emailaddress_email_key";
+
+``ACCOUNT_EMAIL_UNIQUE = False`` will prevent duplicate email addresses per
+user.
