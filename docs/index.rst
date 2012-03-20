@@ -23,3 +23,4 @@ Contents
  signals
  changelog
  migration
+ faq
