@@ -71,3 +71,24 @@ If you want to get rid of username you'll need to do some extra work:
                # Django User model, unfortunately)
                username = "<magic>"
                return username
+
+2. many places will rely on a username for a User instance.
+   django-user-accounts provides a mechanism to add a level of indirection
+   when representing the user in the user interface. Keep in mind not
+   everything you include in your project will do what you expect when
+   removing usernames entirely.
+   
+   Set ``ACCOUNT_USER_DISPLAY`` in settings to a callable suitable for your
+   site::
+   
+       ACCOUNT_USER_DISPLAY = lambda user: user.email
+   
+   Your Python code can use ``user_display`` to handle user representation::
+   
+       from account.utils import user_display
+       user_display(user)
+   
+   Your templates can use ``{% user_display request.user %}``::
+   
+       {% load account_tags %}
+       {% user_display request.user %}
