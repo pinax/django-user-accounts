@@ -21,6 +21,78 @@ this app will:
 The rest of this document will cover how you can tweak the default behavior
 of django-user-accounts.
 
+
+Customizing the sign up process
+===============================
+
+In many cases you need to tweak the sign up process to do some domain specific
+tasks. Perhaps you need to create a profile for the new user or something else.
+The built-in ``SignupView`` has hooks to enable just about any sort of
+customization during sign up. Here's an example of a custom ``SignupView``
+defined in your project::
+
+    import account.views
+    
+    
+    class SignupView(account.views.SignupView):
+        
+        def after_signup(self, user, form):
+            self.create_profile(user, form)
+            super(SignupView, self).after_signup(user, form)
+        
+        def create_profile(self, user, form):
+            profile = user.get_profile()
+            profile.some_attr = "some value"
+            profile.save()
+
+You can define your own form class to add fields to the sign up process::
+
+    # forms.py
+    
+    import account.forms
+    
+    
+    class SignupForm(account.forms.SignupForm):
+        
+        birthdate = forms.DateField(widget=SelectDateWidget(years=range(1910, 1991)))
+    
+    # views.py
+    
+    import account.views
+    
+    import myproject.forms
+    
+    
+    class SignupView(account.views.SignupView):
+       
+       form_class = myproject.forms.SignupForm
+       
+       def after_signup(self, user, form):
+           self.create_profile(user, form)
+           super(SignupView, self).after_signup(user, form)
+       
+       def create_profile(self, user, form):
+           profile = user.get_profile()
+           profile.birthdate = form.cleaned_data["birthdate"]
+           profile.save()
+
+To hook this up for your project you need to override the URL for sign up::
+
+    from django.conf.urls import patterns, include, url
+    
+    import myproject.views
+    
+    
+    urlpatterns = patterns("",
+        url(r"^account/signup/$", myproject.views.SignupView.as_view(), name="account_signup"),
+        url(r"^account/", include("account.urls")),
+    )
+
+.. note::
+
+    Make sure your ``url`` for ``/account/signup/`` comes *before* the
+    ``include`` of ``account.urls``. Django will short-circuit on yours.
+
 Using email address for authentication
 ======================================
 
@@ -75,6 +147,8 @@ If you want to get rid of username you'll need to do some extra work:
        
        import account.views
        
+       import myproject.forms
+       
        
        class SignupView(account.views.SignupView):
            
@@ -123,3 +197,4 @@ tables for django-user-accounts you will need to migrate the
 
 ``ACCOUNT_EMAIL_UNIQUE = False`` will prevent duplicate email addresses per
 user.
+

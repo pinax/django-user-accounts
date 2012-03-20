@@ -106,7 +106,7 @@ class SignupView(FormView):
                 EmailAddress.objects.add_email(new_user, form.cleaned_data["email"])
         else:
             EmailAddress.objects.add_email(new_user, form.cleaned_data["email"])
-        self.after_signup(new_user)
+        self.after_signup(new_user, form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_confirmed:
             response_kwargs = {
                 "request": self.request,
