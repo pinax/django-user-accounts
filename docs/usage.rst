@@ -44,7 +44,7 @@ To enable email authentication do the following:
 
 If you want to get rid of username you'll need to do some extra work:
 
-1. define your own ``SignupView`` in your project::
+1. define your own ``SignupForm`` and ``SignupView`` in your project::
    
        # forms.py
        
