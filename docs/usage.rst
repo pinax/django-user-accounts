@@ -49,6 +49,7 @@ You can define your own form class to add fields to the sign up process::
 
     # forms.py
     
+    from django import forms
     from django.forms.extras.widgets import SelectDateWidget
     
     import account.forms
