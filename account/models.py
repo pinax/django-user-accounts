@@ -222,13 +222,4 @@ class EmailConfirmation(models.Model):
         self.save()
         signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
 
-class PasswordReset(models.Model):
-
-    user = models.ForeignKey(User)
-    temp_key = models.CharField(_("templ_key"), max_length=100)
-    timestamp = models.DateTimeField(default=timezone.now)
-    reset = models.BooleanField(_('reset yet?'), default=False)
-
-    def __unicode__(self):
-        return "%s (key=%s, reset=%r)" %(self.user.username, self.temp_key, self.reset)
 
