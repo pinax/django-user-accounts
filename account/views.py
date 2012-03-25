@@ -163,7 +163,7 @@ class SignupView(FormView):
         raise NotImplementedError("Unable to generate username by default. "
             "Override SignupView.generate_username in a subclass.")
     
-    def after_signup(self, user):
+    def after_signup(self, user, form):
         signals.user_signed_up.send(sender=SignupForm, user=user)
     
     def login_user(self, user):
