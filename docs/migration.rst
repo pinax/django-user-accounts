@@ -29,6 +29,10 @@ Pinax to django-user-accounts::
     ALTER TABLE "account_signupcode" ADD CONSTRAINT "account_signupcode_code_key" UNIQUE ("code");
     ALTER TABLE "account_emailconfirmation" RENAME COLUMN "confirmation_key" TO "key";
     ALTER TABLE "account_emailconfirmation" ALTER COLUMN "key" TYPE varchar(64);
+    ALTER TABLE account_emailconfirmation ADD COLUMN created timestamp with time zone;
+    UPDATE account_emailconfirmation SET created = sent;
+    ALTER TABLE account_emailconfirmation ALTER COLUMN created SET NOT NULL;
+    ALTER TABLE account_emailconfirmation ALTER COLUMN sent DROP NOT NULL;
     -- @@@ more ...
 
 If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
