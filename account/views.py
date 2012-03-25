@@ -43,8 +43,8 @@ class SignupView(FormView):
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
+        code = self.request.GET.get("code")
         try:
-            code = self.request.GET.get("code")
             self.signup_code = SignupCode.check(code)
         except SignupCode.InvalidCode:
             if not settings.ACCOUNT_OPEN_SIGNUP:
@@ -97,6 +97,7 @@ class SignupView(FormView):
             signup_code.use(new_user)
             if signup_code.email and form.cleaned_data["email"] == signup_code.email:
                 EmailAddress.objects.create(
+                    user=new_user,
                     email=form.cleaned_data["email"],
                     primary=True,
                     verified=True
@@ -163,7 +164,7 @@ class SignupView(FormView):
         raise NotImplementedError("Unable to generate username by default. "
             "Override SignupView.generate_username in a subclass.")
     
-    def after_signup(self, user):
+    def after_signup(self, user, form):
         signals.user_signed_up.send(sender=SignupForm, user=user)
     
     def login_user(self, user):
