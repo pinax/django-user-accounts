@@ -325,9 +325,6 @@ class ChangePasswordView(FormView):
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
     
-    def get_success_url(self):
-        return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
-    
     def change_password(self, form):
         user = self.request.user
         form.save(user)
@@ -351,6 +348,9 @@ class ChangePasswordView(FormView):
     def form_valid(self, form):
         self.change_password(form)
         return redirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return reverse("account_password_reset_done")
 
 
 class PasswordResetView(FormView):
@@ -358,9 +358,6 @@ class PasswordResetView(FormView):
     template_name = "account/password_reset.html"
     form_class = PasswordResetForm
     token_generator = default_token_generator
-    
-    def get_success_url(self):
-        return reverse("account_password_reset_done")
     
     def form_valid(self, form):
         email = form.cleaned_data["email"]
@@ -380,6 +377,9 @@ class PasswordResetView(FormView):
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
         
         return redirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return reverse("account_password_reset_done")
 
 
 class PasswordResetDoneView(TemplateView):
@@ -426,7 +426,7 @@ class PasswordResetKeyView(FormView):
             self.messages["successful"]["level"],
             self.messages["successful"]["text"]
         )
-        return redirect(self.get_sucess_url())
+        return redirect(self.get_success_url())
     
-    def get_sucess_url(self):
+    def get_success_url(self):
         return settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
