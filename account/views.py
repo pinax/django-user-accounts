@@ -43,8 +43,8 @@ class SignupView(FormView):
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
+        code = self.request.GET.get("code")
         try:
-            code = self.request.GET.get("code")
             self.signup_code = SignupCode.check(code)
         except SignupCode.InvalidCode:
             if not settings.ACCOUNT_OPEN_SIGNUP:
