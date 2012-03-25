@@ -97,6 +97,7 @@ class SignupView(FormView):
             signup_code.use(new_user)
             if signup_code.email and form.cleaned_data["email"] == signup_code.email:
                 EmailAddress.objects.create(
+                    user=new_user,
                     email=form.cleaned_data["email"],
                     primary=True,
                     verified=True
