@@ -249,8 +249,6 @@ class LogoutView(TemplateResponseMixin, View):
         return default_redirect(self.request, settings.ACCOUNT_LOGOUT_REDIRECT_URL)
 
 
-
-
 class ConfirmEmailView(TemplateResponseMixin, View):
     
     messages = {
@@ -321,12 +319,15 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         else:
             return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
 
+
 class ChangePasswordView(FormView):
+    
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
+    
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
-
+    
     def change_password(self, form):
         user = self.request.user
         form.save(user)
@@ -334,39 +335,41 @@ class ChangePasswordView(FormView):
             _(u"Password successfully changed.")
         )
         signals.password_changed.send(sender=ChangePasswordForm, user=user)
-
+    
     def get_form_kwargs(self):
         """
         Returns the keyword arguments for instantiating the form.
         """
         kwargs = {"user": self.request.user, "initial": self.get_initial()}
-        if self.request.method in ("POST", "PUT"):
+        if self.request.method in ["POST", "PUT"]:
             kwargs.update({
                 "data": self.request.POST,
                 "files": self.request.FILES,
             })
         return kwargs
-
+    
     def form_valid(self, form):
         self.change_password(form)
         return redirect(self.get_success_url())
 
+
 class PasswordResetView(FormView):
+    
     template_name = "account/password_reset.html"
     form_class = PasswordResetForm
     token_generator = default_token_generator
-
+    
     def get_success_url(self):
         return reverse("account_password_reset_done")
-
+    
     def form_valid(self, form):
         email = form.cleaned_data["email"]
-
+        
         for user in User.objects.filter(email__iexact=email):
             temp_key = self.token_generator.make_token(user)
             current_site = get_current_site(self.request)
             domain = unicode(current_site.domain)
-
+            
             subject = _("Password reset email sent")
             message = render_to_string("account/password_reset_key_message.txt", {
                 "user": user,
@@ -375,13 +378,17 @@ class PasswordResetView(FormView):
                 "domain": domain,
             })
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-
+        
         return redirect(self.get_success_url())
 
+
 class PasswordResetDoneView(TemplateView):
+    
     template_name = "account/password_reset_done.html"
 
+
 class PasswordResetKeyView(FormView):
+    
     template_name = "account/password_reset_from_key.html"
     form_class = PasswordResetKeyForm
     token_generator = default_token_generator
@@ -391,7 +398,7 @@ class PasswordResetKeyView(FormView):
             "text": _("Password successfully changed.")
         },
     }
-
+    
     def get(self, request, uidb36, key, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -399,13 +406,12 @@ class PasswordResetKeyView(FormView):
         try:
             uid_int = base36_to_int(uidb36)
         except ValueError:
-            raise Http404
+            raise Http404()
         user = get_object_or_404(User, id=uid_int)
         if not self.token_generator.check_token(user, key):
-            ctx.update({'token_fail':True})
+            ctx.update({"token_fail": True})
         return self.render_to_response(ctx)
-
-
+    
     def form_valid(self, form):
         try:
             uid_int = base36_to_int(self.kwargs.get("uidb36"))
@@ -414,13 +420,13 @@ class PasswordResetKeyView(FormView):
         user = get_object_or_404(User, id=uid_int)
         user.set_password(form.cleaned_data["password1"])
         user.save()
-
+        
         messages.add_message(
             self.request,
             self.messages["successful"]["level"],
             self.messages["successful"]["text"]
         )
         return redirect(self.get_sucess_url())
-
+    
     def get_sucess_url(self):
         return settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL

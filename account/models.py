@@ -222,5 +222,3 @@ class EmailConfirmation(models.Model):
         self.sent = timezone.now()
         self.save()
         signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
-
-
