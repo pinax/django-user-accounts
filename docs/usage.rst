@@ -127,7 +127,7 @@ To enable email authentication do the following:
        
        class LoginView(account.views.LoginView):
            
-           form_class = account.views.LoginEmailForm
+           form_class = account.forms.LoginEmailForm
 
 3. ensure ``"account.auth_backends.EmailAuthenticationBackend"`` is in ``AUTHENTICATION_BACKENDS``
 
