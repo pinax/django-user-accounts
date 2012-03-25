@@ -130,3 +130,69 @@ class LoginEmailForm(LoginForm):
             "email": self.cleaned_data["email"],
             "password": self.cleaned_data["password"],
         }
+
+
+class ChangePasswordForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+    oldpassword = forms.CharField(
+        label = _("Current Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password1 = forms.CharField(
+        label = _("New Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password2 = forms.CharField(
+        label = _("New Password (again)"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+
+    def clean_oldpassword(self):
+        if not self.user.check_password(self.cleaned_data.get("oldpassword")):
+            raise forms.ValidationError(_("Please type your current password."))
+        return self.cleaned_data["oldpassword"]
+    
+    def clean_password2(self):
+        if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
+            if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
+                raise forms.ValidationError(_("You must type the same password each time."))
+        return self.cleaned_data["password2"]
+    
+    def save(self, user):
+        user.set_password(self.cleaned_data["password1"])
+        user.save()
+
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label=_("Email"), required=True)
+
+    def clean_email(self):
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+            if not EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'], verified=True).count():
+                raise forms.ValidationError(_("Email address not verified for any user account"))
+        else:
+            if not User.objects.filter(email__iexact=self.cleaned_data['email']).count():
+                raise forms.ValidationError(_("Email address not found for any user account"))
+        return self.cleaned_data['email']
+
+
+class PasswordResetKeyForm(forms.Form):
+    password1 = forms.CharField(
+        label = _("New Password"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+    password2 = forms.CharField(
+        label = _("New Password (again)"),
+        widget = forms.PasswordInput(render_value=False)
+    )
+
+    def clean_password2(self):
+        if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
+            if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
+                raise forms.ValidationError(_("You must type the same password each time."))
+        return self.cleaned_data["password2"]
+
+
