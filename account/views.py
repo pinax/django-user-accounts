@@ -361,12 +361,10 @@ class PasswordResetView(FormView):
     
     def form_valid(self, form):
         email = form.cleaned_data["email"]
-        
         for user in User.objects.filter(email__iexact=email):
             temp_key = self.token_generator.make_token(user)
             current_site = get_current_site(self.request)
             domain = unicode(current_site.domain)
-            
             subject = _("Password reset email sent")
             message = render_to_string("account/password_reset_key_message.txt", {
                 "user": user,
@@ -375,7 +373,6 @@ class PasswordResetView(FormView):
                 "domain": domain,
             })
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-        
         return redirect(self.get_success_url())
     
     def get_success_url(self):
