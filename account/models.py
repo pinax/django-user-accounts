@@ -1,5 +1,6 @@
 import datetime
 import operator
+import urllib
 
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
@@ -104,11 +105,18 @@ class SignupCode(models.Model):
         signup_code_used.send(sender=result.__class__, signup_code_result=result)
     
     def send(self):
+        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         current_site = Site.objects.get_current()
-        domain = unicode(current_site.domain)
+        signup_url = u"%s://%s%s?%s" % (
+            protocol,
+            unicode(current_site.domain),
+            reverse("account_signup"),
+            urllib.urlencode({"code": signup_code.code})
+        )
         ctx = {
             "signup_code": self,
             "domain": domain,
+            "signup_url": signup_url,
         }
         subject = render_to_string("account/email/invite_user_subject.txt", ctx)
         message = render_to_string("account/email/invite_user.txt", ctx)
