@@ -324,13 +324,23 @@ class ChangePasswordView(FormView):
     
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
-    
+
+    messages = {
+        "password_changed": {
+            "level": messages.SUCCESS,
+            "text": _(u"Password successfully changed.")
+        }
+    }
+
     def change_password(self, form):
         user = self.request.user
         form.save(user)
-        messages.add_message(self.request, messages.SUCCESS,
-            _(u"Password successfully changed.")
-        )
+        if self.messages.get("password_changed"):
+            messages.add_message(
+                self.request,
+                self.messages["password_changed"]["level"],
+                self.messages["password_changed"]["text"]
+            )
         signals.password_changed.send(sender=ChangePasswordForm, user=user)
     
     def get_form_kwargs(self):
