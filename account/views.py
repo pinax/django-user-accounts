@@ -400,7 +400,7 @@ class PasswordResetKeyView(FormView):
     form_class = PasswordResetKeyForm
     token_generator = default_token_generator
     messages = {
-        "password_reset": {
+        "password_changed": {
             "level": messages.SUCCESS,
             "text": _("Password successfully changed.")
         },
@@ -426,11 +426,11 @@ class PasswordResetKeyView(FormView):
         user = self.get_user(self.kwargs.get("uidb36"))
         user.set_password(form.cleaned_data["password1"])
         user.save()
-        if self.messages.get("password_reset"):
+        if self.messages.get("password_changed"):
             messages.add_message(
                 self.request,
-                self.messages["password_reset"]["level"],
-                self.messages["password_reset"]["text"]
+                self.messages["password_changed"]["level"],
+                self.messages["password_changed"]["text"]
             )
         return redirect(self.get_success_url())
     
