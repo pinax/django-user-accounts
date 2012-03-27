@@ -396,6 +396,13 @@ class PasswordResetKeyView(FormView):
         },
     }
     
+    def get_user(self, uidb36):
+        try:
+            uid_int = base36_to_int(uidb36)
+        except ValueError:
+            raise Http404()
+        return get_object_or_404(User, id=uid_int)
+    
     def get(self, request, uidb36, key, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -404,13 +411,6 @@ class PasswordResetKeyView(FormView):
         if not self.token_generator.check_token(user, key):
             ctx.update({"token_fail": True})
         return self.render_to_response(ctx)
-    
-    def get_user(self, uidb36):
-        try:
-            uid_int = base36_to_int(uidb36)
-        except ValueError:
-            raise Http404()
-        return get_object_or_404(User, id=uid_int)
     
     def form_valid(self, form):
         user = self.get_user(self.kwargs.get("uidb36"))
