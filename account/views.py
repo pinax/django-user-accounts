@@ -426,11 +426,12 @@ class PasswordResetKeyView(FormView):
         user = self.get_user(self.kwargs.get("uidb36"))
         user.set_password(form.cleaned_data["password1"])
         user.save()
-        messages.add_message(
-            self.request,
-            self.messages["password_reset"]["level"],
-            self.messages["password_reset"]["text"]
-        )
+        if self.messages.get("password_reset"):
+            messages.add_message(
+                self.request,
+                self.messages["password_reset"]["level"],
+                self.messages["password_reset"]["text"]
+            )
         return redirect(self.get_success_url())
     
     def get_success_url(self):
