@@ -348,9 +348,9 @@ class ChangePasswordView(FormView):
     def form_valid(self, form):
         self.change_password(form)
         return redirect(self.get_success_url())
-    
+
     def get_success_url(self):
-        return reverse("account_password_reset_done")
+        return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
 
 
 class PasswordResetView(FormView):
