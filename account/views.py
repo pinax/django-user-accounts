@@ -324,14 +324,13 @@ class ChangePasswordView(FormView):
     
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
-
     messages = {
         "password_changed": {
             "level": messages.SUCCESS,
             "text": _(u"Password successfully changed.")
         }
     }
-
+    
     def change_password(self, form):
         user = self.request.user
         form.save(user)
@@ -358,7 +357,7 @@ class ChangePasswordView(FormView):
     def form_valid(self, form):
         self.change_password(form)
         return redirect(self.get_success_url())
-
+    
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
 
