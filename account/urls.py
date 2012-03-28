@@ -2,8 +2,9 @@ from django.conf.urls import patterns, url
 
 from django.contrib.auth.decorators import login_required
 
-from account.views import SignupView, LoginView, LogoutView, ChangePasswordView, PasswordResetView, PasswordResetDoneView, PasswordResetKeyView
+from account.views import SignupView, LoginView, LogoutView
 from account.views import ConfirmEmailView
+from accounts.views import ChangePasswordView, PasswordResetView, PasswordResetDoneView, PasswordResetKeyView
 
 
 urlpatterns = patterns("",
