@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.core.mail import send_mail
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.http import base36_to_int, int_to_base36
@@ -330,6 +330,16 @@ class ChangePasswordView(FormView):
             "text": _(u"Password successfully changed.")
         }
     }
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return redirect("account_password_reset")
+        return super(ChangePasswordView, self).get(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return HttpResponseForbidden()
+        return super(ChangePasswordView, self).post(*args, **kwargs)
     
     def change_password(self, form):
         user = self.request.user
