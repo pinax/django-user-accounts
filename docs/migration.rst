@@ -60,7 +60,7 @@ Pinax                                   django-user-accounts
 ======================================  =================================
 
 .. [1] When user is anonymous and requests a GET the user is redirected to
-   ``/account/password/reset/.
+   ``/account/password/reset/``.
 
 View changes
 ============
