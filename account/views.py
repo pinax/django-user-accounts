@@ -171,7 +171,8 @@ class SignupView(FormView):
             "Override SignupView.generate_username in a subclass.")
     
     def after_signup(self, user, form):
-        signals.user_signed_up.send(sender=SignupForm, user=user)
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+            signals.user_signed_up.send(sender=SignupForm, user=user)
     
     def login_user(self, user):
         # set backend on User object to bypass needing to call auth.authenticate
