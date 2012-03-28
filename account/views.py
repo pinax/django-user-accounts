@@ -324,13 +324,23 @@ class ChangePasswordView(FormView):
     
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
-    
+
+    messages = {
+        "password_changed": {
+            "level": messages.SUCCESS,
+            "text": _(u"Password successfully changed.")
+        }
+    }
+
     def change_password(self, form):
         user = self.request.user
         form.save(user)
-        messages.add_message(self.request, messages.SUCCESS,
-            _(u"Password successfully changed.")
-        )
+        if self.messages.get("password_changed"):
+            messages.add_message(
+                self.request,
+                self.messages["password_changed"]["level"],
+                self.messages["password_changed"]["text"]
+            )
         signals.password_changed.send(sender=ChangePasswordForm, user=user)
     
     def get_form_kwargs(self):
@@ -390,7 +400,7 @@ class PasswordResetKeyView(FormView):
     form_class = PasswordResetKeyForm
     token_generator = default_token_generator
     messages = {
-        "successful": {
+        "password_changed": {
             "level": messages.SUCCESS,
             "text": _("Password successfully changed.")
         },
@@ -416,11 +426,12 @@ class PasswordResetKeyView(FormView):
         user = self.get_user(self.kwargs.get("uidb36"))
         user.set_password(form.cleaned_data["password1"])
         user.save()
-        messages.add_message(
-            self.request,
-            self.messages["successful"]["level"],
-            self.messages["successful"]["text"]
-        )
+        if self.messages.get("password_changed"):
+            messages.add_message(
+                self.request,
+                self.messages["password_changed"]["level"],
+                self.messages["password_changed"]["text"]
+            )
         return redirect(self.get_success_url())
     
     def get_success_url(self):
