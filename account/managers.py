@@ -3,9 +3,9 @@ from django.db import models, IntegrityError
 
 class EmailAddressManager(models.Manager):
     
-    def add_email(self, user, email):
+    def add_email(self, user, email, **kwargs):
         try:
-            email_address = self.create(user=user, email=email)
+            email_address = self.create(user=user, email=email, **kwargs)
         except IntegrityError:
             return None
         else:

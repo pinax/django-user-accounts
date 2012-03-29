@@ -98,21 +98,14 @@ class SignupView(FormView):
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
         new_user.save()
+        email_kwargs = {"primary": True}
         signup_code = form.cleaned_data.get("code")
         if signup_code:
             signup_code.use(new_user)
             if signup_code.email and form.cleaned_data["email"] == signup_code.email:
-                EmailAddress.objects.create(
-                    user=new_user,
-                    email=form.cleaned_data["email"],
-                    primary=True,
-                    verified=True
-                )
+                email_kwargs["verified"] = True
                 email_confirmed = True
-            else:
-                EmailAddress.objects.add_email(new_user, form.cleaned_data["email"])
-        else:
-            EmailAddress.objects.add_email(new_user, form.cleaned_data["email"])
+        EmailAddress.objects.add_email(new_user, form.cleaned_data["email"], **email_kwargs)
         self.after_signup(new_user, form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_confirmed:
             response_kwargs = {
