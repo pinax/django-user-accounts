@@ -2,6 +2,9 @@ import hashlib
 import random
 import urlparse
 
+from django.core import urlresolvers
+from django.http import HttpResponseRedirect, QueryDict
+
 from account.conf import settings
 
 
@@ -33,3 +36,26 @@ def random_token(extra=None, hash_func=hashlib.sha256):
         extra = []
     bits = extra + [str(random.SystemRandom().getrandbits(512))]
     return hash_func("".join(bits)).hexdigest()
+
+
+def handle_redirect_to_login(request, **kwargs):
+    login_url = kwargs.get("login_url")
+    redirect_field_name = kwargs.get("redirect_field_name")
+    next_url = kwargs.get("next_url")
+    if login_url is None:
+        login_url = settings.ACCOUNT_LOGIN_URL
+    if next_url is None:
+        next_url = request.get_full_path()
+    try:
+        login_url = urlresolvers.reverse(login_url)
+    except urlresolvers.NoReverseMatch:
+        if callable(login_url):
+            raise
+        if "/" not in login_url and "." not in login_url:
+            raise
+    url_bits = list(urlparse.urlparse(login_url))
+    if redirect_field_name:
+        querystring = QueryDict(url_bits[4], mutable=True)
+        querystring[redirect_field_name] = next_url
+        url_bits[4] = querystring.urlencode(safe="/")
+    return HttpResponseRedirect(urlparse.urlunparse(url_bits))
