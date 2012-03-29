@@ -111,11 +111,11 @@ class SignupCode(models.Model):
             protocol,
             unicode(current_site.domain),
             reverse("account_signup"),
-            urllib.urlencode({"code": signup_code.code})
+            urllib.urlencode({"code": self.code})
         )
         ctx = {
             "signup_code": self,
-            "domain": domain,
+            "current_site": current_site,
             "signup_url": signup_url,
         }
         subject = render_to_string("account/email/invite_user_subject.txt", ctx)
