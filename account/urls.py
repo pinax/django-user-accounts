@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from account.views import SignupView, LoginView, LogoutView
 from account.views import ConfirmEmailView
 from account.views import ChangePasswordView, PasswordResetView, PasswordResetDoneView, PasswordResetKeyView
+from account.views import SettingsView
 
 
 urlpatterns = patterns("",
@@ -16,4 +17,5 @@ urlpatterns = patterns("",
     url(r"^password/reset/$", PasswordResetView.as_view(), name="account_password_reset"),
     url(r"^password/reset/done/$", PasswordResetDoneView.as_view(), name="account_password_reset_done"),
     url(r"^password/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<key>.+)/$", PasswordResetKeyView.as_view(), name="account_password_reset_key"),
+    url(r"^settings/$", SettingsView.as_view(), name="account_settings"),
 )

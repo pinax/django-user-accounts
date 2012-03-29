@@ -197,3 +197,15 @@ class PasswordResetKeyForm(forms.Form):
             if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
                 raise forms.ValidationError(_("You must type the same password each time."))
         return self.cleaned_data["password2"]
+
+
+class SettingsForm(forms.Form):
+    
+    email = forms.EmailField(label=_("Email"), required=True)
+    
+    def clean_email(self):
+        value = self.cleaned_data["email"]
+        qs = EmailAddress.objects.filter(email__iexact=value)
+        if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
+            return value
+        raise forms.ValidationError(_("A user is registered with this email address."))

@@ -15,7 +15,10 @@ from django.contrib.auth.tokens import default_token_generator
 
 from account import signals
 from account.conf import settings
-from account.forms import SignupForm, LoginUsernameForm, ChangePasswordForm, PasswordResetForm, PasswordResetKeyForm
+from account.forms import SignupForm, LoginUsernameForm
+from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetKeyForm
+from account.forms import SettingsForm
+from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation
 from account.utils import default_redirect, user_display
 
@@ -438,3 +441,47 @@ class PasswordResetKeyView(FormView):
     
     def get_success_url(self):
         return settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
+
+
+class SettingsView(LoginRequiredMixin, FormView):
+    
+    template_name = "account/settings.html"
+    form_class = SettingsForm
+    messages = {
+        "settings_updated": {
+            "level": messages.SUCCESS,
+            "text": _("Account settings updated.")
+        },
+    }
+    
+    def get_form_class(self):
+        # @@@ django: this is a workaround to not having a dedicated method
+        # to initialize self with a request in a known good state (of course
+        # this only works with a FormView)
+        self.primary_email_address = EmailAddress.objects.get_primary(self.request.user)
+        return super(SettingsView, self).get_form_class()
+    
+    def get_initial(self):
+        initial = super(SettingsView, self).get_initial()
+        if self.primary_email_address:
+            initial["email"] = self.primary_email_address.email
+        return initial
+    
+    def form_valid(self, form):
+        # @@@ handle multiple emails per user
+        if not self.primary_email_address:
+            EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"], primary=True)
+        else:
+            if form.cleaned_data["email"] != self.primary_email_address.email:
+                email_address = EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"])
+                email_address.set_as_primary()
+        if self.messages.get("settings_updated"):
+            messages.add_message(
+                self.request,
+                self.messages["settings_updated"]["level"],
+                self.messages["settings_updated"]["text"]
+            )
+        return redirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return default_redirect(self.request, settings.ACCOUNT_SETTINGS_REDIRECT_URL)
