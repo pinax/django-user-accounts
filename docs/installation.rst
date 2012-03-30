@@ -19,11 +19,21 @@ Installation
 * See the list of :ref:`settings` to modify the default behavior of
   django-user-accounts and make adjustments for your website.
 
-* Lastly you will want to add `account.urls` to your urls definition::
+* Add ``account.urls`` to your URLs definition::
 
-    ...
-    url(r"^account/", include("account.urls")),
-    ...
+    urlpatterns = patterns("",
+        ...
+        url(r"^account/", include("account.urls")),
+        ...
+    )
+
+* Add ``"account.context_processors.account"`` to ``TEMPLATE_CONTEXT_PROCESSORS``::
+
+    TEMPLATE_CONTEXT_PROCESSORS = [
+        ...
+        "account.context_processors.account",
+        ...
+    ]
 
 .. _dependencies:
 
