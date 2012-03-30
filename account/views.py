@@ -52,22 +52,7 @@ class SignupView(FormView):
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
-        code = self.request.GET.get("code")
-        try:
-            self.signup_code = SignupCode.check(code)
-        except SignupCode.InvalidCode:
-            if not settings.ACCOUNT_OPEN_SIGNUP:
-                return self.closed(code=code)
-            else:
-                if self.messages.get("invalid_signup_code"):
-                    messages.add_message(
-                        self.request,
-                        self.messages["invalid_signup_code"]["level"],
-                        self.messages["invalid_signup_code"]["text"] % {
-                            "code": code
-                        }
-                    )
-        if not settings.ACCOUNT_OPEN_SIGNUP and self.signup_code is None:
+        if not self.is_open():
             return self.closed()
         return super(SignupView, self).get(*args, **kwargs)
     
@@ -102,10 +87,9 @@ class SignupView(FormView):
             new_user.is_active = False
         new_user.save()
         email_kwargs = {"primary": True}
-        signup_code = form.cleaned_data.get("code")
-        if signup_code:
-            signup_code.use(new_user)
-            if signup_code.email and form.cleaned_data["email"] == signup_code.email:
+        if self.signup_code:
+            self.signup_code.use(new_user)
+            if self.signup_code.email and form.cleaned_data["email"] == self.signup_code.email:
                 email_kwargs["verified"] = True
                 email_confirmed = True
         EmailAddress.objects.add_email(new_user, form.cleaned_data["email"], **email_kwargs)
@@ -175,13 +159,33 @@ class SignupView(FormView):
         auth.login(self.request, user)
         self.request.session.set_expiry(0)
     
-    def closed(self, code=None):
+    def is_open(self):
+        code = self.request.REQUEST.get("code")
+        if code:
+            try:
+                self.signup_code = SignupCode.check(code)
+            except SignupCode.InvalidCode:
+                if not settings.ACCOUNT_OPEN_SIGNUP:
+                    return False
+                else:
+                    if self.messages.get("invalid_signup_code"):
+                        messages.add_message(
+                            self.request,
+                            self.messages["invalid_signup_code"]["level"],
+                            self.messages["invalid_signup_code"]["text"] % {
+                                "code": code
+                            }
+                        )
+                    return True
+            else:
+                return True
+        else:
+            return settings.ACCOUNT_OPEN_SIGNUP
+    
+    def closed(self):
         response_kwargs = {
             "request": self.request,
             "template": self.template_name_signup_closed,
-            "context": {
-                "code": code,
-            }
         }
         return self.response_class(**response_kwargs)
 

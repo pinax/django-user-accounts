@@ -74,21 +74,18 @@ class SignupCode(models.Model):
     
     @classmethod
     def check(cls, code):
-        if code:
-            try:
-                signup_code = cls._default_manager.get(code=code)
-            except cls.DoesNotExist:
+        try:
+            signup_code = cls._default_manager.get(code=code)
+        except cls.DoesNotExist:
+            raise cls.InvalidCode()
+        else:
+            if signup_code.max_uses and signup_code.max_uses <= signup_code.use_count:
                 raise cls.InvalidCode()
             else:
-                if signup_code.max_uses and signup_code.max_uses <= signup_code.use_count:
+                if signup_code.expiry and timezone.now() > signup_code.expiry:
                     raise cls.InvalidCode()
                 else:
-                    if signup_code.expiry and timezone.now() > signup_code.expiry:
-                        raise cls.InvalidCode()
-                    else:
-                        return signup_code
-        else:
-            return None
+                    return signup_code
     
     def calculate_use_count(self):
         self.use_count = self.signupcoderesult_set.count()
