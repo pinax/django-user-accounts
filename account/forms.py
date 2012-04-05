@@ -168,7 +168,7 @@ class PasswordResetForm(forms.Form):
         return self.cleaned_data['email']
 
 
-class PasswordResetKeyForm(forms.Form):
+class PasswordResetTokenForm(forms.Form):
     
     password1 = forms.CharField(
         label = _("New Password"),

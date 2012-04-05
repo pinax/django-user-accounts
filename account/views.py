@@ -16,7 +16,7 @@ from django.contrib.auth.tokens import default_token_generator
 from account import signals
 from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
-from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetKeyForm
+from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
 from account.forms import SettingsForm
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation
@@ -375,38 +375,54 @@ class ChangePasswordView(FormView):
 class PasswordResetView(FormView):
     
     template_name = "account/password_reset.html"
+    template_name_sent = "account/password_reset_sent.html"
     form_class = PasswordResetForm
     token_generator = default_token_generator
     
+    def get_context_data(self, **kwargs):
+        context = kwargs
+        if self.request.method == "POST" and "resend" in self.request.POST:
+            context["resend"] = True
+        return context
+    
     def form_valid(self, form):
-        email = form.cleaned_data["email"]
+        self.send_email(form.cleaned_data["email"])
+        response_kwargs = {
+            "request": self.request,
+            "template": self.template_name_sent,
+            "context": self.get_context_data(form=form)
+        }
+        return self.response_class(**response_kwargs)
+    
+    def send_email(self, email):
+        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        current_site = get_current_site(self.request)
         for user in User.objects.filter(email__iexact=email):
-            temp_key = self.token_generator.make_token(user)
-            current_site = get_current_site(self.request)
-            domain = unicode(current_site.domain)
-            subject = _("Password reset email sent")
-            message = render_to_string("account/password_reset_key_message.txt", {
+            uid = int_to_base36(user.id)
+            token = self.make_token(user)
+            password_reset_url = u"%s://%s%s" % (
+                protocol,
+                unicode(current_site.domain),
+                reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
+            )
+            ctx = {
                 "user": user,
-                "uid": int_to_base36(user.id),
-                "temp_key": temp_key,
-                "domain": domain,
-            })
+                "current_site": current_site,
+                "password_reset_url": password_reset_url,
+            }
+            subject = render_to_string("account/email/password_reset_subject.txt", ctx)
+            message = render_to_string("account/email/password_reset.txt", ctx)
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-        return redirect(self.get_success_url())
     
-    def get_success_url(self):
-        return reverse("account_password_reset_done")
+    def make_token(self, user):
+        return self.token_generator.make_token(user)
 
 
-class PasswordResetDoneView(TemplateView):
+class PasswordResetTokenView(FormView):
     
-    template_name = "account/password_reset_done.html"
-
-
-class PasswordResetKeyView(FormView):
-    
-    template_name = "account/password_reset_from_key.html"
-    form_class = PasswordResetKeyForm
+    template_name = "account/password_reset_token.html"
+    template_name_fail = "account/password_reset_token_fail.html"
+    form_class = PasswordResetTokenForm
     token_generator = default_token_generator
     messages = {
         "password_changed": {
@@ -415,24 +431,24 @@ class PasswordResetKeyView(FormView):
         },
     }
     
-    def get_user(self, uidb36):
-        try:
-            uid_int = base36_to_int(uidb36)
-        except ValueError:
-            raise Http404()
-        return get_object_or_404(User, id=uid_int)
-    
-    def get(self, request, uidb36, key, **kwargs):
+    def get(self, request, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         ctx = self.get_context_data(form=form)
-        user = self.get_user(uidb36)
-        if not self.token_generator.check_token(user, key):
-            ctx.update({"token_fail": True})
+        if not self.check_token(self.get_user(), self.kwargs["token"]):
+            return self.token_fail()
         return self.render_to_response(ctx)
     
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        ctx.update({
+            "uidb36": self.kwargs["uidb36"],
+            "token": self.kwargs["token"],
+        })
+        return ctx
+    
     def form_valid(self, form):
-        user = self.get_user(self.kwargs.get("uidb36"))
+        user = self.get_user()
         user.set_password(form.cleaned_data["password1"])
         user.save()
         if self.messages.get("password_changed"):
@@ -445,6 +461,24 @@ class PasswordResetKeyView(FormView):
     
     def get_success_url(self):
         return settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
+    
+    def get_user(self):
+        try:
+            uid_int = base36_to_int(self.kwargs["uidb36"])
+        except ValueError:
+            raise Http404()
+        return get_object_or_404(User, id=uid_int)
+    
+    def check_token(self, user, token):
+        return self.token_generator.check_token(user, token)
+    
+    def token_fail(self):
+        response_kwargs = {
+            "request": self.request,
+            "template": self.template_name_fail,
+            "context": self.get_context_data()
+        }
+        return self.response_class(**response_kwargs)
 
 
 class SettingsView(LoginRequiredMixin, FormView):

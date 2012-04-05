@@ -47,17 +47,17 @@ Here is a list of all URLs provided by django-user-accounts and how they map
 from Pinax. This assumes ``account.urls`` is mounted at ``/account/`` as it
 was in Pinax.
 
-======================================  ==================================
+======================================  ====================================
 Pinax                                   django-user-accounts
-======================================  ==================================
+======================================  ====================================
 ``/account/login/``                     ``/account/login/``
 ``/account/signup/``                    ``/account/signup/``
 ``/account/confirm_email/``             ``/account/confirm_email/``
 ``/account/password_change/``           ``/account/password/`` [1]_
 ``/account/password_reset/``            ``/account/password/reset/``
-``/account/password_reset_done/``       ``/account/password/reset/done/``
-``/account/password_reset_key/<key>/``  ``/account/password/reset/<key>/``
-======================================  ==================================
+``/account/password_reset_done/``       *removed*
+``/account/password_reset_key/<key>/``  ``/account/password/reset/<token>/``
+======================================  ====================================
 
 .. [1] When user is anonymous and requests a GET the user is redirected to
    ``/account/password/reset/``.
