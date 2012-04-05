@@ -10,7 +10,7 @@ class AccountAppConf(AppConf):
     SIGNUP_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL = "/"
     LOGOUT_REDIRECT_URL = "/"
-    PASSWORD_CHANGE_REDIRECT_URL = "/"
+    PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
     USER_DISPLAY = lambda user: user.username
     EMAIL_UNIQUE = True
