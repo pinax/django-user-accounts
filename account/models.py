@@ -275,4 +275,4 @@ class EmailConfirmation(models.Model):
 @receiver(post_save, sender=User)
 def create_account(sender, **kwargs):
     if kwargs["created"]:
-        Account.objects.get_or_create(user=kwargs["instance"])
+        Account.objects.create(user=kwargs["instance"])
