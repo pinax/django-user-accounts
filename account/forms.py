@@ -7,7 +7,6 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 
 from account.conf import settings
-from account.fields import TIMEZONE_CHOICES
 from account.models import EmailAddress
 
 
@@ -192,7 +191,7 @@ class SettingsForm(forms.Form):
     email = forms.EmailField(label=_("Email"), required=True)
     timezone = forms.ChoiceField(
         label=_("Timezone"),
-        choices=TIMEZONE_CHOICES,
+        choices=settings.TIMEZONE_CHOICES,
         required=False
     )
     language = forms.ChoiceField(

@@ -1,5 +1,7 @@
 from django.conf import settings
 
+import pytz
+
 from appconf import AppConf
 
 
@@ -20,3 +22,4 @@ class AccountAppConf(AppConf):
     EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
     SETTINGS_REDIRECT_URL = "account_settings"
     CONTACT_EMAIL = "support@example.com"
+    TIMEZONE_CHOICES = list(zip(pytz.all_timezones, pytz.all_timezones))
