@@ -7,7 +7,8 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 
 from account.conf import settings
-from account.models import SignupCode, EmailAddress
+from account.fields import TIMEZONE_CHOICES
+from account.models import EmailAddress
 
 
 alnum_re = re.compile(r"^\w+$")
@@ -189,6 +190,16 @@ class PasswordResetTokenForm(forms.Form):
 class SettingsForm(forms.Form):
     
     email = forms.EmailField(label=_("Email"), required=True)
+    timezone = forms.ChoiceField(
+        label=_("Timezone"),
+        choices=TIMEZONE_CHOICES,
+        required=False
+    )
+    language = forms.ChoiceField(
+        label=_("Language"),
+        choices=settings.LANGUAGES,
+        required=False
+    )
     
     def clean_email(self):
         value = self.cleaned_data["email"]
