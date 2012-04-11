@@ -1,5 +1,6 @@
-from django.conf import settings
 from django.db import models
+
+from account.conf import settings
 
 
 class TimeZoneField(models.CharField):
@@ -10,7 +11,7 @@ class TimeZoneField(models.CharField):
         defaults = {
             "max_length": 100,
             "default": settings.TIME_ZONE,
-            "choices": settings.TIMEZONE_CHOICES
+            "choices": settings.ACCOUNT_TIMEZONE_CHOICES
         }
         defaults.update(kwargs)
         return super(TimeZoneField, self).__init__(*args, **defaults)

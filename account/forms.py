@@ -191,7 +191,7 @@ class SettingsForm(forms.Form):
     email = forms.EmailField(label=_("Email"), required=True)
     timezone = forms.ChoiceField(
         label=_("Timezone"),
-        choices=settings.TIMEZONE_CHOICES,
+        choices=settings.ACCOUNT_TIMEZONE_CHOICES,
         required=False
     )
     language = forms.ChoiceField(
