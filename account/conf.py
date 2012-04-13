@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import get_language_info
 
 import pytz
 
@@ -23,3 +24,7 @@ class AccountAppConf(AppConf):
     SETTINGS_REDIRECT_URL = "account_settings"
     CONTACT_EMAIL = "support@example.com"
     TIMEZONE_CHOICES = list(zip(pytz.all_timezones, pytz.all_timezones))
+    LANGUAGES = [
+        (code, get_language_info(code).get("name_local"))
+        for code, lang in settings.LANGUAGES
+    ]

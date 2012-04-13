@@ -30,7 +30,7 @@ class Account(models.Model):
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(_("language"),
         max_length = 10,
-        choices = settings.LANGUAGES,
+        choices = settings.ACCOUNT_LANGUAGES,
         default = settings.LANGUAGE_CODE
     )
     

@@ -196,7 +196,7 @@ class SettingsForm(forms.Form):
     )
     language = forms.ChoiceField(
         label=_("Language"),
-        choices=settings.LANGUAGES,
+        choices=settings.ACCOUNT_LANGUAGES,
         required=False
     )
     
