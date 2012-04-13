@@ -19,7 +19,7 @@ from account.forms import SignupForm, LoginUsernameForm
 from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
 from account.forms import SettingsForm
 from account.mixins import LoginRequiredMixin
-from account.models import SignupCode, EmailAddress, EmailConfirmation
+from account.models import SignupCode, EmailAddress, EmailConfirmation, Account
 from account.utils import default_redirect, user_display
 
 
@@ -503,6 +503,8 @@ class SettingsView(LoginRequiredMixin, FormView):
         initial = super(SettingsView, self).get_initial()
         if self.primary_email_address:
             initial["email"] = self.primary_email_address.email
+            initial["timezone"] = self.request.user.account.timezone
+            initial["language"] = self.request.user.account.language
         return initial
     
     def form_valid(self, form):
@@ -513,6 +515,12 @@ class SettingsView(LoginRequiredMixin, FormView):
             if form.cleaned_data["email"] != self.primary_email_address.email:
                 email_address = EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"])
                 email_address.set_as_primary()
+        
+        account = self.request.user.account
+        account.timezone = form.cleaned_data["timezone"]
+        account.language = form.cleaned_data["language"]
+        account.save()
+        
         if self.messages.get("settings_updated"):
             messages.add_message(
                 self.request,
