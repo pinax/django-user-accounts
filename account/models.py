@@ -6,18 +6,61 @@ from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language_from_request, gettext_lazy as _
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
 
 from account import signals
 from account.conf import settings
+from account.fields import TimeZoneField
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 from account.utils import random_token
+
+
+class Account(models.Model):
+    
+    user = models.OneToOneField(User, related_name="account", verbose_name=_("user"))
+    
+    timezone = TimeZoneField(_("timezone"))
+    language = models.CharField(_("language"),
+        max_length = 10,
+        choices = settings.ACCOUNT_LANGUAGES,
+        default = settings.LANGUAGE_CODE
+    )
+    
+    @classmethod
+    def for_request(cls, request):
+        if request.user.is_authenticated():
+            try:
+                account = Account._default_manager.get(user=request.user)
+            except Account.DoesNotExist:
+                account = AnonymousAccount(request)
+        else:
+            account = AnonymousAccount(request)
+        return account
+    
+    def __unicode__(self):
+        return self.user.username
+
+
+class AnonymousAccount(object):
+    
+    def __init__(self, request=None):
+        self.user = AnonymousUser()
+        self.timezone = settings.TIME_ZONE
+        if request is not None:
+            self.language = get_language_from_request(request)
+        else:
+            self.language = settings.LANGUAGE_CODE
+    
+    def __unicode__(self):
+        return "AnonymousAccount"
 
 
 class SignupCode(models.Model):
@@ -227,3 +270,9 @@ class EmailConfirmation(models.Model):
         self.sent = timezone.now()
         self.save()
         signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
+
+
+@receiver(post_save, sender=User)
+def create_account(sender, **kwargs):
+    if kwargs["created"]:
+        Account.objects.create(user=kwargs["instance"])
