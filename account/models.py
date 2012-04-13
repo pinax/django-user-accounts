@@ -101,9 +101,9 @@ class SignupCode(models.Model):
         result.save()
         signup_code_used.send(sender=result.__class__, signup_code_result=result)
     
-    def send(self):
+    def send(self, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = Site.objects.get_current()
+        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         signup_url = u"%s://%s%s?%s" % (
             protocol,
             unicode(current_site.domain),
@@ -206,8 +206,8 @@ class EmailConfirmation(models.Model):
             signals.email_confirmed.send(sender=self.__class__, email_address=email_address)
             return email_address
     
-    def send(self):
-        current_site = Site.objects.get_current()
+    def send(self, **kwargs):
+        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         activate_url = u"%s://%s%s" % (
             protocol,
