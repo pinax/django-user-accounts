@@ -411,7 +411,7 @@ class PasswordResetView(FormView):
                 "password_reset_url": password_reset_url,
             }
             subject = render_to_string("account/email/password_reset_subject.txt", ctx)
-            subject = ''.join(subject.splitlines())
+            subject = "".join(subject.splitlines())
             message = render_to_string("account/email/password_reset.txt", ctx)
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
     
