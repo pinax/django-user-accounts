@@ -513,8 +513,8 @@ class SettingsView(LoginRequiredMixin, FormView):
             EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"], primary=True)
         else:
             if form.cleaned_data["email"] != self.primary_email_address.email:
-                email_address = EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"])
-                email_address.set_as_primary()
+                self.primary_email_address.email = form.cleaned_data["email"]
+                self.primary_email_address.save()
         
         account = self.request.user.account
         account.timezone = form.cleaned_data["timezone"]
