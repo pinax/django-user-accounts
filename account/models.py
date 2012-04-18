@@ -15,6 +15,8 @@ from django.utils.translation import get_language_from_request, gettext_lazy as 
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
 
+import pytz
+
 from account import signals
 from account.conf import settings
 from account.fields import TimeZoneField
@@ -47,6 +49,14 @@ class Account(models.Model):
     
     def __unicode__(self):
         return self.user.username
+    
+    def now(self):
+        """
+        Returns a timezone aware datetime localized to the account's timezone.
+        """
+        naive = datetime.datetime.now()
+        aware = naive.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
+        return aware.astimezone(pytz.timezone(self.timezone))
 
 
 class AnonymousAccount(object):
