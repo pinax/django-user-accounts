@@ -194,7 +194,7 @@ class SettingsForm(forms.Form):
         choices=settings.ACCOUNT_TIMEZONE_CHOICES,
         required=False
     )
-    if settings.I18N:
+    if settings.USE_I18N:
         language = forms.ChoiceField(
             label=_("Language"),
             choices=settings.ACCOUNT_LANGUAGES,
