@@ -140,7 +140,7 @@ class SignupView(FormView):
             username = self.generate_username(form)
         user.username = username
         user.email = form.cleaned_data["email"].strip().lower()
-        password = form.cleaned_data.get("password1")
+        password = form.cleaned_data.get("password")
         if password:
             user.set_password(password)
         else:
@@ -456,7 +456,7 @@ class PasswordResetTokenView(FormView):
     
     def form_valid(self, form):
         user = self.get_user()
-        user.set_password(form.cleaned_data["password1"])
+        user.set_password(form.cleaned_data["password"])
         user.save()
         if self.messages.get("password_changed"):
             messages.add_message(

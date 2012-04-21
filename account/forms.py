@@ -144,7 +144,7 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data["password_current"]
     
     def clean_password_new_confirm(self):
-        if "password1" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
+        if "password_new" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
             if self.cleaned_data["password_new"] != self.cleaned_data["password_new_confirm"]:
                 raise forms.ValidationError(_("You must type the same password each time."))
         return self.cleaned_data["password_new_confirm"]
@@ -170,20 +170,20 @@ class PasswordResetForm(forms.Form):
 
 class PasswordResetTokenForm(forms.Form):
     
-    password1 = forms.CharField(
+    password = forms.CharField(
         label = _("New Password"),
         widget = forms.PasswordInput(render_value=False)
     )
-    password2 = forms.CharField(
+    password_confirm = forms.CharField(
         label = _("New Password (again)"),
         widget = forms.PasswordInput(render_value=False)
     )
     
-    def clean_password2(self):
-        if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
-            if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
+    def clean_password_confirm(self):
+        if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
+            if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
                 raise forms.ValidationError(_("You must type the same password each time."))
-        return self.cleaned_data["password2"]
+        return self.cleaned_data["password_confirm"]
 
 
 class SettingsForm(forms.Form):
