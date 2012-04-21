@@ -88,6 +88,7 @@ class SignupView(FormView):
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
         new_user.save()
+        self.create_account(new_user)
         email_kwargs = {"primary": True}
         if self.signup_code:
             self.signup_code.use(new_user)
@@ -147,6 +148,9 @@ class SignupView(FormView):
         if commit:
             user.save()
         return user
+    
+    def create_account(self, new_user, form):
+        return Account.create(request=self.request, user=new_user)
     
     def generate_username(self, form):
         raise NotImplementedError("Unable to generate username by default. "

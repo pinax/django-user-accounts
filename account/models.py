@@ -9,8 +9,8 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.utils import timezone
-from django.utils.translation import get_language_from_request, gettext_lazy as _
+from django.utils import timezone, translation
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -28,7 +28,6 @@ from account.utils import random_token
 class Account(models.Model):
     
     user = models.OneToOneField(User, related_name="account", verbose_name=_("user"))
-    
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(_("language"),
         max_length=10,
@@ -45,6 +44,17 @@ class Account(models.Model):
                 account = AnonymousAccount(request)
         else:
             account = AnonymousAccount(request)
+        return account
+    
+    @classmethod
+    def create(cls, request=None, **kwargs):
+        account = cls(**kwargs)
+        if "language" not in kwargs:
+            if request is None:
+                account.language = settings.LANGUAGE_CODE
+            else:
+                account.language = translation.get_language_from_request(request, check_path=True)
+        account.save()
         return account
     
     def __unicode__(self):
@@ -64,10 +74,10 @@ class AnonymousAccount(object):
     def __init__(self, request=None):
         self.user = AnonymousUser()
         self.timezone = settings.TIME_ZONE
-        if request is not None:
-            self.language = get_language_from_request(request)
-        else:
+        if request is None:
             self.language = settings.LANGUAGE_CODE
+        else:
+            self.language = translation.get_language_from_request(request, check_path=True)
     
     def __unicode__(self):
         return "AnonymousAccount"
@@ -284,5 +294,10 @@ class EmailConfirmation(models.Model):
 
 @receiver(post_save, sender=User)
 def create_account(sender, **kwargs):
-    if kwargs["created"]:
-        Account.objects.create(user=kwargs["instance"])
+    user = kwargs["instance"]
+    try:
+        account = user.account
+    except Account.DoesNotExist:
+        account = None
+    if account is None and kwargs["created"]:
+        Account.create(user=user)
