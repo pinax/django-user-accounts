@@ -521,7 +521,8 @@ class SettingsView(LoginRequiredMixin, FormView):
         
         account = self.request.user.account
         account.timezone = form.cleaned_data["timezone"]
-        account.language = form.cleaned_data["language"]
+        if "language" in form.cleaned_data:
+            account.language = form.cleaned_data["language"]
         account.save()
         
         if self.messages.get("settings_updated"):
