@@ -60,6 +60,8 @@ class SignupView(FormView):
         initial = super(SignupView, self).get_initial()
         if self.signup_code:
             initial["code"] = self.signup_code.code
+            if self.signup_code.email:
+                initial["email"] = self.signup_code.email
         return initial
     
     def get_context_data(self, **kwargs):
