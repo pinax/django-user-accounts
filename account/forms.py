@@ -194,11 +194,12 @@ class SettingsForm(forms.Form):
         choices=settings.ACCOUNT_TIMEZONE_CHOICES,
         required=False
     )
-    language = forms.ChoiceField(
-        label=_("Language"),
-        choices=settings.ACCOUNT_LANGUAGES,
-        required=False
-    )
+    if settings.I18N:
+        language = forms.ChoiceField(
+            label=_("Language"),
+            choices=settings.ACCOUNT_LANGUAGES,
+            required=False
+        )
     
     def clean_email(self):
         value = self.cleaned_data["email"]
