@@ -198,6 +198,6 @@ tables for django-user-accounts you will need to migrate the
    ALTER TABLE "account_emailaddress" ADD CONSTRAINT "account_emailaddress_user_id_email_key" UNIQUE ("user_id", "email");
    ALTER TABLE "account_emailaddress" DROP CONSTRAINT "account_emailaddress_email_key";
 
-``ACCOUNT_EMAIL_UNIQUE = False`` will prevent duplicate email addresses per
-user.
+``ACCOUNT_EMAIL_UNIQUE = False`` will allow duplicate email addresses per
+user, but not across users.
 
