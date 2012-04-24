@@ -24,7 +24,7 @@ class AccountAppConf(AppConf):
     EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
     SETTINGS_REDIRECT_URL = "account_settings"
     CONTACT_EMAIL = "support@example.com"
-    TIMEZONE_CHOICES = list(zip(pytz.all_timezones, pytz.all_timezones))
+    TIMEZONES = list(zip(pytz.all_timezones, pytz.all_timezones))
     LANGUAGES = [
         (code, get_language_info(code).get("name_local"))
         for code, lang in settings.LANGUAGES
