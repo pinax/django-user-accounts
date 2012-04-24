@@ -1,5 +1,7 @@
 from django.db import models, IntegrityError
 
+from account.conf import settings
+
 
 class EmailAddressManager(models.Manager):
     
@@ -9,7 +11,8 @@ class EmailAddressManager(models.Manager):
         except IntegrityError:
             return None
         else:
-            email_address.send_confirmation()
+            if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL:
+                email_address.send_confirmation()
             return email_address
     
     def get_primary(self, user):
