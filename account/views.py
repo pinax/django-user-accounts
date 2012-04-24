@@ -33,15 +33,15 @@ class SignupView(FormView):
     messages = {
         "email_confirmation_sent": {
             "level": messages.INFO,
-            "text": _("Confirmation email sent to %(email)s")
+            "text": _("Confirmation email sent to %(email)s.")
         },
         "logged_in": {
             "level": messages.SUCCESS,
-            "text": _("Successfully logged in as %(user)s")
+            "text": _("Successfully logged in as %(user)s.")
         },
         "invalid_signup_code": {
             "level": messages.WARNING,
-            "text": _("The code %(code)s is invalid")
+            "text": _("The code %(code)s is invalid.")
         }
     }
     
@@ -260,7 +260,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
     messages = {
         "email_confirmed": {
             "level": messages.SUCCESS,
-            "text": _("You have confirmed %(email)s")
+            "text": _("You have confirmed %(email)s.")
         }
     }
     
