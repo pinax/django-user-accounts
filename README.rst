@@ -9,6 +9,7 @@ Requirements
 
 * Django 1.4
 * django-appconf (included in ``install_requires``)
+* pytz (included in ``install_requires``)
 
 Documentation
 =============

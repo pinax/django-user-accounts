@@ -13,7 +13,7 @@ setup(
     packages = find_packages(),
     install_requires = [
         "django-appconf==0.5",
-        "pytz==2012b"
+        "pytz==2012c"
     ],
     classifiers = [
         "Development Status :: 4 - Beta",
