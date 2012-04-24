@@ -149,7 +149,7 @@ class SignupView(FormView):
             user.save()
         return user
     
-    def create_account(self, new_user, form):
+    def create_account(self, new_user):
         return Account.create(request=self.request, user=new_user)
     
     def generate_username(self, form):
