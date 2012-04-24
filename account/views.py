@@ -88,7 +88,7 @@ class SignupView(FormView):
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
         new_user.save()
-        self.create_account(new_user)
+        self.create_account(new_user, form)
         email_kwargs = {"primary": True}
         if self.signup_code:
             self.signup_code.use(new_user)
