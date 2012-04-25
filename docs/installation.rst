@@ -4,9 +4,9 @@
 Installation
 ============
 
-* To install django-user-accounts (no releases have been yet)::
+* Install the development version::
 
-    pip install django-user-accounts
+    pip install --extra-index-url=http://dist.pinaxproject.com/dev/ django-user-accounts
 
 * Add ``account`` to your ``INSTALLED_APPS`` setting::
 
