@@ -92,17 +92,17 @@ class SignupView(FormView):
         email_kwargs = {"primary": True}
         if self.signup_code:
             self.signup_code.use(new_user)
-            if self.signup_code.email and form.cleaned_data["email"] == self.signup_code.email:
+            if self.signup_code.email and new_user.email == self.signup_code.email:
                 email_kwargs["verified"] = True
                 email_confirmed = True
-        EmailAddress.objects.add_email(new_user, form.cleaned_data["email"], **email_kwargs)
+        EmailAddress.objects.add_email(new_user, new_user.email, **email_kwargs)
         self.after_signup(new_user, form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_confirmed:
             response_kwargs = {
                 "request": self.request,
                 "template": self.template_name_email_confirmation_sent,
                 "context": {
-                    "email": form.cleaned_data["email"],
+                    "email": new_user.email,
                     "success_url": self.get_success_url(),
                 }
             }
@@ -139,7 +139,7 @@ class SignupView(FormView):
         if username is None:
             username = self.generate_username(form)
         user.username = username
-        user.email = form.cleaned_data["email"].strip().lower()
+        user.email = form.cleaned_data["email"].strip()
         password = form.cleaned_data.get("password")
         if password:
             user.set_password(password)
@@ -528,12 +528,18 @@ class SettingsView(LoginRequiredMixin, FormView):
         self.update_account(form)
     
     def update_email(self, form):
+        user = self.request.user
         # @@@ handle multiple emails per user
+        email = form.cleaned_data["email"].strip()
         if not self.primary_email_address:
-            EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"], primary=True)
+            user.email = email
+            EmailAddress.objects.add_email(self.request.user, email, primary=True)
+            user.save()
         else:
-            if form.cleaned_data["email"] != self.primary_email_address.email:
-                self.primary_email_address.email = form.cleaned_data["email"]
+            if email != self.primary_email_address.email:
+                user.email = email
+                self.primary_email_address.email = email
+                user.save()
                 self.primary_email_address.save()
     
     def update_account(self, form):
