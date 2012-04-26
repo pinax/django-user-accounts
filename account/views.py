@@ -228,9 +228,8 @@ class LoginView(FormView):
     
     def login_user(self, form):
         auth.login(self.request, form.user)
-        self.request.session.set_expiry(
-            60*60*24*365*10 if form.cleaned_data.get("remember") else 0
-        )
+        expiry = settings.ACCOUNT_REMEMBER_ME_EXPIRY if form.cleaned_data.get("remember") else 0
+        self.request.session.set_expiry(expiry)
 
 
 class LogoutView(TemplateResponseMixin, View):
