@@ -509,25 +509,12 @@ class SettingsView(LoginRequiredMixin, FormView):
         initial = super(SettingsView, self).get_initial()
         if self.primary_email_address:
             initial["email"] = self.primary_email_address.email
-            initial["timezone"] = self.request.user.account.timezone
-            initial["language"] = self.request.user.account.language
+        initial["timezone"] = self.request.user.account.timezone
+        initial["language"] = self.request.user.account.language
         return initial
     
     def form_valid(self, form):
-        # @@@ handle multiple emails per user
-        if not self.primary_email_address:
-            EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"], primary=True)
-        else:
-            if form.cleaned_data["email"] != self.primary_email_address.email:
-                self.primary_email_address.email = form.cleaned_data["email"]
-                self.primary_email_address.save()
-        
-        account = self.request.user.account
-        account.timezone = form.cleaned_data["timezone"]
-        if "language" in form.cleaned_data:
-            account.language = form.cleaned_data["language"]
-        account.save()
-        
+        self.update_settings(form)
         if self.messages.get("settings_updated"):
             messages.add_message(
                 self.request,
@@ -536,5 +523,32 @@ class SettingsView(LoginRequiredMixin, FormView):
             )
         return redirect(self.get_success_url())
     
-    def get_success_url(self):
-        return default_redirect(self.request, settings.ACCOUNT_SETTINGS_REDIRECT_URL)
+    def update_settings(self, form):
+        self.update_email(form)
+        self.update_account(form)
+    
+    def update_email(self, form):
+        # @@@ handle multiple emails per user
+        if not self.primary_email_address:
+            EmailAddress.objects.add_email(self.request.user, form.cleaned_data["email"], primary=True)
+        else:
+            if form.cleaned_data["email"] != self.primary_email_address.email:
+                self.primary_email_address.email = form.cleaned_data["email"]
+                self.primary_email_address.save()
+    
+    def update_account(self, form):
+        fields = {}
+        if "timezone" in form.cleaned_data:
+            fields["timezone"] = form.cleaned_data["timezone"]
+        if "language" in form.cleaned_data:
+            fields["language"] = form.cleaned_data["language"]
+        if fields:
+            account = self.request.user.account
+            for k, v in fields.iteritems():
+                setattr(account, k, v)
+            account.save()
+    
+    def get_success_url(self, fallback_url=None):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_SETTINGS_REDIRECT_URL
+        return default_redirect(self.request, fallback_url)
