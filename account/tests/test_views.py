@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 from django.utils import unittest
 
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 
 from account.views import SignupView, LoginView
 
@@ -49,6 +49,16 @@ class SignupViewTestCase(unittest.TestCase):
         response = SignupDisabledView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.template_name, 'account/signup_closed.html')
+
+    def test_post_successful(self):
+        post = {"username": "user", "password": "pwd",
+            "password_confirm": "pwd", "email": "info@example.com"}
+        request = self.factory.post(reverse("account_signup"), post)
+        request.user = AnonymousUser()
+        response = SignupEnabledView.as_view()(request)
+        self.assertEqual(response.status_code, 302)
+        user = User.objects.get(username="user")
+        self.asserEqual(user.email, "info@example.com")
 
 
 class LoginViewTestCase(unittest.TestCase):
