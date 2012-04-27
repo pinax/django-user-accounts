@@ -7,6 +7,12 @@ from django.contrib.auth.models import AnonymousUser
 from account.views import SignupView, LoginView
 
 
+class SignupEnabledView(SignupView):
+
+    def is_open(self):
+        return True
+
+
 class SignupDisabledView(SignupView):
 
     def is_open(self):
@@ -27,7 +33,7 @@ class SignupViewTestCase(unittest.TestCase):
     def test_get(self):
         request = self.factory.get(reverse("account_signup"))
         request.user = AnonymousUser()
-        response = SignupView.as_view()(request)
+        response = SignupEnabledView.as_view()(request)
         self.assertEqual(response.status_code, 200)
 
     def test_get_disabled(self):
@@ -55,6 +61,7 @@ class LoginViewTestCase(unittest.TestCase):
         request.user = AnonymousUser()
         response = LoginView.as_view()(request)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template_name, 'account/login.html')
 
     def test_get_disabled(self):
         request = self.factory.get(reverse("account_login"))
