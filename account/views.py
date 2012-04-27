@@ -50,7 +50,7 @@ class SignupView(FormView):
         super(SignupView, self).__init__(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        if 'user' in self.request and self.request.user.is_authenticated():
+        if self.request.user.is_authenticated():
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
         if not self.is_open():
             return self.closed()

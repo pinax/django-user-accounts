@@ -26,17 +26,20 @@ class SignupViewTestCase(unittest.TestCase):
 
     def test_get(self):
         request = self.factory.get(reverse("account_signup"))
+        request.user = AnonymousUser()
         response = SignupView.as_view()(request)
         self.assertEqual(response.status_code, 200)
 
     def test_get_disabled(self):
         request = self.factory.get(reverse("account_signup"))
+        request.user = AnonymousUser()
         response = SignupDisabledView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.template_name, 'account/signup_closed.html')
 
     def test_post_disabled(self):
         request = self.factory.post(reverse("account_signup"))
+        request.user = AnonymousUser()
         response = SignupDisabledView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.template_name, 'account/signup_closed.html')
