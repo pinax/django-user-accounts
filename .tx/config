@@ -2,6 +2,5 @@
 host = https://www.transifex.net
 
 [django-user-accounts.djangopo]
-file_filter = translations/django-user-accounts.djangopo/<lang>.po
+file_filter = account/locale/<lang>/LC_MESSAGES/django.po
 source_lang = en
-
