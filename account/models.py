@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
@@ -290,14 +289,3 @@ class EmailConfirmation(models.Model):
         self.sent = timezone.now()
         self.save()
         signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
-
-
-@receiver(post_save, sender=User)
-def create_account(sender, **kwargs):
-    user = kwargs["instance"]
-    try:
-        account = user.account
-    except Account.DoesNotExist:
-        account = None
-    if account is None and kwargs["created"]:
-        Account.create(user=user)
