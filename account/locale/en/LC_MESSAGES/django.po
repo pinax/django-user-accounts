@@ -1,0 +1,154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-30 12:50-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:19 forms.py:92
+msgid "Username"
+msgstr ""
+
+#: forms.py:25 forms.py:64
+msgid "Password"
+msgstr ""
+
+#: forms.py:29
+msgid "Password (again)"
+msgstr ""
+
+#: forms.py:41
+msgid "Usernames can only contain letters, numbers and underscores."
+msgstr ""
+
+#: forms.py:45
+msgid "This username is already taken. Please choose another."
+msgstr ""
+
+#: forms.py:52 forms.py:211
+msgid "A user is registered with this email address."
+msgstr ""
+
+#: forms.py:57 forms.py:149 forms.py:185
+msgid "You must type the same password each time."
+msgstr ""
+
+#: forms.py:68
+msgid "Remember Me"
+msgstr ""
+
+#: forms.py:81
+msgid "This account is inactive."
+msgstr ""
+
+#: forms.py:93
+msgid "The username and/or password you specified are not correct."
+msgstr ""
+
+#: forms.py:108 forms.py:159 forms.py:191
+msgid "Email"
+msgstr ""
+
+#: forms.py:109
+msgid "The email address and/or password you specified are not correct."
+msgstr ""
+
+#: forms.py:125
+msgid "Current Password"
+msgstr ""
+
+#: forms.py:129 forms.py:174
+msgid "New Password"
+msgstr ""
+
+#: forms.py:133 forms.py:178
+msgid "New Password (again)"
+msgstr ""
+
+#: forms.py:143
+msgid "Please type your current password."
+msgstr ""
+
+#: forms.py:164
+msgid "Email address not verified for any user account"
+msgstr ""
+
+#: forms.py:167
+msgid "Email address not found for any user account"
+msgstr ""
+
+#: forms.py:193
+msgid "Timezone"
+msgstr ""
+
+#: forms.py:199
+msgid "Language"
+msgstr ""
+
+#: models.py:30
+msgid "user"
+msgstr ""
+
+#: models.py:31
+msgid "timezone"
+msgstr ""
+
+#: models.py:32
+msgid "language"
+msgstr ""
+
+#: models.py:210
+msgid "email address"
+msgstr ""
+
+#: models.py:211
+msgid "email addresses"
+msgstr ""
+
+#: models.py:247
+msgid "email confirmation"
+msgstr ""
+
+#: models.py:248
+msgid "email confirmations"
+msgstr ""
+
+#: views.py:36
+#, python-format
+msgid "Confirmation email sent to %(email)s."
+msgstr ""
+
+#: views.py:40
+#, python-format
+msgid "Successfully logged in as %(user)s."
+msgstr ""
+
+#: views.py:44
+#, python-format
+msgid "The code %(code)s is invalid."
+msgstr ""
+
+#: views.py:262
+#, python-format
+msgid "You have confirmed %(email)s."
+msgstr ""
+
+#: views.py:335 views.py:436
+msgid "Password successfully changed."
+msgstr ""
+
+#: views.py:497
+msgid "Account settings updated."
+msgstr ""
