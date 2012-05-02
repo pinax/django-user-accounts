@@ -5,7 +5,7 @@ from django.utils.http import base36_to_int, int_to_base36
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.base import TemplateResponseMixin, View, TemplateView
+from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
@@ -55,6 +55,11 @@ class SignupView(FormView):
         if not self.is_open():
             return self.closed()
         return super(SignupView, self).get(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        if not self.is_open():
+            return self.closed()
+        return super(SignupView, self).post(*args, **kwargs)
     
     def get_initial(self):
         initial = super(SignupView, self).get_initial()
