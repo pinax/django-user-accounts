@@ -130,7 +130,7 @@ class SignupView(FormView):
                         "user": user_display(new_user)
                     }
                 )
-        return super(SignupView, self).form_valid(form)
+        return redirect(self.get_success_url())
     
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_SIGNUP_REDIRECT_URL)
