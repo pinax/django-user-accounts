@@ -275,9 +275,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         }[self.request.method]
     
     def get(self, *args, **kwargs):
-        self.object = confirmation = self.get_object()
-        if confirmation.email_address.user != self.request.user:
-            raise Http404()
+        self.object = self.get_object()
         ctx = self.get_context_data()
         return self.render_to_response(ctx)
     
