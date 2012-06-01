@@ -113,7 +113,8 @@ class SignupView(FormView):
             }
             return self.response_class(**response_kwargs)
         else:
-            if self.messages.get("email_confirmation_sent") and not email_confirmed:
+            if (self.messages.get("email_confirmation_sent") and not email_confirmed and
+                settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL):
                 messages.add_message(
                     self.request,
                     self.messages["email_confirmation_sent"]["level"],
