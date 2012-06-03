@@ -289,3 +289,36 @@ class EmailConfirmation(models.Model):
         self.sent = timezone.now()
         self.save()
         signals.email_confirmation_sent.send(sender=self.__class__, confirmation=self)
+
+
+class AccountDeletion(models.Model):
+    
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    email = models.EmailField()
+    date_requested = models.DateTimeField(default=datetime.datetime.now)
+    date_expunged = models.DateTimeField(null=True, blank=True)
+
+
+def mark_for_deletion(user):
+    
+    account_deletion, created = AccountDeletion.objects.get_or_create(user=user)
+    account_deletion.email = user.email
+    account_deletion.save()
+    user.is_active = False
+    user.save()
+    
+    return account_deletion
+
+
+def expunge_deleted():
+    
+    before = datetime.datetime.now() - datetime.timedelta(hours=48)
+    count = 0
+    
+    for account_deletion in AccountDeletion.objects.filter(date_requested__lt=before, user__isnull=False):
+        account_deletion.user.delete()
+        account_deletion.date_expunged = datetime.datetime.now()
+        account_deletion.save()
+        count += 1
+    
+    return count
