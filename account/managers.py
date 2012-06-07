@@ -6,12 +6,13 @@ from account.conf import settings
 class EmailAddressManager(models.Manager):
     
     def add_email(self, user, email, **kwargs):
+        confirm = kwargs.pop("confirm", False)
         try:
             email_address = self.create(user=user, email=email, **kwargs)
         except IntegrityError:
             return None
         else:
-            if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL:
+            if confirm:
                 email_address.send_confirmation()
             return email_address
     

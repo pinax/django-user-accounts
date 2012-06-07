@@ -94,7 +94,10 @@ class SignupView(FormView):
             new_user.is_active = False
         new_user.save()
         self.create_account(new_user, form)
-        email_kwargs = {"primary": True}
+        email_kwargs = {
+            "primary": True,
+            "confirm": settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
+        }
         if self.signup_code:
             self.signup_code.use(new_user)
             if self.signup_code.email and new_user.email == self.signup_code.email:
@@ -113,7 +116,12 @@ class SignupView(FormView):
             }
             return self.response_class(**response_kwargs)
         else:
-            if self.messages.get("email_confirmation_sent") and not email_confirmed:
+            show_message = [
+                settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
+                self.messages.get("email_confirmation_sent"),
+                not email_confirmed
+            ]
+            if all(show_message):
                 messages.add_message(
                     self.request,
                     self.messages["email_confirmation_sent"]["level"],
@@ -528,13 +536,15 @@ class SettingsView(LoginRequiredMixin, FormView):
         self.update_email(form)
         self.update_account(form)
     
-    def update_email(self, form):
+    def update_email(self, form, confirm=None):
         user = self.request.user
+        if confirm is None:
+            confirm = settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL
         # @@@ handle multiple emails per user
         email = form.cleaned_data["email"].strip()
         if not self.primary_email_address:
             user.email = email
-            EmailAddress.objects.add_email(self.request.user, email, primary=True)
+            EmailAddress.objects.add_email(self.request.user, email, primary=True, confirm=confirm)
             user.save()
         else:
             if email != self.primary_email_address.email:
