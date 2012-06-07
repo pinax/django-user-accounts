@@ -361,6 +361,8 @@ class ChangePasswordView(FormView):
     def change_password(self, form):
         user = self.request.user
         form.save(user)
+        if settings.ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE:
+            self.send_email(user)
         if self.messages.get("password_changed"):
             messages.add_message(
                 self.request,
@@ -387,6 +389,18 @@ class ChangePasswordView(FormView):
     
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
+    
+    def send_email(self, user):
+        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        current_site = get_current_site(self.request)
+        ctx = {
+            "user": user,
+            "current_site": current_site,
+        }
+        subject = render_to_string("account/email/password_change_subject.txt", ctx)
+        subject = "".join(subject.splitlines())
+        message = render_to_string("account/email/password_change.txt", ctx)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
 class PasswordResetView(FormView):
