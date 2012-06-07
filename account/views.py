@@ -92,6 +92,9 @@ class SignupView(FormView):
         new_user = self.create_user(form, commit=False)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
+        # prevent User post_save signal from creating an Account instance
+        # we want to handle that ourself.
+        new_user._disable_account_creation = True
         new_user.save()
         self.create_account(new_user, form)
         email_kwargs = {

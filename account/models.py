@@ -68,6 +68,20 @@ class Account(models.Model):
         return aware.astimezone(pytz.timezone(self.timezone))
 
 
+@receiver(post_save, sender=User)
+def user_post_save(sender, user, created, **kwargs):
+    """
+    After User.save is called we check to see if it was a created user. If so,
+    we check if the User object wants account creation. If all passes we
+    create an Account object.
+    
+    We only run on user creation to avoid having to check for existence on
+    each call to User.save.
+    """
+    disabled = getattr(user, "_disable_account_creation", not settings.ACCOUNT_CREATE_ON_SAVE)
+    if created and not disabled:
+        Account.create(user=user)
+
 class AnonymousAccount(object):
     
     def __init__(self, request=None):

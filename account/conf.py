@@ -17,6 +17,7 @@ class AccountAppConf(AppConf):
     PASSWORD_RESET_REDIRECT_URL = "account_login"
     REMEMBER_ME_EXPIRY = 60*60*24*365*10
     USER_DISPLAY = lambda user: user.username
+    CREATE_ON_SAVE = True
     EMAIL_UNIQUE = True
     EMAIL_CONFIRMATION_REQUIRED = False
     EMAIL_CONFIRMATION_EMAIL = True
