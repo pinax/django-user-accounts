@@ -142,8 +142,10 @@ class SignupView(FormView):
                 )
         return redirect(self.get_success_url())
     
-    def get_success_url(self):
-        return default_redirect(self.request, settings.ACCOUNT_SIGNUP_REDIRECT_URL)
+    def get_success_url(self, fallback_url=None):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_SIGNUP_REDIRECT_URL
+        return default_redirect(self.request, fallback_url)
     
     def get_redirect_field_name(self):
         return self.redirect_field_name
@@ -247,8 +249,10 @@ class LoginView(FormView):
     def after_login(self, form):
         signals.user_logged_in.send(sender=LoginView, user=form.user, form=form)
     
-    def get_success_url(self):
-        return default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL)
+    def get_success_url(self, fallback_url=None):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_LOGIN_REDIRECT_URL
+        return default_redirect(self.request, fallback_url)
     
     def get_redirect_field_name(self):
         return self.redirect_field_name
@@ -277,9 +281,10 @@ class LogoutView(TemplateResponseMixin, View):
     def get_context_data(self):
         return {}
     
-    def get_redirect_url(self):
-        return default_redirect(self.request, settings.ACCOUNT_LOGOUT_REDIRECT_URL)
-
+    def get_redirect_url(self, fallback_url=None):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_LOGOUT_REDIRECT_URL
+        return default_redirect(self.request, fallback_url)
 
 class ConfirmEmailView(TemplateResponseMixin, View):
     
@@ -398,8 +403,10 @@ class ChangePasswordView(FormView):
         self.change_password(form)
         return redirect(self.get_success_url())
     
-    def get_success_url(self):
-        return default_redirect(self.request, settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
+    def get_success_url(self, fallback_url=None):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL
+        return default_redirect(self.request, fallback_url)
     
     def send_email(self, user):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
@@ -502,8 +509,10 @@ class PasswordResetTokenView(FormView):
             )
         return redirect(self.get_success_url())
     
-    def get_success_url(self):
-        return settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
+    def get_success_url(self, fallback_url=None):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
+        return default_redirect(self.request, fallback_url)
     
     def get_user(self):
         try:
