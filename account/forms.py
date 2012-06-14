@@ -114,7 +114,7 @@ class LoginEmailForm(LoginForm):
     
     def user_credentials(self):
         return {
-            "email": self.cleaned_data["email"],
+            "username": self.cleaned_data["email"],
             "password": self.cleaned_data["password"],
         }
 
