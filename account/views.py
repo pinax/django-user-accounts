@@ -231,9 +231,21 @@ class LoginView(FormView):
         })
         return ctx
     
+    def form_invalid(self, form):
+        signals.user_log_in_attempt.send(
+            sender=LoginView,
+            username=form.data.get(form.identifier_field),
+            result=form.is_valid()
+        )
+        return super(LoginView, self).form_invalid(form)
+    
     def form_valid(self, form):
         self.login_user(form)
+        self.after_login(form)
         return redirect(self.get_success_url())
+    
+    def after_login(self, form):
+        signals.user_signed_up.send(sender=LoginView, user=form.user, form=form)
     
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL)

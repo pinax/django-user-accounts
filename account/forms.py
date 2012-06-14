@@ -84,39 +84,32 @@ class LoginForm(forms.Form):
         return self.cleaned_data
     
     def user_credentials(self):
-        raise NotImplementedError("LoginForm must be subclassed to provide all user credentials")
+        return {
+            "username": self.cleaned_data[self.identifier_field],
+            "password": self.cleaned_data["password"],
+        }
 
 
 class LoginUsernameForm(LoginForm):
     
     username = forms.CharField(label=_("Username"), max_length=30)
     authentication_fail_message = _("The username and/or password you specified are not correct.")
+    identifier_field = "username"
     
     def __init__(self, *args, **kwargs):
         super(LoginUsernameForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ["username", "password", "remember"]
-    
-    def user_credentials(self):
-        return {
-            "username": self.cleaned_data["username"],
-            "password": self.cleaned_data["password"],
-        }
 
 
 class LoginEmailForm(LoginForm):
     
     email = forms.EmailField(label=_("Email"))
     authentication_fail_message = _("The email address and/or password you specified are not correct.")
+    identifier_field = "email"
     
     def __init__(self, *args, **kwargs):
         super(LoginEmailForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ["email", "password", "remember"]
-    
-    def user_credentials(self):
-        return {
-            "username": self.cleaned_data["email"],
-            "password": self.cleaned_data["password"],
-        }
 
 
 class ChangePasswordForm(forms.Form):
