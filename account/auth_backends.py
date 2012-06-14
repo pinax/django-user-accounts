@@ -21,7 +21,7 @@ class EmailAuthenticationBackend(ModelBackend):
     
     def authenticate(self, **credentials):
         try:
-            email_address = EmailAddress.objects.get(email__iexact=credentials["username"])
+            email_address = EmailAddress.objects.get(email__iexact=credentials["username"], verified=True)
         except EmailAddress.DoesNotExist:
             return None
         else:
