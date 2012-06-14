@@ -245,7 +245,7 @@ class LoginView(FormView):
         return redirect(self.get_success_url())
     
     def after_login(self, form):
-        signals.user_signed_up.send(sender=LoginView, user=form.user, form=form)
+        signals.user_logged_in.send(sender=LoginView, user=form.user, form=form)
     
     def get_success_url(self):
         return default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL)
