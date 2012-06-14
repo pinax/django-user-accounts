@@ -232,7 +232,7 @@ class LoginView(FormView):
         return ctx
     
     def form_invalid(self, form):
-        signals.user_log_in_attempt.send(
+        signals.user_login_attempt.send(
             sender=LoginView,
             username=form.data.get(form.identifier_field),
             result=form.is_valid()
