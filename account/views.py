@@ -88,7 +88,6 @@ class SignupView(FormView):
         return super(SignupView, self).form_invalid(form)
     
     def form_valid(self, form):
-        email_confirmed = False
         new_user = self.create_user(form, commit=False)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
@@ -99,16 +98,16 @@ class SignupView(FormView):
         self.create_account(new_user, form)
         email_kwargs = {
             "primary": True,
+            "verified": False,
             "confirm": settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
         }
         if self.signup_code:
             self.signup_code.use(new_user)
             if self.signup_code.email and new_user.email == self.signup_code.email:
                 email_kwargs["verified"] = True
-                email_confirmed = True
         EmailAddress.objects.add_email(new_user, new_user.email, **email_kwargs)
         self.after_signup(new_user, form)
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_confirmed:
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
             response_kwargs = {
                 "request": self.request,
                 "template": self.template_name_email_confirmation_sent,
@@ -122,7 +121,7 @@ class SignupView(FormView):
             show_message = [
                 settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
                 self.messages.get("email_confirmation_sent"),
-                not email_confirmed
+                not email_kwargs["verified"]
             ]
             if all(show_message):
                 messages.add_message(

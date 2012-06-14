@@ -12,7 +12,7 @@ class EmailAddressManager(models.Manager):
         except IntegrityError:
             return None
         else:
-            if confirm:
+            if confirm and not email_address.verified:
                 email_address.send_confirmation()
             return email_address
     
