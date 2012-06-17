@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 
@@ -20,8 +22,9 @@ class UsernameAuthenticationBackend(ModelBackend):
 class EmailAuthenticationBackend(ModelBackend):
     
     def authenticate(self, **credentials):
+        qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
         try:
-            email_address = EmailAddress.objects.get(email__iexact=credentials["username"], verified=True)
+            email_address = qs.get(email__iexact=credentials["username"])
         except EmailAddress.DoesNotExist:
             return None
         else:
