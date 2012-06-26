@@ -38,6 +38,6 @@ class TimezoneMiddleware(object):
     templates to the user's timezone.
     """
     def process_request(self, request):
-        tz = request.user.account.timezone
-        if tz:
-            timezone.activate(tz)
+        account = getattr(request.user, 'account', None)
+        if account:
+            timezone.activate(account.timezone)
