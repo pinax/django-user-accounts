@@ -5,7 +5,7 @@ from account.conf import settings
 
 class EmailAddressManager(models.Manager):
     
-    def add_email(self, user, email, **kwargs):
+    def add_email(self, user, email, site=None, **kwargs):
         confirm = kwargs.pop("confirm", False)
         try:
             email_address = self.create(user=user, email=email, **kwargs)
@@ -13,7 +13,7 @@ class EmailAddressManager(models.Manager):
             return None
         else:
             if confirm and not email_address.verified:
-                email_address.send_confirmation()
+                email_address.send_confirmation(site=site)
             return email_address
     
     def get_primary(self, user):
