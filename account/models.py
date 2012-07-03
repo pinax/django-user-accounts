@@ -4,7 +4,7 @@ import urllib
 
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -247,6 +247,19 @@ class EmailAddress(models.Model):
         confirmation = EmailConfirmation.create(self)
         confirmation.send()
         return confirmation
+    
+    def change(self, new_email, confirm=True):
+        """
+        Given a new email address, change self and re-confirm.
+        """
+        with transaction.commit_on_success():
+            self.user.email = email
+            self.user.save()
+            self.email = email
+            self.verified = False
+            self.save()
+            if confirm:
+                self.send_confirmation()
 
 
 class EmailConfirmation(models.Model):
