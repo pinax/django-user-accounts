@@ -32,12 +32,12 @@ class LocaleMiddleware(object):
         translation.deactivate()
         return response
 
-class TimezoneMiddleware(object):
+class AccountTimezoneMiddleware(object):
     """
     This middleware sets the timezone used to display dates in
     templates to the user's timezone.
     """
     def process_request(self, request):
-        account = getattr(request.user, 'account', None)
+        account = getattr(request.user, "account", None)
         if account:
             timezone.activate(account.timezone)
