@@ -585,7 +585,7 @@ class SettingsView(LoginRequiredMixin, FormView):
             user.save()
         else:
             if email != self.primary_email_address.email:
-                self.primary_email_address.change(email)
+                self.primary_email_address.change(email, confirm=confirm)
     
     def update_account(self, form):
         fields = {}
