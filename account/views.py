@@ -29,7 +29,7 @@ class SignupView(FormView):
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
     form_class = SignupForm
-    form_prefix = "signup"
+    form_kwargs = {}
     redirect_field_name = "next"
     messages = {
         "email_confirmation_sent": {
@@ -81,8 +81,7 @@ class SignupView(FormView):
     
     def get_form_kwargs(self):
         kwargs = super(SignupView, self).get_form_kwargs()
-        if self.form_prefix:
-            kwargs.update({"prefix": self.form_prefix})
+        kwargs.update(self.form_kwargs)
         return kwargs
     
     def form_invalid(self, form):
@@ -224,7 +223,7 @@ class LoginView(FormView):
     
     template_name = "account/login.html"
     form_class = LoginUsernameForm
-    form_prefix = "login"
+    form_kwargs = {}
     redirect_field_name = "next"
     
     def get(self, *args, **kwargs):
@@ -243,8 +242,7 @@ class LoginView(FormView):
     
     def get_form_kwargs(self):
         kwargs = super(LoginView, self).get_form_kwargs()
-        if self.form_prefix:
-            kwargs.update({"prefix": self.form_prefix})
+        kwargs.update(self.form_kwargs)
         return kwargs
     
     def form_invalid(self, form):
