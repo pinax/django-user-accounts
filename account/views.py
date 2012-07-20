@@ -10,7 +10,6 @@ from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
-from django.contrib.sites.models import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 
 from account import signals
@@ -20,7 +19,7 @@ from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTo
 from account.forms import SettingsForm
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account
-from account.utils import default_redirect, user_display
+from account.utils import default_redirect, user_display, get_current_site
 
 
 class SignupView(FormView):
@@ -111,7 +110,8 @@ class SignupView(FormView):
             self.signup_code.use(new_user)
             if self.signup_code.email and new_user.email == self.signup_code.email:
                 email_kwargs["verified"] = True
-        EmailAddress.objects.add_email(new_user, new_user.email, **email_kwargs)
+        site = get_current_site(self.request)
+        EmailAddress.objects.add_email(new_user, new_user.email, site,**email_kwargs)
         self.after_signup(new_user, form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
             response_kwargs = {
@@ -593,7 +593,8 @@ class SettingsView(LoginRequiredMixin, FormView):
         email = form.cleaned_data["email"].strip()
         if not self.primary_email_address:
             user.email = email
-            EmailAddress.objects.add_email(self.request.user, email, primary=True, confirm=confirm)
+            site = get_current_site(self.request)
+            EmailAddress.objects.add_email(self.request.user, email, site, primary=True, confirm=confirm)
             user.save()
         else:
             if email != self.primary_email_address.email:

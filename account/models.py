@@ -22,7 +22,7 @@ from account.conf import settings
 from account.fields import TimeZoneField
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
-from account.utils import random_token
+from account.utils import random_token, get_current_site
 
 
 class Account(models.Model):
@@ -243,9 +243,9 @@ class EmailAddress(models.Model):
         self.user.save()
         return True
     
-    def send_confirmation(self):
+    def send_confirmation(self, **kwargs):
         confirmation = EmailConfirmation.create(self)
-        confirmation.send()
+        confirmation.send(**kwargs)
         return confirmation
     
     def change(self, new_email, confirm=True):

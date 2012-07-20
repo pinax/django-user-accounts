@@ -3,7 +3,9 @@ import random
 import urlparse
 
 from django.core import urlresolvers
-from django.http import HttpResponseRedirect, QueryDict
+from django.core.cache import cache
+from django.http import Http404, HttpResponseRedirect, QueryDict
+from django.contrib.sites.models import Site
 
 from account.conf import settings
 
@@ -59,3 +61,18 @@ def handle_redirect_to_login(request, **kwargs):
         querystring[redirect_field_name] = next_url
         url_bits[4] = querystring.urlencode(safe="/")
     return HttpResponseRedirect(urlparse.urlunparse(url_bits))
+
+def get_current_site(request, raise404=False):
+    if hasattr(request, 'site'): #if use django-hosts
+        return request.site
+        
+    host = request.get_host()
+    try:
+        site = Site.objects.get(domain__iexact=host)
+    except Site.DoesNotExist:
+        if raise404:
+            raise Http404                
+        site = Site.objects.get_current()
+        
+    return site
+    
