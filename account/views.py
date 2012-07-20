@@ -29,6 +29,7 @@ class SignupView(FormView):
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
     form_class = SignupForm
+    form_prefix = "signup"
     redirect_field_name = "next"
     messages = {
         "email_confirmation_sent": {
@@ -77,6 +78,12 @@ class SignupView(FormView):
             "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
         })
         return ctx
+    
+    def get_form_kwargs(self):
+        kwargs = super(SignupView, self).get_form_kwargs()
+        if self.form_prefix:
+            kwargs.update({"prefix": self.form_prefix})
+        return kwargs
     
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
@@ -217,6 +224,7 @@ class LoginView(FormView):
     
     template_name = "account/login.html"
     form_class = LoginUsernameForm
+    form_prefix = "login"
     redirect_field_name = "next"
     
     def get(self, *args, **kwargs):
@@ -232,6 +240,12 @@ class LoginView(FormView):
             "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
         })
         return ctx
+    
+    def get_form_kwargs(self):
+        kwargs = super(LoginView, self).get_form_kwargs()
+        if self.form_prefix:
+            kwargs.update({"prefix": self.form_prefix})
+        return kwargs
     
     def form_invalid(self, form):
         signals.user_login_attempt.send(
