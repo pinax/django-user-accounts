@@ -152,13 +152,10 @@ class PasswordResetForm(forms.Form):
     email = forms.EmailField(label=_("Email"), required=True)
     
     def clean_email(self):
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
-            if not EmailAddress.objects.filter(email__iexact=self.cleaned_data["email"], verified=True).count():
-                raise forms.ValidationError(_("Email address not verified for any user account"))
-        else:
-            if not User.objects.filter(email__iexact=self.cleaned_data["email"]).count():
-                raise forms.ValidationError(_("Email address not found for any user account"))
-        return self.cleaned_data['email']
+        value = self.cleaned_data["email"]
+        if not EmailAddress.objects.filter(email__iexact=value).exists():
+            raise forms.ValidationError(_("Email address can not be found."))
+        return value
 
 
 class PasswordResetTokenForm(forms.Form):
