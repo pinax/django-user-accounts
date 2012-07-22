@@ -331,30 +331,25 @@ class AccountDeletion(models.Model):
     
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.EmailField()
-    date_requested = models.DateTimeField(default=datetime.datetime.now)
+    date_requested = models.DateTimeField(default=timezone.now)
     date_expunged = models.DateTimeField(null=True, blank=True)
-
-
-def mark_for_deletion(user):
     
-    account_deletion, created = AccountDeletion.objects.get_or_create(user=user)
-    account_deletion.email = user.email
-    account_deletion.save()
-    user.is_active = False
-    user.save()
+    @classmethod
+    def expunge(cls):
+        before = timezone.now() - datetime.timedelta(hours=48)
+        count = 0
+        for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):
+            account_deletion.user.delete()
+            account_deletion.date_expunged = timezone.now()
+            account_deletion.save()
+            count += 1
+        return count
     
-    return account_deletion
-
-
-def expunge_deleted():
-    
-    before = datetime.datetime.now() - datetime.timedelta(hours=48)
-    count = 0
-    
-    for account_deletion in AccountDeletion.objects.filter(date_requested__lt=before, user__isnull=False):
-        account_deletion.user.delete()
-        account_deletion.date_expunged = datetime.datetime.now()
+    @classmethod
+    def mark(cls, user):
+        account_deletion, created = cls.objects.get_or_create(user=user)
+        account_deletion.email = user.email
         account_deletion.save()
-        count += 1
-    
-    return count
+        user.is_active = False
+        user.save()
+        return account_deletion

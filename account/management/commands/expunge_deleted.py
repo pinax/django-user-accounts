@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand
 
-from account.models import expunge_deleted
+from account.models import AccountDeletion
 
 
 class Command(BaseCommand):
+    
     help = "Expunge accounts deleted more than 48 hours ago."
     
     def handle(self, *args, **options):
-        count = expunge_deleted()
+        count = AccountDeletion.expunge()
         print "%d expunged." % count
