@@ -33,7 +33,7 @@ class LocaleMiddleware(object):
         return response
 
 
-class AccountTimezoneMiddleware(object):
+class TimezoneMiddleware(object):
     """
     This middleware sets the timezone used to display dates in
     templates to the user's timezone.
