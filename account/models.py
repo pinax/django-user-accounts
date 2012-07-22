@@ -48,6 +48,8 @@ class Account(models.Model):
     
     @classmethod
     def create(cls, request=None, **kwargs):
+        create_email = kwargs.pop("create_email", True)
+        confirm_email = kwargs.pop("confirm_email", None)
         account = cls(**kwargs)
         if "language" not in kwargs:
             if request is None:
@@ -55,6 +57,11 @@ class Account(models.Model):
             else:
                 account.language = translation.get_language_from_request(request, check_path=True)
         account.save()
+        if create_email and account.user.email:
+            kwargs = {"primary": True}
+            if confirm_email is not None:
+                kwargs["confirm"] = confirm_email
+            EmailAddress.objects.add_email(account.user, account.user.email, **kwargs)
         return account
     
     def __unicode__(self):

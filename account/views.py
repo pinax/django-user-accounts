@@ -173,7 +173,7 @@ class SignupView(FormView):
         return user
     
     def create_account(self, new_user, form):
-        return Account.create(request=self.request, user=new_user)
+        return Account.create(request=self.request, user=new_user, create_email=False)
     
     def generate_username(self, form):
         raise NotImplementedError("Unable to generate username by default. "
