@@ -1,4 +1,4 @@
-from django.utils import translation
+from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
 
 from account.models import Account
@@ -31,3 +31,13 @@ class LocaleMiddleware(object):
         response["Content-Language"] = translation.get_language()
         translation.deactivate()
         return response
+
+class AccountTimezoneMiddleware(object):
+    """
+    This middleware sets the timezone used to display dates in
+    templates to the user's timezone.
+    """
+    def process_request(self, request):
+        account = getattr(request.user, "account", None)
+        if account:
+            timezone.activate(account.timezone)
