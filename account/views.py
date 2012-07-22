@@ -20,6 +20,7 @@ from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTo
 from account.forms import SettingsForm
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account
+from account.models import mark_for_deletion
 from account.utils import default_redirect, user_display
 
 
@@ -615,3 +616,26 @@ class SettingsView(LoginRequiredMixin, FormView):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_SETTINGS_REDIRECT_URL
         return default_redirect(self.request, fallback_url)
+
+
+class DeleteView(TemplateResponseMixin, View):
+    
+    template_name = "account/delete.html"
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return redirect(self.get_redirect_url())
+        ctx = self.get_context_data()
+        return self.render_to_response(ctx)
+    
+    def post(self, *args, **kwargs):
+        mark_for_deletion(self.request.user)
+        auth.logout(self.request)
+        messages.add_message(self.request, messages.WARNING, "Your account is now inactive and your data will be expunged in the next 48 hours.")
+        return redirect(self.get_redirect_url())
+            
+    def get_context_data(self):
+        return {}
+    
+    def get_redirect_url(self):
+        return default_redirect(self.request, settings.ACCOUNT_LOGOUT_REDIRECT_URL)
