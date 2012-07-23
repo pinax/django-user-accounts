@@ -1,7 +1,5 @@
 from django.db import models, IntegrityError
 
-from account.conf import settings
-
 
 class EmailAddressManager(models.Manager):
     

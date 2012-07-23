@@ -1,7 +1,5 @@
 from django.conf.urls import patterns, url
 
-from django.contrib.auth.decorators import login_required
-
 from account.views import SignupView, LoginView, LogoutView, DeleteView
 from account.views import ConfirmEmailView
 from account.views import ChangePasswordView, PasswordResetView, PasswordResetTokenView

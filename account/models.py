@@ -101,6 +101,7 @@ def user_post_save(sender, **kwargs):
     if created and not disabled:
         Account.create(user=user)
 
+
 class AnonymousAccount(object):
     
     def __init__(self, request=None):

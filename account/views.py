@@ -425,6 +425,7 @@ class ChangePasswordView(FormView):
         current_site = get_current_site(self.request)
         ctx = {
             "user": user,
+            "protocol": protocol,
             "current_site": current_site,
         }
         subject = render_to_string("account/email/password_change_subject.txt", ctx)
