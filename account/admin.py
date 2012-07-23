@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from account.models import SignupCode
+from account.models import SignupCode, AccountDeletion
 
 
 class SignupCodeAdmin(admin.ModelAdmin):
@@ -10,3 +10,4 @@ class SignupCodeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SignupCode, SignupCodeAdmin)
+admin.site.register(AccountDeletion, list_display=["email", "date_requested", "date_expunged"])
