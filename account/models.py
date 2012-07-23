@@ -73,7 +73,7 @@ class Account(models.Model):
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone("UTC"))
         timezone = settings.TIME_ZONE if not self.timezone else self.timezone
-        return aware.astimezone(pytz.timezone(timezone))
+        return now.astimezone(pytz.timezone(timezone))
     
     def localtime(self, value):
         """
