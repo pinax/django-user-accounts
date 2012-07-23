@@ -10,9 +10,8 @@ class TimeZoneField(models.CharField):
     def __init__(self, *args, **kwargs):
         defaults = {
             "max_length": 100,
-            "default": None,
+            "default": "",
             "choices": settings.ACCOUNT_TIMEZONES,
-            "null": True,
             "blank": True,
         }
         defaults.update(kwargs)

@@ -72,7 +72,7 @@ class Account(models.Model):
         Returns a timezone aware datetime localized to the account's timezone.
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone("UTC"))
-        timezone = "UTC" if self.timezone is None else self.timezone
+        timezone = settings.TIME_ZONE if not self.timezone else self.timezone
         return aware.astimezone(pytz.timezone(timezone))
     
     def localtime(self, value):
@@ -80,7 +80,7 @@ class Account(models.Model):
         Given a datetime object as value convert it to the timezone of
         the account.
         """
-        timezone = "UTC" if self.timezone is None else self.timezone
+        timezone = settings.TIME_ZONE if not self.timezone else self.timezone
         if value.tzinfo is None:
             value = pytz.timezone(settings.TIME_ZONE).localize(value)
         return value.astimezone(pytz.timezone(timezone))
