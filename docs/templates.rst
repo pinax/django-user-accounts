@@ -5,6 +5,7 @@ Templates
 ============
 This document covers the implementation of django-user-accounts within django templates. The pinax-theme-bootstrap-account package provides a good starting point to build off of. 
 Note, this document assumes you have read the installation docs.
+
 Template Files
 ===============
 
