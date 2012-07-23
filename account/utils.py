@@ -1,8 +1,10 @@
 import hashlib
+import importlib
 import random
 import urlparse
 
 from django.core import urlresolvers
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseRedirect, QueryDict
 
 from account.conf import settings
@@ -59,3 +61,17 @@ def handle_redirect_to_login(request, **kwargs):
         querystring[redirect_field_name] = next_url
         url_bits[4] = querystring.urlencode(safe="/")
     return HttpResponseRedirect(urlparse.urlunparse(url_bits))
+
+
+def load_path_attr(path):
+    i = path.rfind(".")
+    module, attr = path[:i], path[i+1:]
+    try:
+        mod = importlib.import_module(module)
+    except ImportError, e:
+        raise ImproperlyConfigured("Error importing %s: '%s'" % (module, e))
+    try:
+        attr = getattr(mod, attr)
+    except AttributeError:
+        raise ImproperlyConfigured("Module '%s' does not define a '%s'" % (module, attr))
+    return attr
