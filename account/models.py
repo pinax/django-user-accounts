@@ -335,7 +335,9 @@ class AccountDeletion(models.Model):
     date_expunged = models.DateTimeField(null=True, blank=True)
     
     @classmethod
-    def expunge(cls, hours_ago=48):
+    def expunge(cls, hours_ago=None):
+        if hours_ago is None:
+            hours_ago = settings.ACCOUNT_DELETION_EXPUNGE_HOURS
         before = timezone.now() - datetime.timedelta(hours=hours_ago)
         count = 0
         for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):

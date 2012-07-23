@@ -623,7 +623,7 @@ class DeleteView(LogoutView):
     messages = {
         "account_deleted": {
             "level": messages.WARNING,
-            "text": _("Your account is now inactive and your data will be expunged in the next 48 hours.")
+            "text": _("Your account is now inactive and your data will be expunged in the next %(expunge_hours)d hours.")
         },
     }
     
@@ -633,6 +633,8 @@ class DeleteView(LogoutView):
         messages.add_message(
             self.request,
             self.messages["account_deleted"]["level"],
-            self.messages["account_deleted"]["text"]
+            self.messages["account_deleted"]["text"] % {
+                "expunge_hours": settings.ACCOUNT_DELETION_EXPUNGE_HOURS,
+            }
         )
         return redirect(self.get_redirect_url())
