@@ -638,3 +638,8 @@ class DeleteView(LogoutView):
             }
         )
         return redirect(self.get_redirect_url())
+    
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        ctx["ACCOUNT_DELETION_EXPUNGE_HOURS"] = settings.ACCOUNT_DELETION_EXPUNGE_HOURS
+        return ctx
