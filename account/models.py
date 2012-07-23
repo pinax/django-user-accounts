@@ -335,11 +335,13 @@ class AccountDeletion(models.Model):
     date_expunged = models.DateTimeField(null=True, blank=True)
     
     @classmethod
-    def expunge(cls):
-        before = timezone.now() - datetime.timedelta(hours=48)
+    def expunge(cls, hours_ago=None):
+        if hours_ago is None:
+            hours_ago = settings.ACCOUNT_DELETION_EXPUNGE_HOURS
+        before = timezone.now() - datetime.timedelta(hours=hours_ago)
         count = 0
         for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):
-            account_deletion.user.delete()
+            settings.ACCOUNT_DELETION_EXPUNGE_CALLBACK(account_deletion)
             account_deletion.date_expunged = timezone.now()
             account_deletion.save()
             count += 1
@@ -350,6 +352,5 @@ class AccountDeletion(models.Model):
         account_deletion, created = cls.objects.get_or_create(user=user)
         account_deletion.email = user.email
         account_deletion.save()
-        user.is_active = False
-        user.save()
+        settings.ACCOUNT_DELETION_MARK_CALLBACK(account_deletion)
         return account_deletion
