@@ -73,7 +73,7 @@ class Account(models.Model):
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone("UTC"))
         timezone = settings.TIME_ZONE if not self.timezone else self.timezone
-        return aware.astimezone(pytz.timezone(timezone))
+        return now.astimezone(pytz.timezone(timezone))
     
     def localtime(self, value):
         """
@@ -100,6 +100,7 @@ def user_post_save(sender, **kwargs):
     disabled = getattr(user, "_disable_account_creation", not settings.ACCOUNT_CREATE_ON_SAVE)
     if created and not disabled:
         Account.create(user=user)
+
 
 class AnonymousAccount(object):
     
