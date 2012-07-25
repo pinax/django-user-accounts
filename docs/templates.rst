@@ -18,10 +18,10 @@ these templates yourself.
 
 Login/Registration/Signup Templates::
 
-account/login.html
-account/logout.html
-account/signup.html
-account/signup_closed.html
+  account/login.html
+  account/logout.html
+  account/signup.html
+  account/signup_closed.html
 
 Email Confirmation Templates::
 
