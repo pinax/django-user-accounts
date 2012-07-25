@@ -19,11 +19,11 @@ these templates yourself.
 Login/Registration/Signup Templates:
 =====================================
 ``account/login.html`` 
-
 ``account/logout.html``
 ``account/signup.html``
 ``account/signup_closed.html``
 =====================================
+
 
 =========================================
 Email Confirmation Templates:
@@ -32,6 +32,7 @@ Email Confirmation Templates:
 ``account/email_confirmation_sent.html``
 ``account/email_confirmed.html`` 
 =========================================
+
 
 ===========================================
 Password Management:
@@ -43,11 +44,13 @@ Password Management:
 ``account/password_reset_token_fail.html``
 ===========================================
 
+
 =========================================
 Account Settings:
 =========================================
 ``account/settings.html``
 =========================================
+
 
 =================================================
 Emails (actual emails themselves):
@@ -61,6 +64,8 @@ Emails (actual emails themselves):
 ``account/email/password_reset.txt``
 ``account/email/password_reset_subject.txt``
 =================================================
+
+
 
 Template Tags
 ===============
