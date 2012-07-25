@@ -16,7 +16,7 @@ don't use ``pinax-theme-bootstrap-account``, then you will have to create
 these templates yourself.
 
 
-Login/Registration/Signup Templates:
+Login/Registration/Signup Templates::
 ************************************
 ``account/login.html`` 
 ``account/logout.html``
