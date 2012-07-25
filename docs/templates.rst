@@ -25,9 +25,9 @@ Login/Registration/Signup Templates::
 
 Email Confirmation Templates::
 
-account/email_confirm.html
-account/email_confirmation_sent.html
-account/email_confirmed.html
+    account/email_confirm.html
+    account/email_confirmation_sent.html
+    account/email_confirmed.html
 
 Password Management Templates::
 
