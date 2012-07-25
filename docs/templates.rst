@@ -15,14 +15,14 @@ By default, django-user-accounts expects the following templates. If you
 don't use ``pinax-theme-bootstrap-account``, then you will have to create 
 these templates yourself.
 
-=====================================
+====================================
 Login/Registration/Signup Templates:
-=====================================
+====================================
 ``account/login.html`` 
 ``account/logout.html``
 ``account/signup.html``
 ``account/signup_closed.html``
-=====================================
+====================================
 
 
 =========================================
