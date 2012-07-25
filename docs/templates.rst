@@ -17,7 +17,7 @@ these templates yourself.
 
 
 Login/Registration/Signup Templates::
-*************************************
+***********************************
 account/login.html
 account/logout.html
 account/signup.html
