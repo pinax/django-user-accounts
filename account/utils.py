@@ -1,10 +1,11 @@
+import functools
 import hashlib
 import importlib
 import random
 import urlparse
 
 from django.core import urlresolvers
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
 
 from account.conf import settings
@@ -18,19 +19,39 @@ def default_redirect(request, fallback_url, **kwargs):
         if hasattr(request, "session"):
             session_key_value = kwargs.get("session_key_value", "redirect_to")
             next = request.session.get(session_key_value)
-    if next:
-        netloc = urlparse.urlparse(next)[1]
-        redirect_to = next
-        # security check -- don't allow redirection to a different host
-        if netloc and netloc != request.get_host():
-            redirect_to = fallback_url
-    else:
-        redirect_to = fallback_url
+    is_safe = functools.partial(
+        ensure_safe_url,
+        allowed_protocols=kwargs.get("allowed_protocols"),
+        allowed_host=request.get_host()
+    )
+    redirect_to = next if next and is_safe(next) else fallback_url
+    # perform one last check to ensure the URL is safe to redirect to. if it
+    # is not then we should bail here as it is likely developer error and
+    # they should be notified
+    is_safe(redirect_to, raise_on_fail=True)
     return redirect_to
 
 
 def user_display(user):
     return settings.ACCOUNT_USER_DISPLAY(user)
+
+
+def ensure_safe_url(url, allowed_protocols=None, allowed_host=None, raise_on_fail=False):
+    if allowed_protocols is None:
+        allowed_protocols = ["http", "https"]
+    parsed = urlparse.urlparse(url)
+    # perform security checks to ensure no malicious intent
+    # (i.e., an XSS attack with a data URL)
+    safe = True
+    if parsed.scheme and parsed.scheme not in allowed_protocols:
+        if raise_on_fail:
+            raise SuspiciousOperation("Unsafe redirect to URL with protocol '%s'" % parsed.scheme)
+        safe = False
+    if allowed_host and parsed.netloc and parsed.netloc != allowed_host:
+        if raise_on_fail:
+            raise SuspiciousOperation("Unsafe redirect to URL not matching host '%s'" % allowed_host)
+        safe = False
+    return safe
 
 
 def random_token(extra=None, hash_func=hashlib.sha256):
