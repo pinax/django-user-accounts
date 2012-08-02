@@ -47,6 +47,7 @@ class SignupView(FormView):
     }
     
     def __init__(self, *args, **kwargs):
+        self.created_user = None
         kwargs["signup_code"] = None
         super(SignupView, self).__init__(*args, **kwargs)
     
@@ -94,7 +95,7 @@ class SignupView(FormView):
         return super(SignupView, self).form_invalid(form)
     
     def form_valid(self, form):
-        new_user = self.create_user(form, commit=False)
+        self.created_user = new_user = self.create_user(form, commit=False)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
             new_user.is_active = False
         # prevent User post_save signal from creating an Account instance
