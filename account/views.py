@@ -95,31 +95,31 @@ class SignupView(FormView):
         return super(SignupView, self).form_invalid(form)
     
     def form_valid(self, form):
-        self.created_user = new_user = self.create_user(form, commit=False)
+        self.created_user = self.create_user(form, commit=False)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
-            new_user.is_active = False
+            self.created_user.is_active = False
         # prevent User post_save signal from creating an Account instance
         # we want to handle that ourself.
-        new_user._disable_account_creation = True
-        new_user.save()
-        self.create_account(new_user, form)
+        self.created_user._disable_account_creation = True
+        self.created_user.save()
+        self.create_account(form)
         email_kwargs = {
             "primary": True,
             "verified": False,
             "confirm": settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
         }
         if self.signup_code:
-            self.signup_code.use(new_user)
-            if self.signup_code.email and new_user.email == self.signup_code.email:
+            self.signup_code.use(self.created_user)
+            if self.signup_code.email and self.created_user.email == self.signup_code.email:
                 email_kwargs["verified"] = True
-        EmailAddress.objects.add_email(new_user, new_user.email, **email_kwargs)
-        self.after_signup(new_user, form)
+        EmailAddress.objects.add_email(self.created_user, self.created_user.email, **email_kwargs)
+        self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
             response_kwargs = {
                 "request": self.request,
                 "template": self.template_name_email_confirmation_sent,
                 "context": {
-                    "email": new_user.email,
+                    "email": self.created_user.email,
                     "success_url": self.get_success_url(),
                 }
             }
@@ -138,13 +138,13 @@ class SignupView(FormView):
                         "email": form.cleaned_data["email"]
                     }
                 )
-            self.login_user(new_user)
+            self.login_user()
             if self.messages.get("logged_in"):
                 messages.add_message(
                     self.request,
                     self.messages["logged_in"]["level"],
                     self.messages["logged_in"]["text"] % {
-                        "user": user_display(new_user)
+                        "user": user_display(self.created_user)
                     }
                 )
         return redirect(self.get_success_url())
@@ -173,20 +173,20 @@ class SignupView(FormView):
             user.save()
         return user
     
-    def create_account(self, new_user, form):
-        return Account.create(request=self.request, user=new_user, create_email=False)
+    def create_account(self, form):
+        return Account.create(request=self.request, user=self.created_user, create_email=False)
     
     def generate_username(self, form):
         raise NotImplementedError("Unable to generate username by default. "
             "Override SignupView.generate_username in a subclass.")
     
-    def after_signup(self, user, form):
-        signals.user_signed_up.send(sender=SignupForm, user=user, form=form)
+    def after_signup(self, form):
+        signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
     
-    def login_user(self, user):
+    def login_user(self):
         # set backend on User object to bypass needing to call auth.authenticate
         user.backend = "django.contrib.auth.backends.ModelBackend"
-        auth.login(self.request, user)
+        auth.login(self.request, self.created_user)
         self.request.session.set_expiry(0)
     
     def is_open(self):
