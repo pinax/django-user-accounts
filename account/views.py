@@ -185,7 +185,7 @@ class SignupView(FormView):
     
     def login_user(self):
         # set backend on User object to bypass needing to call auth.authenticate
-        user.backend = "django.contrib.auth.backends.ModelBackend"
+        self.create_user.backend = "django.contrib.auth.backends.ModelBackend"
         auth.login(self.request, self.created_user)
         self.request.session.set_expiry(0)
     
