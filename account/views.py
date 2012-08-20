@@ -257,7 +257,8 @@ class LoginView(FormView):
     def form_valid(self, form):
         self.login_user(form)
         self.after_login(form)
-        return redirect(self.get_success_url())
+        return redirect(self.get_success_url(
+            redirect_field_name=self.redirect_field_name))
     
     def after_login(self, form):
         signals.user_logged_in.send(sender=LoginView, user=form.user, form=form)
