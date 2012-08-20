@@ -4,6 +4,7 @@ from django.utils import unittest
 
 from django.contrib.auth.models import AnonymousUser, User
 
+from account.forms import LoginUsernameForm
 from account.views import SignupView, LoginView
 
 
@@ -22,6 +23,12 @@ class SignupDisabledView(SignupView):
 class LoginDisabledView(LoginView):
     
     def disabled(self):
+        return True
+
+
+class LoginRedirectView(LoginView):
+
+    def login_user(self, form):
         return True
 
 
@@ -84,3 +91,12 @@ class LoginViewTestCase(unittest.TestCase):
         request.user = AnonymousUser()
         response = LoginDisabledView.as_view()(request)
         self.assertEqual(response.status_code, 403)
+
+    def test_next_redirect(self):
+        request = self.factory.request()
+        request.GET = {"nextpage": "/profile/"}
+        form = LoginUsernameForm({"username": "me", "password": "pass"})
+        self.assertEqual("/profile/",
+                LoginRedirectView(request=request,
+                    redirect_field_name="nextpage").form_valid(form)['Location'])
+
