@@ -1,12 +1,12 @@
 import functools
 import hashlib
-import importlib
 import random
 import urlparse
 
 from django.core import urlresolvers
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
+from django.utils import importlib
 
 from account.conf import settings
 
