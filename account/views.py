@@ -152,6 +152,7 @@ class SignupView(FormView):
     def get_success_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_SIGNUP_REDIRECT_URL
+        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
     
     def get_redirect_field_name(self):
@@ -265,6 +266,7 @@ class LoginView(FormView):
     def get_success_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_LOGIN_REDIRECT_URL
+        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
     
     def get_redirect_field_name(self):
@@ -279,6 +281,7 @@ class LoginView(FormView):
 class LogoutView(TemplateResponseMixin, View):
     
     template_name = "account/logout.html"
+    redirect_field_name = "next"
     
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated():
@@ -291,12 +294,22 @@ class LogoutView(TemplateResponseMixin, View):
             auth.logout(self.request)
         return redirect(self.get_redirect_url())
     
-    def get_context_data(self):
-        return {}
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        redirect_field_name = self.get_redirect_field_name()
+        ctx.update({
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+        })
+        return ctx
+    
+    def get_redirect_field_name(self):
+        return self.redirect_field_name
     
     def get_redirect_url(self, fallback_url=None):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_LOGOUT_REDIRECT_URL
+        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url)
 
 class ConfirmEmailView(TemplateResponseMixin, View):
@@ -370,6 +383,7 @@ class ChangePasswordView(FormView):
     
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
+    redirect_field_name = "next"
     messages = {
         "password_changed": {
             "level": messages.SUCCESS,
@@ -416,9 +430,22 @@ class ChangePasswordView(FormView):
         self.change_password(form)
         return redirect(self.get_success_url())
     
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        redirect_field_name = self.get_redirect_field_name()
+        ctx.update({
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+        })
+        return ctx
+    
+    def get_redirect_field_name(self):
+        return self.redirect_field_name
+    
     def get_success_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL
+        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
     
     def send_email(self, user):
@@ -488,6 +515,7 @@ class PasswordResetTokenView(FormView):
     template_name_fail = "account/password_reset_token_fail.html"
     form_class = PasswordResetTokenForm
     token_generator = default_token_generator
+    redirect_field_name = "next"
     messages = {
         "password_changed": {
             "level": messages.SUCCESS,
@@ -505,9 +533,12 @@ class PasswordResetTokenView(FormView):
     
     def get_context_data(self, **kwargs):
         ctx = kwargs
+        redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "uidb36": self.kwargs["uidb36"],
             "token": self.kwargs["token"],
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
         })
         return ctx
     
@@ -523,9 +554,13 @@ class PasswordResetTokenView(FormView):
             )
         return redirect(self.get_success_url())
     
+    def get_redirect_field_name(self):
+        return self.redirect_field_name
+    
     def get_success_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
+        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
     
     def get_user(self):
@@ -551,6 +586,7 @@ class SettingsView(LoginRequiredMixin, FormView):
     
     template_name = "account/settings.html"
     form_class = SettingsForm
+    redirect_field_name = "next"
     messages = {
         "settings_updated": {
             "level": messages.SUCCESS,
@@ -601,6 +637,15 @@ class SettingsView(LoginRequiredMixin, FormView):
             if email != self.primary_email_address.email:
                 self.primary_email_address.change(email, confirm=confirm)
     
+    def get_context_data(self, **kwargs):
+        ctx = kwargs
+        redirect_field_name = self.get_redirect_field_name()
+        ctx.update({
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+        })
+        return ctx
+    
     def update_account(self, form):
         fields = {}
         if "timezone" in form.cleaned_data:
@@ -613,9 +658,13 @@ class SettingsView(LoginRequiredMixin, FormView):
                 setattr(account, k, v)
             account.save()
     
+    def get_redirect_field_name(self):
+        return self.redirect_field_name
+    
     def get_success_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_SETTINGS_REDIRECT_URL
+        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
 
 
@@ -642,6 +691,7 @@ class DeleteView(LogoutView):
         return redirect(self.get_redirect_url())
     
     def get_context_data(self, **kwargs):
-        ctx = kwargs
+        ctx = super(DeleteView, self).get_context_data()
+        ctx.update(kwargs)
         ctx["ACCOUNT_DELETION_EXPUNGE_HOURS"] = settings.ACCOUNT_DELETION_EXPUNGE_HOURS
         return ctx

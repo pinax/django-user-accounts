@@ -4,6 +4,7 @@ from django.utils import unittest
 
 from django.contrib.auth.models import AnonymousUser, User
 
+from account.forms import SignupForm, LoginUsernameForm
 from account.views import SignupView, LoginView
 
 
@@ -19,9 +20,18 @@ class SignupDisabledView(SignupView):
         return False
 
 
+class SignupRedirectView(SignupView):
+    pass
+
+
 class LoginDisabledView(LoginView):
     
     def disabled(self):
+        return True
+
+class LoginRedirectView(LoginView):
+    
+    def login_user(self, form):
         return True
 
 
@@ -59,6 +69,18 @@ class SignupViewTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 302)
         user = User.objects.get(username="user")
         self.asserEqual(user.email, "info@example.com")
+    
+    def test_custom_redirect_field(self):
+        request = self.factory.request()
+        request.GET = {"next_page": "/profile/"}
+        form = SignupForm({
+            "username": "test",
+            "password": "password",
+            "password_confirm": "password",
+            "email": "someone@example.com",
+        })
+        view = SignupRedirectView(request=request, redirect_field_name="next_page")
+        self.assertEqual("/profile/", view.form_valid(form)["Location"])
 
 
 class LoginViewTestCase(unittest.TestCase):
@@ -84,3 +106,10 @@ class LoginViewTestCase(unittest.TestCase):
         request.user = AnonymousUser()
         response = LoginDisabledView.as_view()(request)
         self.assertEqual(response.status_code, 403)
+    
+    def test_custom_redirect_field(self):
+        request = self.factory.request()
+        request.GET = {"next_page": "/profile/"}
+        form = LoginUsernameForm({"username": "test", "password": "password"})
+        view = LoginRedirectView(request=request, redirect_field_name="next_page")
+        self.assertEqual("/profile/", view.form_valid(form)["Location"])
