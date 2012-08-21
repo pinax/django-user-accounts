@@ -33,7 +33,6 @@ Pinax to django-user-accounts::
     UPDATE account_emailconfirmation SET created = sent;
     ALTER TABLE account_emailconfirmation ALTER COLUMN created SET NOT NULL;
     ALTER TABLE account_emailconfirmation ALTER COLUMN sent DROP NOT NULL;
-    -- @@@ more ...
 
 If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
 
