@@ -4,4 +4,5 @@
 Signals
 =======
 
-@@@ todo
+.. automodule:: account.signals
+   :members:
