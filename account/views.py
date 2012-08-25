@@ -306,11 +306,11 @@ class LogoutView(TemplateResponseMixin, View):
     def get_redirect_field_name(self):
         return self.redirect_field_name
     
-    def get_redirect_url(self, fallback_url=None):
+    def get_redirect_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
             fallback_url = settings.ACCOUNT_LOGOUT_REDIRECT_URL
         kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
-        return default_redirect(self.request, fallback_url)
+        return default_redirect(self.request, fallback_url, **kwargs)
 
 class ConfirmEmailView(TemplateResponseMixin, View):
     
