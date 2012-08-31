@@ -36,12 +36,12 @@ defined in your project::
     
     class SignupView(account.views.SignupView):
         
-        def after_signup(self, user, form):
-            self.create_profile(user, form)
-            super(SignupView, self).after_signup(user, form)
+        def after_signup(self, form):
+            self.create_profile(form)
+            super(SignupView, self).after_signup(form)
         
-        def create_profile(self, user, form):
-            profile = user.get_profile()
+        def create_profile(self, form):
+            profile = self.created_user.get_profile()
             profile.some_attr = "some value"
             profile.save()
 
@@ -70,12 +70,12 @@ You can define your own form class to add fields to the sign up process::
        
        form_class = myproject.forms.SignupForm
        
-       def after_signup(self, user, form):
-           self.create_profile(user, form)
-           super(SignupView, self).after_signup(user, form)
+       def after_signup(self, form):
+           self.create_profile(form)
+           super(SignupView, self).after_signup(form)
        
-       def create_profile(self, user, form):
-           profile = user.get_profile()
+       def create_profile(self, form):
+           profile = self.created_user.get_profile()
            profile.birthdate = form.cleaned_data["birthdate"]
            profile.save()
 
