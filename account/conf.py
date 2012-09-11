@@ -8,6 +8,20 @@ import pytz
 from appconf import AppConf
 
 
+def load_path_attr(path):
+    i = path.rfind(".")
+    module, attr = path[:i], path[i+1:]
+    try:
+        mod = importlib.import_module(module)
+    except ImportError, e:
+        raise ImproperlyConfigured("Error importing %s: '%s'" % (module, e))
+    try:
+        attr = getattr(mod, attr)
+    except AttributeError:
+        raise ImproperlyConfigured("Module '%s' does not define a '%s'" % (module, attr))
+    return attr
+
+
 class AccountAppConf(AppConf):
     
     OPEN_SIGNUP = True
@@ -42,17 +56,3 @@ class AccountAppConf(AppConf):
     
     def configure_deletion_expunge_callback(self, value):
         return load_path_attr(value)
-
-
-def load_path_attr(path):
-    i = path.rfind(".")
-    module, attr = path[:i], path[i+1:]
-    try:
-        mod = importlib.import_module(module)
-    except ImportError, e:
-        raise ImproperlyConfigured("Error importing %s: '%s'" % (module, e))
-    try:
-        attr = getattr(mod, attr)
-    except AttributeError:
-        raise ImproperlyConfigured("Module '%s' does not define a '%s'" % (module, attr))
-    return attr
