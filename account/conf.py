@@ -1,11 +1,11 @@
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.utils import importlib
 from django.utils.translation import get_language_info
 
 import pytz
 
 from appconf import AppConf
-
-from account.utils import load_path_attr
 
 
 class AccountAppConf(AppConf):
@@ -42,3 +42,17 @@ class AccountAppConf(AppConf):
     
     def configure_deletion_expunge_callback(self, value):
         return load_path_attr(value)
+
+
+def load_path_attr(path):
+    i = path.rfind(".")
+    module, attr = path[:i], path[i+1:]
+    try:
+        mod = importlib.import_module(module)
+    except ImportError, e:
+        raise ImproperlyConfigured("Error importing %s: '%s'" % (module, e))
+    try:
+        attr = getattr(mod, attr)
+    except AttributeError:
+        raise ImproperlyConfigured("Module '%s' does not define a '%s'" % (module, attr))
+    return attr
