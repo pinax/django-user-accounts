@@ -76,7 +76,7 @@ class SignupView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name, ""),
         })
         return ctx
     
@@ -238,7 +238,7 @@ class LoginView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name, ""),
         })
         return ctx
     
@@ -299,7 +299,7 @@ class LogoutView(TemplateResponseMixin, View):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name, ""),
         })
         return ctx
     
@@ -435,7 +435,7 @@ class ChangePasswordView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name, ""),
         })
         return ctx
     
@@ -538,7 +538,7 @@ class PasswordResetTokenView(FormView):
             "uidb36": self.kwargs["uidb36"],
             "token": self.kwargs["token"],
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name, ""),
         })
         return ctx
     
@@ -642,7 +642,7 @@ class SettingsView(LoginRequiredMixin, FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.REQUEST.get(redirect_field_name),
+            "redirect_field_value": self.request.REQUEST.get(redirect_field_name, ""),
         })
         return ctx
     
