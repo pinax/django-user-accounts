@@ -354,6 +354,7 @@ class AccountDeletion(models.Model):
         for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):
             settings.ACCOUNT_DELETION_EXPUNGE_CALLBACK(account_deletion)
             account_deletion.date_expunged = timezone.now()
+            account_deletion.user = None
             account_deletion.save()
             count += 1
         return count
