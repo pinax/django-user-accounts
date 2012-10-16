@@ -324,6 +324,7 @@ class EmailConfirmation(models.Model):
             reverse("account_confirm_email", args=[self.key])
         )
         ctx = {
+            "email_address": self.email_address,
             "user": self.email_address.user,
             "activate_url": activate_url,
             "current_site": current_site,
