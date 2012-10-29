@@ -36,10 +36,6 @@ class SignupView(FormView):
             "level": messages.INFO,
             "text": _("Confirmation email sent to %(email)s.")
         },
-        "logged_in": {
-            "level": messages.SUCCESS,
-            "text": _("Successfully logged in as %(user)s.")
-        },
         "invalid_signup_code": {
             "level": messages.WARNING,
             "text": _("The code %(code)s is invalid.")
@@ -137,14 +133,6 @@ class SignupView(FormView):
                     }
                 )
             self.login_user()
-            if self.messages.get("logged_in"):
-                messages.add_message(
-                    self.request,
-                    self.messages["logged_in"]["level"],
-                    self.messages["logged_in"]["text"] % {
-                        "user": user_display(self.created_user)
-                    }
-                )
         return redirect(self.get_success_url())
     
     def get_success_url(self, fallback_url=None, **kwargs):
