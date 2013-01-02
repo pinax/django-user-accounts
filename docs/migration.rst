@@ -17,8 +17,10 @@ Database changes
 
 Due to combining apps the table layout when converting from Pinax has changed.
 We've also taken the opportunity to update the schema to take advantage of
-much saner defaults. Here is SQL (tested on PostgreSQL only) to convert from
-Pinax to django-user-accounts::
+much saner defaults. Here is SQL to convert from Pinax to django-user-accounts.
+
+PostgreSQL
+^^^^^^^^^^
 
     ALTER TABLE "signup_codes_signupcode" RENAME TO "account_signupcode";
     ALTER TABLE "signup_codes_signupcoderesult" RENAME TO "account_signupcoderesult";
@@ -38,6 +40,31 @@ If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
 
     ALTER TABLE "account_emailaddress" ADD CONSTRAINT "account_emailaddress_email_key" UNIQUE ("email");
     ALTER TABLE "emailconfirmation_emailaddress" DROP CONSTRAINT "emailconfirmation_emailaddress_user_id_email_key";
+
+MySql SQL
+^^^^^^^^^
+
+::
+
+    RENAME TABLE  `emailconfirmation_emailaddress` TO  `account_emailaddress` ;
+    RENAME TABLE  `emailconfirmation_emailconfirmation` TO  `account_emailconfirmation` ;
+    DROP TABLE account_passwordreset;
+    ALTER TABLE  `account_emailconfirmation` CHANGE  `confirmation_key`  `key` VARCHAR(64) NOT NULL;
+    ALTER TABLE `account_emailconfirmation` ADD UNIQUE (`key`);
+    ALTER TABLE account_emailconfirmation ADD COLUMN created datetime NOT NULL;
+    UPDATE account_emailconfirmation SET created = sent;
+    ALTER TABLE  `account_emailconfirmation` CHANGE  `sent`  `sent` DATETIME NULL;
+
+If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
+
+    ALTER TABLE  `account_emailaddress` ADD UNIQUE (`email`);
+    ALTER TABLE account_emailaddress DROP INDEX user_id;
+
+If you have installed ``pinax.apps.signup_codes``::
+
+    RENAME TABLE  `signup_codes_signupcode` TO  `account_signupcode` ;
+    RENAME TABLE  `signup_codes_signupcoderesult` TO  `account_signupcoderesult` ;
+
 
 URL changes
 ===========
