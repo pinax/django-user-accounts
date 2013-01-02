@@ -35,6 +35,16 @@ Installation
         ...
     ]
 
+* Add ``"account.middleware.LocaleMiddleware"`` and
+  ``"account.middleware.TimezoneMiddleware"`` to ``MIDDLEWARE_CLASSES``::
+
+    MIDDLEWARE_CLASSES = [
+        ...
+        "account.middleware.LocaleMiddleware",
+        "account.middleware.TimezoneMiddleware",
+        ...
+    ]
+
 .. _dependencies:
 
 Dependencies
