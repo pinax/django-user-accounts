@@ -20,7 +20,9 @@ We've also taken the opportunity to update the schema to take advantage of
 much saner defaults. Here is SQL to convert from Pinax to django-user-accounts.
 
 PostgreSQL
-^^^^^^^^^^
+----------
+
+::
 
     ALTER TABLE "signup_codes_signupcode" RENAME TO "account_signupcode";
     ALTER TABLE "signup_codes_signupcoderesult" RENAME TO "account_signupcoderesult";
@@ -41,8 +43,8 @@ If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
     ALTER TABLE "account_emailaddress" ADD CONSTRAINT "account_emailaddress_email_key" UNIQUE ("email");
     ALTER TABLE "emailconfirmation_emailaddress" DROP CONSTRAINT "emailconfirmation_emailaddress_user_id_email_key";
 
-MySql SQL
-^^^^^^^^^
+MySQL
+-----
 
 ::
 
