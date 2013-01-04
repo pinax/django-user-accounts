@@ -41,7 +41,7 @@ PostgreSQL
 If ``ACCOUNT_EMAIL_UNIQUE`` is set to ``True`` (the default value) you need::
 
     ALTER TABLE "account_emailaddress" ADD CONSTRAINT "account_emailaddress_email_key" UNIQUE ("email");
-    ALTER TABLE "emailconfirmation_emailaddress" DROP CONSTRAINT "emailconfirmation_emailaddress_user_id_email_key";
+    ALTER TABLE "account_emailaddress" DROP CONSTRAINT "emailconfirmation_emailaddress_user_id_email_key";
 
 MySQL
 -----
