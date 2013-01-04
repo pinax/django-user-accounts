@@ -56,7 +56,7 @@ Template Tags
 =============
 To use the built in template tags you must first load them within the templates::
 
-{{ load account_tags }}
+{% load account_tags %}
 
 To display the current logged-in user::
 
