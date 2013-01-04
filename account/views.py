@@ -389,7 +389,12 @@ class ChangePasswordView(FormView):
     
     def change_password(self, form):
         user = self.request.user
-        form.save(user)
+        user.set_password(form.cleaned_data["password_new"])
+        user.save()
+    
+    def after_change_password(self):
+        user = self.request.user
+        signals.password_changed.send(sender=ChangePasswordView, user=user)
         if settings.ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE:
             self.send_email(user)
         if self.messages.get("password_changed"):
@@ -398,7 +403,6 @@ class ChangePasswordView(FormView):
                 self.messages["password_changed"]["level"],
                 self.messages["password_changed"]["text"]
             )
-        signals.password_changed.send(sender=ChangePasswordForm, user=user)
     
     def get_form_kwargs(self):
         """
@@ -414,6 +418,7 @@ class ChangePasswordView(FormView):
     
     def form_valid(self, form):
         self.change_password(form)
+        self.after_change_password()
         return redirect(self.get_success_url())
     
     def get_context_data(self, **kwargs):
@@ -528,16 +533,23 @@ class PasswordResetTokenView(FormView):
         })
         return ctx
     
-    def form_valid(self, form):
+    def change_password(self, form):
         user = self.get_user()
         user.set_password(form.cleaned_data["password"])
         user.save()
+    
+    def after_change_password(self):
+        signals.password_changed.send(sender=PasswordResetTokenView, user=user)
         if self.messages.get("password_changed"):
             messages.add_message(
                 self.request,
                 self.messages["password_changed"]["level"],
                 self.messages["password_changed"]["text"]
             )
+    
+    def form_valid(self, form):
+        self.change_password(form)
+        self.after_change_password()
         return redirect(self.get_success_url())
     
     def get_redirect_field_name(self):
