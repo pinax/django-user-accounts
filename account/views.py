@@ -539,6 +539,7 @@ class PasswordResetTokenView(FormView):
         user.save()
     
     def after_change_password(self):
+        user = self.get_user()
         signals.password_changed.send(sender=PasswordResetTokenView, user=user)
         if self.messages.get("password_changed"):
             messages.add_message(
