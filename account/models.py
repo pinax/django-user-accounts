@@ -67,7 +67,7 @@ class Account(models.Model):
         return account
     
     def __unicode__(self):
-        return self.user.username
+        return unicode(self.user)
     
     def now(self):
         """
