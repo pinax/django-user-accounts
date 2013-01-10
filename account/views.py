@@ -19,7 +19,7 @@ from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTo
 from account.forms import SettingsForm
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion
-from account.utils import default_redirect, get_user_model, user_display
+from account.utils import default_redirect, get_user_model, get_username_field, user_display
 
 UserModel = get_user_model()
 
@@ -150,7 +150,10 @@ class SignupView(FormView):
         username = form.cleaned_data.get("username")
         if username is None:
             username = self.generate_username(form)
-        user.username = username
+
+        username_field = get_username_field(UserModel)
+        setattr(user, username_field, username)
+
         user.email = form.cleaned_data["email"].strip()
         password = form.cleaned_data.get("password")
         if password:
