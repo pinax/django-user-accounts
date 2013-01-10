@@ -2,10 +2,13 @@ from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 from django.utils import unittest
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 
 from account.forms import SignupForm, LoginUsernameForm
 from account.views import SignupView, LoginView
+from account.utils import get_user_model
+
+UserModel = get_user_model()
 
 
 class SignupEnabledView(SignupView):
@@ -67,7 +70,7 @@ class SignupViewTestCase(unittest.TestCase):
         request.user = AnonymousUser()
         response = SignupEnabledView.as_view()(request)
         self.assertEqual(response.status_code, 302)
-        user = User.objects.get(username="user")
+        user = UserModel.objects.get(username="user")
         self.asserEqual(user.email, "info@example.com")
     
     def test_custom_redirect_field(self):
