@@ -70,7 +70,7 @@ class SignupViewTestCase(unittest.TestCase):
         request.user = AnonymousUser()
         response = SignupEnabledView.as_view()(request)
         self.assertEqual(response.status_code, 302)
-        user = UserModel.objects.get(username="user")
+        user = UserModel.objects.get_by_natural_key("user")
         self.asserEqual(user.email, "info@example.com")
     
     def test_custom_redirect_field(self):

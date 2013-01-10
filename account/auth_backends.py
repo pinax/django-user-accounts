@@ -11,7 +11,7 @@ class UsernameAuthenticationBackend(ModelBackend):
     
     def authenticate(self, **credentials):
         try:
-            user = UserModel.objects.get(username__iexact=credentials["username"])
+            user = UserModel.objects.get_by_natural_key(credentials["username"]) # TODO: iexact?
         except UserModel.DoesNotExist:
             return None
         else:
