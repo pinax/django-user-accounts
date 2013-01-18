@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import datetime
 import operator
+import logging
+import traceback
 
 try:
     from urllib.parse import urlencode
@@ -14,6 +16,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils import timezone, translation, six
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_text
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
@@ -28,6 +31,7 @@ from account.hooks import hookset
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 
+logger = logging.getLogger(__name__)
 
 class Account(models.Model):
 
@@ -352,11 +356,19 @@ class AccountDeletion(models.Model):
         before = timezone.now() - datetime.timedelta(hours=hours_ago)
         count = 0
         for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):
-            settings.ACCOUNT_DELETION_EXPUNGE_CALLBACK(account_deletion)
-            account_deletion.date_expunged = timezone.now()
-            account_deletion.user = None
-            account_deletion.save()
-            count += 1
+            try:
+                deleted_user = force_text(account_deletion.user)
+            except:
+                deleted_user = None
+            try:
+                settings.ACCOUNT_DELETION_EXPUNGE_CALLBACK(account_deletion)
+                account_deletion.date_expunged = timezone.now()
+                account_deletion.user = None
+                account_deletion.save()
+                count += 1
+            except Exception as e:
+                logger.error("Failed to delete user %s", deleted_user)
+                logger.error("%s", traceback.format_exc())
         return count
 
     @classmethod
