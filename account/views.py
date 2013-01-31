@@ -104,6 +104,9 @@ class SignupView(FormView):
             self.signup_code.use(self.created_user)
             if self.signup_code.email and self.created_user.email == self.signup_code.email:
                 email_kwargs["verified"] = True
+                if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+                    self.created_user.is_active = True
+                    self.created_user.save()
         email_address = EmailAddress.objects.add_email(self.created_user, self.created_user.email, **email_kwargs)
         self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_kwargs["verified"]:
