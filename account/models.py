@@ -132,7 +132,7 @@ class SignupCode(models.Model):
     max_uses = models.PositiveIntegerField(default=1)
     expiry = models.DateTimeField(null=True, blank=True)
     inviter = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(blank=True, max_length=254)
     notes = models.TextField(blank=True)
     sent = models.DateTimeField(null=True, blank=True)
     created = models.DateTimeField(default=timezone.now, editable=False)
@@ -235,7 +235,7 @@ class SignupCodeResult(models.Model):
 class EmailAddress(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL)
-    email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
+    email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE, max_length=254)
     verified = models.BooleanField(default=False)
     primary = models.BooleanField(default=False)
 
@@ -341,7 +341,7 @@ class EmailConfirmation(models.Model):
 class AccountDeletion(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-    email = models.EmailField()
+    email = models.EmailField(max_length=254)
     date_requested = models.DateTimeField(default=timezone.now)
     date_expunged = models.DateTimeField(null=True, blank=True)
 
