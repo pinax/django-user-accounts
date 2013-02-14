@@ -185,18 +185,15 @@ class SignupView(FormView):
             try:
                 self.signup_code = SignupCode.check(code)
             except SignupCode.InvalidCode:
-                if not settings.ACCOUNT_OPEN_SIGNUP:
-                    return False
-                else:
-                    if self.messages.get("invalid_signup_code"):
-                        messages.add_message(
-                            self.request,
-                            self.messages["invalid_signup_code"]["level"],
-                            self.messages["invalid_signup_code"]["text"] % {
-                                "code": code
-                            }
-                        )
-                    return True
+                if self.messages.get("invalid_signup_code"):
+                    messages.add_message(
+                        self.request,
+                        self.messages["invalid_signup_code"]["level"],
+                        self.messages["invalid_signup_code"]["text"] % {
+                            "code": code
+                        }
+                    )
+                return settings.ACCOUNT_OPEN_SIGNUP
             else:
                 return True
         else:
