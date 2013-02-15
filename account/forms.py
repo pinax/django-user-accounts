@@ -131,6 +131,16 @@ class LoginEmailForm(LoginForm):
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
 
+class LoginHybridForm(LoginForm):
+    
+    username = forms.CharField(label=_("Username or Email"))
+    authentication_fail_message = _("The username or email address and/or password you specified are not correct.")
+    identifier_field = "username"
+    
+    def __init__(self, *args, **kwargs):
+        super(LoginHybridForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ["username", "password", "remember"]
+
 
 class ChangePasswordForm(forms.Form):
 
