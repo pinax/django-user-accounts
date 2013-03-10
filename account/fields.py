@@ -26,4 +26,16 @@ class TimeZoneField(six.with_metaclass(models.SubfieldBase, models.CharField)):
 
 
 if HAS_SOUTH:
-    add_introspection_rules([], ["^account\.fields\.TimeZoneField"])
+    rules = [
+      (
+        (TimeZoneField,),
+        [],
+        {
+            "max_length": ["max_length", {"default": 100}],
+            "default": ["default", {"default": ""}],
+            "choices": ["choices", {"default": settings.ACCOUNT_TIMEZONES}],
+            "blank": ["blank", {"default": True}],
+        },
+      )
+    ]
+    add_introspection_rules(rules, ["^account\.fields\.TimeZoneField"])
