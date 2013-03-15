@@ -110,7 +110,7 @@ class SignupView(FormView):
         email_address = EmailAddress.objects.add_email(self.created_user, self.created_user.email, **email_kwargs)
         self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_kwargs["verified"]:
-            email_address.send_confirmation()
+            email_address.send_confirmation(get_current_site(self.request))
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
             response_kwargs = {
                 "request": self.request,
