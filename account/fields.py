@@ -8,9 +8,12 @@ class TimeZoneField(models.CharField):
     __metaclass__ = models.SubfieldBase
     
     def __init__(self, *args, **kwargs):
+        default_tz = 'UTC'
+        if settings.TIME_ZONE:
+            default_tz = settings.TIME_ZONE
         defaults = {
             "max_length": 100,
-            "default": "",
+            "default": default_tz,
             "choices": settings.ACCOUNT_TIMEZONES,
             "blank": True,
         }
