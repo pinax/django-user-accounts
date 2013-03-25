@@ -79,6 +79,7 @@ class SignupViewTestCase(unittest.TestCase):
             "password_confirm": "password",
             "email": "someone@example.com",
         })
+        form.is_valid()
         view = SignupRedirectView(request=request, redirect_field_name="next_page")
         self.assertEqual("/profile/", view.form_valid(form)["Location"])
 
