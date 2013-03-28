@@ -65,20 +65,43 @@ class SignupViewTestCase(unittest.TestCase):
             "password_confirm": "pwd", "email": "info@example.com"}
         request = self.factory.post(reverse("account_signup"), post)
         request.user = AnonymousUser()
+
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        from django.contrib.sessions.middleware import SessionMiddleware
+        
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+        
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
         response = SignupEnabledView.as_view()(request)
         self.assertEqual(response.status_code, 302)
         user = User.objects.get(username="user")
-        self.asserEqual(user.email, "info@example.com")
+        self.assertEqual(user.email, "info@example.com")
     
     def test_custom_redirect_field(self):
         request = self.factory.request()
         request.GET = {"next_page": "/profile/"}
+        
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        from django.contrib.sessions.middleware import SessionMiddleware
+        
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+        
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
         form = SignupForm({
             "username": "test",
             "password": "password",
             "password_confirm": "password",
             "email": "someone@example.com",
         })
+        form.is_valid()
         view = SignupRedirectView(request=request, redirect_field_name="next_page")
         self.assertEqual("/profile/", view.form_valid(form)["Location"])
 
