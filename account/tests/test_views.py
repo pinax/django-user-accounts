@@ -84,6 +84,17 @@ class SignupViewTestCase(unittest.TestCase):
     def test_custom_redirect_field(self):
         request = self.factory.request()
         request.GET = {"next_page": "/profile/"}
+        
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        from django.contrib.sessions.middleware import SessionMiddleware
+        
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+        
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
         form = SignupForm({
             "username": "test",
             "password": "password",
