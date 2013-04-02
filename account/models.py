@@ -13,7 +13,7 @@ from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import User, AnonymousUser
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import get_current_site
 
 import pytz
 
@@ -197,18 +197,17 @@ class SignupCode(models.Model):
         result.save()
         signup_code_used.send(sender=result.__class__, signup_code_result=result)
     
-    def send(self, **kwargs):
+    def send(self, site, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         signup_url = u"%s://%s%s?%s" % (
             protocol,
-            unicode(current_site.domain),
+            unicode(site.domain),
             reverse("account_signup"),
             urllib.urlencode({"code": self.code})
         )
         ctx = {
             "signup_code": self,
-            "current_site": current_site,
+            "current_site": site,
             "signup_url": signup_url,
         }
         subject = render_to_string("account/email/invite_user_subject.txt", ctx)
@@ -260,10 +259,10 @@ class EmailAddress(models.Model):
         self.user.email = self.email
         self.user.save()
         return True
-    
-    def send_confirmation(self):
+
+    def send_confirmation(self, site):
         confirmation = EmailConfirmation.create(self)
-        confirmation.send()
+        confirmation.send(site)
         return confirmation
     
     def change(self, new_email, confirm=True):
@@ -315,19 +314,18 @@ class EmailConfirmation(models.Model):
             signals.email_confirmed.send(sender=self.__class__, email_address=email_address)
             return email_address
     
-    def send(self, **kwargs):
-        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
+    def send(self, site, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         activate_url = u"%s://%s%s" % (
             protocol,
-            unicode(current_site.domain),
+            unicode(site.domain),
             reverse("account_confirm_email", args=[self.key])
         )
         ctx = {
             "email_address": self.email_address,
             "user": self.email_address.user,
             "activate_url": activate_url,
-            "current_site": current_site,
+            "current_site": site,
             "key": self.key,
         }
         subject = render_to_string("account/email/email_confirmation_subject.txt", ctx)
