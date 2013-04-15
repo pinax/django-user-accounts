@@ -26,6 +26,7 @@ from account.utils import default_redirect, user_display
 class SignupView(FormView):
     
     template_name = "account/signup.html"
+    template_name_ajax = "account/ajax/signup.html"
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
     form_class = SignupForm
@@ -66,6 +67,12 @@ class SignupView(FormView):
             if self.signup_code.email:
                 initial["email"] = self.signup_code.email
         return initial
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return [self.template_name_ajax]
+        else:
+            return [self.template_name]
     
     def get_context_data(self, **kwargs):
         ctx = kwargs
@@ -210,6 +217,7 @@ class SignupView(FormView):
 class LoginView(FormView):
     
     template_name = "account/login.html"
+    template_name_ajax = "account/ajax/login.html"
     form_class = LoginUsernameForm
     form_kwargs = {}
     redirect_field_name = "next"
@@ -218,6 +226,12 @@ class LoginView(FormView):
         if self.request.user.is_authenticated():
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return [self.template_name_ajax]
+        else:
+            return [self.template_name]
     
     def get_context_data(self, **kwargs):
         ctx = kwargs
