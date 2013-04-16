@@ -28,7 +28,9 @@ class SignupView(FormView):
     template_name = "account/signup.html"
     template_name_ajax = "account/ajax/signup.html"
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
+    template_name_email_confirmation_sent_ajax = "account/ajax/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
+    template_name_signup_closed_ajax = "account/ajax/signup_closed.html"
     form_class = SignupForm
     form_kwargs = {}
     redirect_field_name = "next"
@@ -119,15 +121,7 @@ class SignupView(FormView):
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_kwargs["verified"]:
             email_address.send_confirmation()
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
-            response_kwargs = {
-                "request": self.request,
-                "template": self.template_name_email_confirmation_sent,
-                "context": {
-                    "email": self.created_user.email,
-                    "success_url": self.get_success_url(),
-                }
-            }
-            return self.response_class(**response_kwargs)
+            return self.email_confirmation_required_response()
         else:
             show_message = [
                 settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
@@ -206,10 +200,29 @@ class SignupView(FormView):
         else:
             return settings.ACCOUNT_OPEN_SIGNUP
     
-    def closed(self):
+    def email_confirmation_required_response(self):
+        if self.request.is_ajax():
+            template_name = self.template_name_email_confirmation_sent_ajax
+        else:
+            template_name = self.template_name_email_confirmation_sent
         response_kwargs = {
             "request": self.request,
-            "template": self.template_name_signup_closed,
+            "template": template_name,
+            "context": {
+                "email": self.created_user.email,
+                "success_url": self.get_success_url(),
+            }
+        }
+        return self.response_class(**response_kwargs)
+    
+    def closed(self):
+        if self.request.is_ajax():
+            template_name = self.template_name_signup_closed_ajax
+        else:
+            template_name = self.template_name_signup_closed
+        response_kwargs = {
+            "request": self.request,
+            "template": template_name,
         }
         return self.response_class(**response_kwargs)
 
