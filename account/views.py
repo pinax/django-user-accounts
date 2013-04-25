@@ -348,9 +348,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
         confirmation.confirm()
-        user = confirmation.email_address.user
-        user.is_active = True
-        user.save()
+        self.after_confirmation(confirmation)
         redirect_url = self.get_redirect_url()
         if not redirect_url:
             ctx = self.get_context_data()
@@ -390,6 +388,11 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
         else:
             return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
+    
+    def after_confirmation(self, confirmation):
+        user = confirmation.email_address.user
+        user.is_active = True
+        user.save()
 
 
 class ChangePasswordView(FormView):
