@@ -108,25 +108,17 @@ class SignupView(FormView):
         self.created_user._disable_account_creation = True
         self.created_user.save()
         self.create_account(form)
-        email_kwargs = {"primary": True, "verified": False}
-        if self.signup_code:
-            self.signup_code.use(self.created_user)
-            if self.signup_code.email and self.created_user.email == self.signup_code.email:
-                email_kwargs["verified"] = True
-                if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
-                    self.created_user.is_active = True
-                    self.created_user.save()
-        email_address = EmailAddress.objects.add_email(self.created_user, self.created_user.email, **email_kwargs)
+        email_address = self.create_email_address(form)
         self.after_signup(form)
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_kwargs["verified"]:
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
             email_address.send_confirmation()
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_address.verified:
             return self.email_confirmation_required_response()
         else:
             show_message = [
                 settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
                 self.messages.get("email_confirmation_sent"),
-                not email_kwargs["verified"]
+                not email_address.verified
             ]
             if all(show_message):
                 messages.add_message(
@@ -170,6 +162,18 @@ class SignupView(FormView):
     def generate_username(self, form):
         raise NotImplementedError("Unable to generate username by default. "
             "Override SignupView.generate_username in a subclass.")
+    
+    def create_email_address(self, form, **kwargs):
+        kwargs.setdefault("primary", True)
+        kwargs.setdefault("verified", False)
+        if self.signup_code:
+            self.signup_code.use(self.created_user)
+            if self.signup_code.email and self.created_user.email == self.signup_code.email:
+                kwargs["verified"] = True
+                if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+                    self.created_user.is_active = True
+                    self.created_user.save()
+        return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
     
     def after_signup(self, form):
         signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
