@@ -22,7 +22,7 @@ from account.conf import settings
 from account.fields import TimeZoneField
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
-from account.utils import random_token
+from account.utils import random_token, generate_random_string
 
 
 class Account(models.Model):
@@ -156,7 +156,8 @@ class SignupCode(models.Model):
             raise cls.AlreadyExists()
         expiry = timezone.now() + datetime.timedelta(hours=kwargs.get("expiry", 24))
         if not code:
-            code = random_token([email]) if email else random_token()
+            # code = random_token([email]) if email else random_token()
+            code = generate_random_string()
         params = {
             "code": code,
             "max_uses": kwargs.get("max_uses", 0),
