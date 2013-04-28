@@ -2,6 +2,7 @@ import functools
 import hashlib
 import random
 import urlparse
+import string
 
 from django.core import urlresolvers
 from django.core.exceptions import SuspiciousOperation
@@ -58,6 +59,11 @@ def random_token(extra=None, hash_func=hashlib.sha256):
         extra = []
     bits = extra + [str(random.SystemRandom().getrandbits(512))]
     return hash_func("".join(bits)).hexdigest()
+
+
+def generate_random_string():
+    chars = string.letters + string.digits
+    return "".join(random.sample(chars, 8))
 
 
 def handle_redirect_to_login(request, **kwargs):
