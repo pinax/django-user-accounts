@@ -223,7 +223,7 @@ class SignupCodeResult(models.Model):
     
     signup_code = models.ForeignKey(SignupCode)
     user = models.ForeignKey(User)
-    timestamp = models.DateTimeField(default=datetime.datetime.now)
+    timestamp = models.DateTimeField(default=timezone.now)
     
     def save(self, **kwargs):
         super(SignupCodeResult, self).save(**kwargs)
