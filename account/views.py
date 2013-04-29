@@ -28,7 +28,9 @@ class SignupView(FormView):
     template_name = "account/signup.html"
     template_name_ajax = "account/ajax/signup.html"
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
+    template_name_email_confirmation_sent_ajax = "account/ajax/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
+    template_name_signup_closed_ajax = "account/ajax/signup_closed.html"
     form_class = SignupForm
     form_kwargs = {}
     redirect_field_name = "next"
@@ -106,33 +108,17 @@ class SignupView(FormView):
         self.created_user._disable_account_creation = True
         self.created_user.save()
         self.create_account(form)
-        email_kwargs = {"primary": True, "verified": False}
-        if self.signup_code:
-            self.signup_code.use(self.created_user)
-            if self.signup_code.email and self.created_user.email == self.signup_code.email:
-                email_kwargs["verified"] = True
-                if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
-                    self.created_user.is_active = True
-                    self.created_user.save()
-        email_address = EmailAddress.objects.add_email(self.created_user, self.created_user.email, **email_kwargs)
+        email_address = self.create_email_address(form)
         self.after_signup(form)
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_kwargs["verified"]:
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
             email_address.send_confirmation()
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_kwargs["verified"]:
-            response_kwargs = {
-                "request": self.request,
-                "template": self.template_name_email_confirmation_sent,
-                "context": {
-                    "email": self.created_user.email,
-                    "success_url": self.get_success_url(),
-                }
-            }
-            return self.response_class(**response_kwargs)
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_address.verified:
+            return self.email_confirmation_required_response()
         else:
             show_message = [
                 settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
                 self.messages.get("email_confirmation_sent"),
-                not email_kwargs["verified"]
+                not email_address.verified
             ]
             if all(show_message):
                 messages.add_message(
@@ -177,6 +163,18 @@ class SignupView(FormView):
         raise NotImplementedError("Unable to generate username by default. "
             "Override SignupView.generate_username in a subclass.")
     
+    def create_email_address(self, form, **kwargs):
+        kwargs.setdefault("primary", True)
+        kwargs.setdefault("verified", False)
+        if self.signup_code:
+            self.signup_code.use(self.created_user)
+            if self.signup_code.email and self.created_user.email == self.signup_code.email:
+                kwargs["verified"] = True
+                if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
+                    self.created_user.is_active = True
+                    self.created_user.save()
+        return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
+    
     def after_signup(self, form):
         signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
     
@@ -206,10 +204,29 @@ class SignupView(FormView):
         else:
             return settings.ACCOUNT_OPEN_SIGNUP
     
-    def closed(self):
+    def email_confirmation_required_response(self):
+        if self.request.is_ajax():
+            template_name = self.template_name_email_confirmation_sent_ajax
+        else:
+            template_name = self.template_name_email_confirmation_sent
         response_kwargs = {
             "request": self.request,
-            "template": self.template_name_signup_closed,
+            "template": template_name,
+            "context": {
+                "email": self.created_user.email,
+                "success_url": self.get_success_url(),
+            }
+        }
+        return self.response_class(**response_kwargs)
+    
+    def closed(self):
+        if self.request.is_ajax():
+            template_name = self.template_name_signup_closed_ajax
+        else:
+            template_name = self.template_name_signup_closed
+        response_kwargs = {
+            "request": self.request,
+            "template": template_name,
         }
         return self.response_class(**response_kwargs)
 
@@ -335,9 +352,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
         confirmation.confirm()
-        user = confirmation.email_address.user
-        user.is_active = True
-        user.save()
+        self.after_confirmation(confirmation)
         redirect_url = self.get_redirect_url()
         if not redirect_url:
             ctx = self.get_context_data()
@@ -377,6 +392,11 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
         else:
             return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
+    
+    def after_confirmation(self, confirmation):
+        user = confirmation.email_address.user
+        user.is_active = True
+        user.save()
 
 
 class ChangePasswordView(FormView):
