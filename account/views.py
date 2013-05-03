@@ -101,14 +101,15 @@ class SignupView(FormView):
     
     def form_valid(self, form):
         self.created_user = self.create_user(form, commit=False)
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
-            self.created_user.is_active = False
         # prevent User post_save signal from creating an Account instance
         # we want to handle that ourself.
         self.created_user._disable_account_creation = True
         self.created_user.save()
-        self.create_account(form)
         email_address = self.create_email_address(form)
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_address.verified:
+            self.created_user.is_active = False
+            self.created_user.save()
+        self.create_account(form)
         self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
             email_address.send_confirmation()
@@ -168,11 +169,7 @@ class SignupView(FormView):
         kwargs.setdefault("verified", False)
         if self.signup_code:
             self.signup_code.use(self.created_user)
-            if self.signup_code.email and self.created_user.email == self.signup_code.email:
-                kwargs["verified"] = True
-                if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED:
-                    self.created_user.is_active = True
-                    self.created_user.save()
+            kwargs["verified"] = self.signup_code.email and self.created_user.email == self.signup_code.email
         return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
     
     def after_signup(self, form):
