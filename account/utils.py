@@ -17,7 +17,9 @@ def default_redirect(request, fallback_url, **kwargs):
         # try the session if available
         if hasattr(request, "session"):
             session_key_value = kwargs.get("session_key_value", "redirect_to")
-            next_url = request.session.get(session_key_value)
+            if session_key_value in request.session:
+                next_url = request.session[session_key_value]
+                del request.session[session_key_value]
     is_safe = functools.partial(
         ensure_safe_url,
         allowed_protocols=kwargs.get("allowed_protocols"),
