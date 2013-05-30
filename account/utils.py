@@ -25,12 +25,14 @@ def default_redirect(request, fallback_url, **kwargs):
         allowed_protocols=kwargs.get("allowed_protocols"),
         allowed_host=request.get_host()
     )
-    redirect_to = next_url if next_url and is_safe(next_url) else fallback_url
-    # perform one last check to ensure the URL is safe to redirect to. if it
-    # is not then we should bail here as it is likely developer error and
-    # they should be notified
-    is_safe(redirect_to, raise_on_fail=True)
-    return redirect_to
+    if next_url and is_safe(next_url):
+        return next_url
+    else:
+        # assert the fallback URL is safe to return to caller. if it is
+        # determined unsafe then raise an exception as the fallback value comes
+        # from the a source the developer choose.
+        is_safe(fallback_url, raise_on_fail=True)
+        return fallback_url
 
 
 def user_display(user):
