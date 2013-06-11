@@ -26,7 +26,7 @@ Customizing the sign up process
 ===============================
 
 In many cases you need to tweak the sign up process to do some domain specific
-tasks. Perhaps you need to create a profile for the new user or something else.
+tasks. Perhaps you need to update a profile for the new user or something else.
 The built-in ``SignupView`` has hooks to enable just about any sort of
 customization during sign up. Here's an example of a custom ``SignupView``
 defined in your project::
@@ -40,10 +40,28 @@ defined in your project::
             self.create_profile(form)
             super(SignupView, self).after_signup(form)
         
-        def create_profile(self, form):
+        def update_profile(self, form):
             profile = self.created_user.get_profile()
             profile.some_attr = "some value"
             profile.save()
+
+
+This example assumes you had a receiver hooked up to the `post_save` signal for
+the sender, `User` like so::
+
+    from django.dispatch import receiver
+    from django.db.models.signals import post_save
+    
+    from django.contrib.auth.models import User
+    
+    from mysite.profiles.models import UserProfile
+    
+    
+    @receiver(post_save, sender=User)
+    def handle_user_save(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
+
 
 You can define your own form class to add fields to the sign up process::
 
