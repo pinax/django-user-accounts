@@ -37,7 +37,7 @@ defined in your project::
     class SignupView(account.views.SignupView):
         
         def after_signup(self, form):
-            self.create_profile(form)
+            self.update_profile(form)
             super(SignupView, self).after_signup(form)
         
         def update_profile(self, form):
