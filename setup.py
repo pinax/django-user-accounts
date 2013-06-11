@@ -14,8 +14,8 @@ setup(
     url = "http://github.com/pinax/django-user-accounts",
     packages = find_packages(),
     install_requires = [
-        "django-appconf==0.5",
-        "pytz==2012j"
+        "django-appconf==0.6",
+        "pytz==2013b"
     ],
     classifiers = [
         "Development Status :: 4 - Beta",
