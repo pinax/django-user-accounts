@@ -326,6 +326,15 @@ class LogoutView(TemplateResponseMixin, View):
         kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
 
+
+class LogoutOneClickView(LogoutView):
+
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated():
+            auth.logout(self.request)
+        return redirect(self.get_redirect_url())
+
+
 class ConfirmEmailView(TemplateResponseMixin, View):
     
     messages = {
