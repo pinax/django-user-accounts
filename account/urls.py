@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from account.views import SignupView, LoginView, LogoutView, DeleteView
+from account.views import SignupView, LoginView, LogoutView, LogoutOneClickView, DeleteView
 from account.views import ConfirmEmailView
 from account.views import ChangePasswordView, PasswordResetView, PasswordResetTokenView
 from account.views import SettingsView
@@ -10,6 +10,7 @@ urlpatterns = patterns("",
     url(r"^signup/$", SignupView.as_view(), name="account_signup"),
     url(r"^login/$", LoginView.as_view(), name="account_login"),
     url(r"^logout/$", LogoutView.as_view(), name="account_logout"),
+    url(r"^logout_now/$", LogoutOneClickView.as_view(), name="account_logout_oneclick"),
     url(r"^confirm_email/(?P<key>\w+)/$", ConfirmEmailView.as_view(), name="account_confirm_email"),
     url(r"^password/$", ChangePasswordView.as_view(), name="account_password"),
     url(r"^password/reset/$", PasswordResetView.as_view(), name="account_password_reset"),
