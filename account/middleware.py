@@ -1,9 +1,13 @@
+import logging
+
 from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
 
 from account.conf import settings
 from account.models import Account
 
+logger = logging.getLogger(__name__)
+TIMEZONE = getattr(settings, 'TIME_ZONE', "UTC")
 
 class LocaleMiddleware(object):
     """
@@ -39,9 +43,17 @@ class TimezoneMiddleware(object):
     This middleware sets the timezone used to display dates in
     templates to the user's timezone.
     """
-    
+
     def process_request(self, request):
-        account = getattr(request.user, "account", None)
-        if account:
-            tz = settings.TIME_ZONE if not account.timezone else account.timezone
-            timezone.activate(tz)
+        try:
+            account = getattr(request.user, "account", None)
+        except Account.DoesNotExist:
+            pass
+        else:
+            if account and account.timezone:
+                try:
+                    timezone.activate(account.timezone)
+                except UnknownTimeZoneError as e:
+                    logger.warning(e)
+                    logger.warning("Resetting timezone to default")
+                    account.timezone = TIMEZONE
