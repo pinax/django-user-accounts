@@ -3,6 +3,7 @@ import hashlib
 import random
 import urlparse
 
+import django
 from django.core import urlresolvers
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
@@ -85,3 +86,16 @@ def handle_redirect_to_login(request, **kwargs):
         querystring[redirect_field_name] = next_url
         url_bits[4] = querystring.urlencode(safe="/")
     return HttpResponseRedirect(urlparse.urlunparse(url_bits))
+
+
+def get_user_model():
+    if django.VERSION[:2] >= (1, 5):
+        from django.contrib.auth import get_user_model
+        return get_user_model()
+    else:
+        from django.contrib.auth.models import User
+        return User
+
+
+def get_username_field(UserModel):
+    return getattr(UserModel, "USERNAME_FIELD", "username")

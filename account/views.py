@@ -9,7 +9,6 @@ from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
-from django.contrib.auth.models import User
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 
@@ -20,7 +19,9 @@ from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTo
 from account.forms import SettingsForm
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion
-from account.utils import default_redirect, user_display
+from account.utils import default_redirect, get_user_model, get_username_field, user_display
+
+UserModel = get_user_model()
 
 
 class SignupView(FormView):
@@ -142,11 +143,14 @@ class SignupView(FormView):
         return self.redirect_field_name
     
     def create_user(self, form, commit=True, **kwargs):
-        user = User(**kwargs)
+        user = UserModel(**kwargs)
         username = form.cleaned_data.get("username")
         if username is None:
             username = self.generate_username(form)
-        user.username = username
+
+        username_field = get_username_field(UserModel)
+        setattr(user, username_field, username)
+
         user.email = form.cleaned_data["email"].strip()
         password = form.cleaned_data.get("password")
         if password:
@@ -509,7 +513,7 @@ class PasswordResetView(FormView):
     def send_email(self, email):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         current_site = get_current_site(self.request)
-        for user in User.objects.filter(email__iexact=email):
+        for user in UserModel.objects.filter(email__iexact=email):
             uid = int_to_base36(user.id)
             token = self.make_token(user)
             password_reset_url = u"%s://%s%s" % (
@@ -598,7 +602,7 @@ class PasswordResetTokenView(FormView):
             uid_int = base36_to_int(self.kwargs["uidb36"])
         except ValueError:
             raise Http404()
-        return get_object_or_404(User, id=uid_int)
+        return get_object_or_404(UserModel, id=uid_int)
     
     def check_token(self, user, token):
         return self.token_generator.check_token(user, token)

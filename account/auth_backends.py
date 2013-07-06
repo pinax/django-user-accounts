@@ -1,17 +1,18 @@
 from django.db.models import Q
 
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
 
 from account.models import EmailAddress
+from account.utils import get_user_model
 
+UserModel = get_user_model()
 
 class UsernameAuthenticationBackend(ModelBackend):
     
     def authenticate(self, **credentials):
         try:
-            user = User.objects.get(username__iexact=credentials["username"])
-        except User.DoesNotExist:
+            user = UserModel.objects.get_by_natural_key(credentials["username"]) # TODO: iexact?
+        except UserModel.DoesNotExist:
             return None
         else:
             if user.check_password(credentials["password"]):
