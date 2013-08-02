@@ -37,11 +37,11 @@ class SignupView(FormView):
     messages = {
         "email_confirmation_sent": {
             "level": messages.INFO,
-            "text": _("Confirmation email sent to %(email)s.")
+            "text": _("Confirmation email sent to {email}.")
         },
         "invalid_signup_code": {
             "level": messages.WARNING,
-            "text": _("The code %(code)s is invalid.")
+            "text": _("The code {code} is invalid.")
         }
     }
     
@@ -125,9 +125,9 @@ class SignupView(FormView):
                 messages.add_message(
                     self.request,
                     self.messages["email_confirmation_sent"]["level"],
-                    self.messages["email_confirmation_sent"]["text"] % {
+                    self.messages["email_confirmation_sent"]["text"].format(**{
                         "email": form.cleaned_data["email"]
-                    }
+                    })
                 )
             self.login_user()
         return redirect(self.get_success_url())
@@ -191,9 +191,9 @@ class SignupView(FormView):
                     messages.add_message(
                         self.request,
                         self.messages["invalid_signup_code"]["level"],
-                        self.messages["invalid_signup_code"]["text"] % {
+                        self.messages["invalid_signup_code"]["text"].format(**{
                             "code": code
-                        }
+                        })
                     )
                 return settings.ACCOUNT_OPEN_SIGNUP
             else:
@@ -331,7 +331,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
     messages = {
         "email_confirmed": {
             "level": messages.SUCCESS,
-            "text": _("You have confirmed %(email)s.")
+            "text": _("You have confirmed {email}.")
         }
     }
     
@@ -358,9 +358,9 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             messages.add_message(
                 self.request,
                 self.messages["email_confirmed"]["level"],
-                self.messages["email_confirmed"]["text"] % {
+                self.messages["email_confirmed"]["text"].format(**{
                     "email": confirmation.email_address.email
-                }
+                })
             )
         return redirect(redirect_url)
     
@@ -512,7 +512,7 @@ class PasswordResetView(FormView):
         for user in User.objects.filter(email__iexact=email):
             uid = int_to_base36(user.id)
             token = self.make_token(user)
-            password_reset_url = u"%s://%s%s" % (
+            password_reset_url = u"{0}://{1}{2}".format(
                 protocol,
                 unicode(current_site.domain),
                 reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
@@ -704,7 +704,7 @@ class DeleteView(LogoutView):
     messages = {
         "account_deleted": {
             "level": messages.WARNING,
-            "text": _("Your account is now inactive and your data will be expunged in the next %(expunge_hours)d hours.")
+            "text": _("Your account is now inactive and your data will be expunged in the next {expunge_hours} hours.")
         },
     }
     
@@ -714,9 +714,9 @@ class DeleteView(LogoutView):
         messages.add_message(
             self.request,
             self.messages["account_deleted"]["level"],
-            self.messages["account_deleted"]["text"] % {
+            self.messages["account_deleted"]["text"].format(**{
                 "expunge_hours": settings.ACCOUNT_DELETION_EXPUNGE_HOURS,
-            }
+            })
         )
         return redirect(self.get_redirect_url())
     

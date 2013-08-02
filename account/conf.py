@@ -14,11 +14,11 @@ def load_path_attr(path):
     try:
         mod = importlib.import_module(module)
     except ImportError as e:
-        raise ImproperlyConfigured("Error importing %s: '%s'" % (module, e))
+        raise ImproperlyConfigured("Error importing {0}: '{1}'".format(module, e))
     try:
         attr = getattr(mod, attr)
     except AttributeError:
-        raise ImproperlyConfigured("Module '%s' does not define a '%s'" % (module, attr))
+        raise ImproperlyConfigured("Module '{0}' does not define a '{1}'".format(module, attr))
     return attr
 
 

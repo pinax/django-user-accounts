@@ -9,4 +9,4 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         count = AccountDeletion.expunge()
-        print "%d expunged." % count
+        print "{0} expunged.".format(count)

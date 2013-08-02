@@ -48,11 +48,11 @@ def ensure_safe_url(url, allowed_protocols=None, allowed_host=None, raise_on_fai
     safe = True
     if parsed.scheme and parsed.scheme not in allowed_protocols:
         if raise_on_fail:
-            raise SuspiciousOperation("Unsafe redirect to URL with protocol '%s'" % parsed.scheme)
+            raise SuspiciousOperation("Unsafe redirect to URL with protocol '{0}'".format(parsed.scheme))
         safe = False
     if allowed_host and parsed.netloc and parsed.netloc != allowed_host:
         if raise_on_fail:
-            raise SuspiciousOperation("Unsafe redirect to URL not matching host '%s'" % allowed_host)
+            raise SuspiciousOperation("Unsafe redirect to URL not matching host '{0}'".format(allowed_host))
         safe = False
     return safe
 

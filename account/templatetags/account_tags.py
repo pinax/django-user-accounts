@@ -46,6 +46,6 @@ def do_user_display(parser, token):
         user = bits[1]
         as_var = bits[3]
     else:
-        raise template.TemplateSyntaxError("'%s' takes either two or four arguments" % bits[0])
+        raise template.TemplateSyntaxError("'{0}' takes either two or four arguments".format(bits[0]))
     
     return UserDisplayNode(user, as_var)

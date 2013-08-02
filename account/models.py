@@ -136,7 +136,7 @@ class SignupCode(models.Model):
     
     def __unicode__(self):
         if self.email:
-            return u"%s [%s]" % (self.email, self.code)
+            return u"{0} [{1}]".format(self.email, self.code)
         else:
             return self.code
     
@@ -200,7 +200,7 @@ class SignupCode(models.Model):
     def send(self, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
-        signup_url = u"%s://%s%s?%s" % (
+        signup_url = u"{0}://{1}{2}?{3}".format(
             protocol,
             unicode(current_site.domain),
             reverse("account_signup"),
@@ -246,7 +246,7 @@ class EmailAddress(models.Model):
             unique_together = [("user", "email")]
     
     def __unicode__(self):
-        return u"%s (%s)" % (self.email, self.user)
+        return u"{0} ({1})".format(self.email, self.user)
     
     def set_as_primary(self, conditional=False):
         old_primary = EmailAddress.objects.get_primary(self.user)
@@ -294,7 +294,7 @@ class EmailConfirmation(models.Model):
         verbose_name_plural = _("email confirmations")
     
     def __unicode__(self):
-        return u"confirmation for %s" % self.email_address
+        return u"confirmation for {0}".format(self.email_address)
     
     @classmethod
     def create(cls, email_address):
@@ -318,7 +318,7 @@ class EmailConfirmation(models.Model):
     def send(self, **kwargs):
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        activate_url = u"%s://%s%s" % (
+        activate_url = u"{0}://{1}{2}".format(
             protocol,
             unicode(current_site.domain),
             reverse("account_confirm_email", args=[self.key])
