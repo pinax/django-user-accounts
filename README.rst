@@ -7,7 +7,8 @@ Provides user accounts to a Django project.
 Requirements
 ============
 
-* Django 1.4
+* Django 1.4+
+* Python 2.6+ or Python 3.3+
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
