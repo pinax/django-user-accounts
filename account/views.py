@@ -512,9 +512,9 @@ class PasswordResetView(FormView):
         for user in User.objects.filter(email__iexact=email):
             uid = int_to_base36(user.id)
             token = self.make_token(user)
-            password_reset_url = u"{0}://{1}{2}".format(
+            password_reset_url = "{0}://{1}{2}".format(
                 protocol,
-                unicode(current_site.domain),
+                current_site.domain,
                 reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
             )
             ctx = {
