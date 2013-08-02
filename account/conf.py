@@ -45,7 +45,7 @@ class AccountAppConf(AppConf):
     DELETION_MARK_CALLBACK = "account.callbacks.account_delete_mark"
     DELETION_EXPUNGE_CALLBACK = "account.callbacks.account_delete_expunge"
     DELETION_EXPUNGE_HOURS = 48
-    TIMEZONES = zip(pytz.all_timezones, pytz.all_timezones)
+    TIMEZONES = list(zip(pytz.all_timezones, pytz.all_timezones))
     LANGUAGES = [
         (code, get_language_info(code).get("name_local"))
         for code, lang in settings.LANGUAGES
