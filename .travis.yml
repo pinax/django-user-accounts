@@ -16,7 +16,7 @@ matrix:
       env: DJANGO=1.4.5
 install:
   - pip install -q Django==$DJANGO --use-mirrors
-  - pip install -q django-nose --use-mirrors
+  - pip install -q django-nose==1.2 --use-mirrors
   - pip install -e . --use-mirrors
 script:
   - python runtests.py
