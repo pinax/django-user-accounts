@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django import template
 from django.utils.html import conditional_escape
 
@@ -20,7 +22,7 @@ class UserDisplayNode(template.Node):
         
         if self.as_var:
             context[self.as_var] = display
-            return u""
+            return ""
         return conditional_escape(display)
 
 

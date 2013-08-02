@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.conf.urls import patterns, url
 
 from account.views import SignupView, LoginView, LogoutView, DeleteView

@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.http import Http404, HttpResponseForbidden
 from django.core.mail import send_mail
 from django.shortcuts import redirect, get_object_or_404
@@ -404,7 +406,7 @@ class ChangePasswordView(FormView):
     messages = {
         "password_changed": {
             "level": messages.SUCCESS,
-            "text": _(u"Password successfully changed.")
+            "text": _("Password successfully changed.")
         }
     }
     

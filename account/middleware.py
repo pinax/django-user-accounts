@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
 

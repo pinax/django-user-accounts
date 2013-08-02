@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from account.conf import settings
 from account.utils import handle_redirect_to_login
 

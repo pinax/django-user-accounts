@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import datetime
 import operator
 import urllib
@@ -136,7 +138,7 @@ class SignupCode(models.Model):
     
     def __unicode__(self):
         if self.email:
-            return u"{0} [{1}]".format(self.email, self.code)
+            return "{0} [{1}]".format(self.email, self.code)
         else:
             return self.code
     
@@ -246,7 +248,7 @@ class EmailAddress(models.Model):
             unique_together = [("user", "email")]
     
     def __unicode__(self):
-        return u"{0} ({1})".format(self.email, self.user)
+        return "{0} ({1})".format(self.email, self.user)
     
     def set_as_primary(self, conditional=False):
         old_primary = EmailAddress.objects.get_primary(self.user)
@@ -294,7 +296,7 @@ class EmailConfirmation(models.Model):
         verbose_name_plural = _("email confirmations")
     
     def __unicode__(self):
-        return u"confirmation for {0}".format(self.email_address)
+        return "confirmation for {0}".format(self.email_address)
     
     @classmethod
     def create(cls, email_address):
