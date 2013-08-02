@@ -1,3 +1,4 @@
+from __future__ import print_function
 from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
@@ -11,4 +12,4 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         count = AccountDeletion.expunge()
-        print "{0} expunged.".format(count)
+        print("{0} expunged.".format(count))
