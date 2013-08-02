@@ -686,7 +686,7 @@ class SettingsView(LoginRequiredMixin, FormView):
             fields["language"] = form.cleaned_data["language"]
         if fields:
             account = self.request.user.account
-            for k, v in fields.iteritems():
+            for k, v in fields.items():
                 setattr(account, k, v)
             account.save()
     
