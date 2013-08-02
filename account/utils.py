@@ -1,7 +1,10 @@
 import functools
 import hashlib
 import random
-import urlparse
+try:
+    from urllib.parse import urlparse, urlunparse
+except ImportError: # python 2
+    from urlparse import urlparse, urlunparse
 
 from django.core import urlresolvers
 from django.core.exceptions import SuspiciousOperation
@@ -42,7 +45,7 @@ def user_display(user):
 def ensure_safe_url(url, allowed_protocols=None, allowed_host=None, raise_on_fail=False):
     if allowed_protocols is None:
         allowed_protocols = ["http", "https"]
-    parsed = urlparse.urlparse(url)
+    parsed = urlparse(url)
     # perform security checks to ensure no malicious intent
     # (i.e., an XSS attack with a data URL)
     safe = True
@@ -79,9 +82,9 @@ def handle_redirect_to_login(request, **kwargs):
             raise
         if "/" not in login_url and "." not in login_url:
             raise
-    url_bits = list(urlparse.urlparse(login_url))
+    url_bits = list(urlparse(login_url))
     if redirect_field_name:
         querystring = QueryDict(url_bits[4], mutable=True)
         querystring[redirect_field_name] = next_url
         url_bits[4] = querystring.urlencode(safe="/")
-    return HttpResponseRedirect(urlparse.urlunparse(url_bits))
+    return HttpResponseRedirect(urlunparse(url_bits))
