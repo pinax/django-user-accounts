@@ -9,7 +9,7 @@ from account.models import EmailAddress
 
 
 class UsernameAuthenticationBackend(ModelBackend):
-    
+
     def authenticate(self, **credentials):
         try:
             user = User.objects.get(username__iexact=credentials["username"])
@@ -21,7 +21,7 @@ class UsernameAuthenticationBackend(ModelBackend):
 
 
 class EmailAuthenticationBackend(ModelBackend):
-    
+
     def authenticate(self, **credentials):
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
         try:

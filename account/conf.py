@@ -25,7 +25,7 @@ def load_path_attr(path):
 
 
 class AccountAppConf(AppConf):
-    
+
     OPEN_SIGNUP = True
     LOGIN_URL = "account_login"
     SIGNUP_REDIRECT_URL = "/"
@@ -52,9 +52,9 @@ class AccountAppConf(AppConf):
         (code, get_language_info(code).get("name_local"))
         for code, lang in settings.LANGUAGES
     ]
-    
+
     def configure_deletion_mark_callback(self, value):
         return load_path_attr(value)
-    
+
     def configure_deletion_expunge_callback(self, value):
         return load_path_attr(value)

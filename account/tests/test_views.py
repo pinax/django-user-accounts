@@ -10,16 +10,16 @@ from account.views import SignupView, LoginView
 
 
 class SignupEnabledView(SignupView):
-    
+
     def is_open(self):
         return True
 
 
 class SignupViewTestCase(TestCase):
-    
+
     def setUp(self):
         self.factory = RequestFactory()
-    
+
     def test_get(self):
         request = self.factory.get(reverse("account_signup"))
         request.user = AnonymousUser()
@@ -28,10 +28,10 @@ class SignupViewTestCase(TestCase):
 
 
 class LoginViewTestCase(TestCase):
-    
+
     def setUp(self):
         self.factory = RequestFactory()
-    
+
     def test_get(self):
         request = self.factory.get(reverse("account_login"))
         request.user = AnonymousUser()
