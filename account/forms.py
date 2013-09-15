@@ -31,7 +31,10 @@ class SignupForm(forms.Form):
         label=_("Password (again)"),
         widget=forms.PasswordInput(render_value=False)
     )
-    email = forms.EmailField(widget=forms.TextInput(), required=True)
+    email = forms.EmailField(
+        label=_("Email"),
+        widget=forms.TextInput(), required=True)
+
     code = forms.CharField(
         max_length=64,
         required=False,
