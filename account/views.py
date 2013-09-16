@@ -473,13 +473,14 @@ class ChangePasswordView(FormView):
         kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
 
+    def build_site_url(self, path):
+        return self.request.build_absolute_uri(path)
+
     def send_email(self, user):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = get_current_site(self.request)
+        
         ctx = {
             "user": user,
-            "protocol": protocol,
-            "current_site": current_site,
+            "site_url": self.build_site_url("/"),
         }
         subject = render_to_string("account/email/password_change_subject.txt", ctx)
         subject = "".join(subject.splitlines())
@@ -509,21 +510,18 @@ class PasswordResetView(FormView):
         }
         return self.response_class(**response_kwargs)
 
+    def build_site_url(self, path):
+        return self.request.build_absolute_uri(path)
+
     def send_email(self, email):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = get_current_site(self.request)
         for user in User.objects.filter(email__iexact=email):
             uid = int_to_base36(user.id)
             token = self.make_token(user)
-            password_reset_url = "{0}://{1}{2}".format(
-                protocol,
-                current_site.domain,
-                reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
-            )
             ctx = {
                 "user": user,
                 "current_site": current_site,
-                "password_reset_url": password_reset_url,
+                "password_reset_url": self.build_site_url(
+                    reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))),
             }
             subject = render_to_string("account/email/password_reset_subject.txt", ctx)
             subject = "".join(subject.splitlines())
