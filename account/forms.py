@@ -2,6 +2,11 @@ from __future__ import unicode_literals
 
 import re
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = None
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -67,8 +72,8 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(render_value=False)
     )
     remember = forms.BooleanField(
-        label = _("Remember Me"),
-        required = False
+        label=_("Remember Me"),
+        required=False
     )
     user = None
 
@@ -100,7 +105,11 @@ class LoginUsernameForm(LoginForm):
 
     def __init__(self, *args, **kwargs):
         super(LoginUsernameForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ["username", "password", "remember"]
+        field_order = ["username", "password", "remember"]
+        if not OrderedDict or "keyOrder" in self.fields:
+            self.fields.keyOrder = field_order
+        else:
+            self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
 
 
 class LoginEmailForm(LoginForm):
@@ -111,7 +120,11 @@ class LoginEmailForm(LoginForm):
 
     def __init__(self, *args, **kwargs):
         super(LoginEmailForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ["email", "password", "remember"]
+        field_order = ["email", "password", "remember"]
+        if not OrderedDict or "keyOrder" in self.fields:
+            self.fields.keyOrder = field_order
+        else:
+            self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
 
 
 class ChangePasswordForm(forms.Form):
@@ -159,12 +172,12 @@ class PasswordResetForm(forms.Form):
 class PasswordResetTokenForm(forms.Form):
 
     password = forms.CharField(
-        label = _("New Password"),
-        widget = forms.PasswordInput(render_value=False)
+        label=_("New Password"),
+        widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
-        label = _("New Password (again)"),
-        widget = forms.PasswordInput(render_value=False)
+        label=_("New Password (again)"),
+        widget=forms.PasswordInput(render_value=False)
     )
 
     def clean_password_confirm(self):
