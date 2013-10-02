@@ -4,20 +4,20 @@ import account
 
 
 setup(
-    name = "django-user-accounts",
-    version = account.__version__,
-    author = "Brian Rosner",
-    author_email = "brosner@gmail.com",
-    description = "a Django user account app",
-    long_description = open("README.rst").read(),
-    license = "MIT",
-    url = "http://github.com/pinax/django-user-accounts",
-    packages = find_packages(),
-    install_requires = [
+    name="django-user-accounts",
+    version=account.__version__,
+    author="Brian Rosner",
+    author_email="brosner@gmail.com",
+    description="a Django user account app",
+    long_description=open("README.rst").read(),
+    license="MIT",
+    url="http://github.com/pinax/django-user-accounts",
+    packages=find_packages(),
+    install_requires=[
         "django-appconf==0.6",
-        "pytz==2013b"
+        "pytz==2013.7"
     ],
-    classifiers = [
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
