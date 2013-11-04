@@ -43,7 +43,10 @@ class TimezoneMiddleware(object):
     """
 
     def process_request(self, request):
-        account = getattr(request.user, "account", None)
+        try:
+            account = getattr(request.user, "account", None)
+        except Account.DoesNotExist:
+            account = None
         if account:
             tz = settings.TIME_ZONE if not account.timezone else account.timezone
             timezone.activate(tz)
