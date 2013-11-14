@@ -1,0 +1,154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: django-user-accounts\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-13 13:38-0600\n"
+"PO-Revision-Date: 2012-02-13 18:11+0000\n"
+"Last-Translator: James Pic <jamespic@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: forms.py:19 forms.py:95
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: forms.py:25 forms.py:64
+msgid "Password"
+msgstr "Mot de passe"
+
+#: forms.py:29
+msgid "Password (again)"
+msgstr "Mot de passe (à nouveau)"
+
+#: forms.py:41
+msgid "Usernames can only contain letters, numbers and underscores."
+msgstr "Les noms d'utilisateur ne doivent contenir que des lettres, numéros et tirets bas."
+
+#: forms.py:45
+msgid "This username is already taken. Please choose another."
+msgstr "Ce nom d'utilisateur est déjà pris. Merci d'en choisir un autre."
+
+#: forms.py:52 forms.py:197
+msgid "A user is registered with this email address."
+msgstr "Un utilisateur est déjà enregistré avec cette addresse email."
+
+#: forms.py:57 forms.py:142 forms.py:171
+msgid "You must type the same password each time."
+msgstr "Vous devez saisir le même mot de passe à chaque fois."
+
+#: forms.py:68
+msgid "Remember Me"
+msgstr "Se souvenir de moi"
+
+#: forms.py:81
+msgid "This account is inactive."
+msgstr "Ce compte est inactif."
+
+#: forms.py:96
+msgid "The username and/or password you specified are not correct."
+msgstr "Le nom d'utilisateur et/ou mot de passe que vous avez spécifié ne sont pas corrects."
+
+#: forms.py:106 forms.py:148 forms.py:177
+msgid "Email"
+msgstr "Courriel"
+
+#: forms.py:107
+msgid "The email address and/or password you specified are not correct."
+msgstr "L'addresse email et/ou mot de passe que vous avez spécifié ne sont pas correct."
+
+#: forms.py:118
+msgid "Current Password"
+msgstr "Mot de passe actuel"
+
+#: forms.py:122 forms.py:160
+msgid "New Password"
+msgstr "Nouveau mot de passe"
+
+#: forms.py:126 forms.py:164
+msgid "New Password (again)"
+msgstr "Nouveau mot de passe (à nouveau)"
+
+#: forms.py:136
+msgid "Please type your current password."
+msgstr "Merci de saisir votre mot de passe actuel."
+
+#: forms.py:153
+msgid "Email address can not be found."
+msgstr "Nous n'avons pas trouvé cette addresse de courriel."
+
+#: forms.py:179
+msgid "Timezone"
+msgstr "Fuseau horaire"
+
+#: forms.py:185
+msgid "Language"
+msgstr "Langue"
+
+#: models.py:30
+msgid "user"
+msgstr "utilisateur"
+
+#: models.py:31
+msgid "timezone"
+msgstr "fuseau horaire"
+
+#: models.py:32
+msgid "language"
+msgstr "langue"
+
+#: models.py:243
+msgid "email address"
+msgstr "courriel"
+
+#: models.py:244
+msgid "email addresses"
+msgstr "courriels"
+
+#: models.py:293
+msgid "email confirmation"
+msgstr "confirmation de courriel"
+
+#: models.py:294
+msgid "email confirmations"
+msgstr "confirmations de courriel"
+
+#: views.py:37
+#, python-format
+msgid "Confirmation email sent to %(email)s."
+msgstr "Courriel de confirmation envoyé à %(email)s."
+
+#: views.py:41
+#, python-format
+msgid "The code %(code)s is invalid."
+msgstr "Le code %(code)s est invalide."
+
+#: views.py:309
+#, python-format
+msgid "You have confirmed %(email)s."
+msgstr "Vous avez confirmé %(email)s."
+
+#: views.py:379 views.py:516
+msgid "Password successfully changed."
+msgstr "Mot de passe changé avec succès."
+
+#: views.py:595
+msgid "Account settings updated."
+msgstr "Paramètres du compte mis à jour."
+
+#: views.py:679
+#, python-format
+msgid ""
+"Your account is now inactive and your data will be expunged in the next "
+"%(expunge_hours)d hours."
+msgstr ""
+"Votre compte est maintenant inactif et vos données seront éffacées dans les prochaines"
+"%(expunge_hours)d heures."
