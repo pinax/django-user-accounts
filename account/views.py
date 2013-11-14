@@ -20,6 +20,7 @@ from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
 from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
 from account.forms import SettingsForm
+from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion
 from account.utils import default_redirect, user_display
@@ -482,10 +483,7 @@ class ChangePasswordView(FormView):
             "protocol": protocol,
             "current_site": current_site,
         }
-        subject = render_to_string("account/email/password_change_subject.txt", ctx)
-        subject = "".join(subject.splitlines())
-        message = render_to_string("account/email/password_change.txt", ctx)
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        hookset.send_password_change_email([user.email], ctx)
 
 
 class PasswordResetView(FormView):
@@ -526,10 +524,7 @@ class PasswordResetView(FormView):
                 "current_site": current_site,
                 "password_reset_url": password_reset_url,
             }
-            subject = render_to_string("account/email/password_reset_subject.txt", ctx)
-            subject = "".join(subject.splitlines())
-            message = render_to_string("account/email/password_reset.txt", ctx)
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+            hookset.send_password_reset_email([user.email], ctx)
 
     def make_token(self, user):
         return self.token_generator.make_token(user)
