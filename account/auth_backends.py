@@ -13,12 +13,14 @@ class UsernameAuthenticationBackend(ModelBackend):
     def authenticate(self, **credentials):
         try:
             user = User.objects.get(username__iexact=credentials["username"])
-        except User.DoesNotExist:
+        except (User.DoesNotExist, KeyError):
             return None
         else:
-            if user.check_password(credentials["password"]):
-                return user
-
+            try:
+                if user.check_password(credentials["password"]):
+                    return user
+            except KeyError:
+               return None 
 
 class EmailAuthenticationBackend(ModelBackend):
 
@@ -26,9 +28,12 @@ class EmailAuthenticationBackend(ModelBackend):
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
         try:
             email_address = qs.get(email__iexact=credentials["username"])
-        except EmailAddress.DoesNotExist:
+        except (EmailAddress.DoesNotExist, KeyError):
             return None
         else:
             user = email_address.user
-            if user.check_password(credentials["password"]):
-                return user
+            try:
+                if user.check_password(credentials["password"]):
+                    return user
+            except KeyError:
+                return None
