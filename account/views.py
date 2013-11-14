@@ -331,6 +331,7 @@ class LogoutView(TemplateResponseMixin, View):
 
 class ConfirmEmailView(TemplateResponseMixin, View):
 
+    http_method_names = ["get", "post"]
     messages = {
         "email_confirmed": {
             "level": messages.SUCCESS,
