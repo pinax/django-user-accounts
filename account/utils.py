@@ -33,6 +33,13 @@ def default_redirect(request, fallback_url, **kwargs):
     if next_url and is_safe(next_url):
         return next_url
     else:
+        try:
+            fallback_url = urlresolvers.reverse(fallback_url)
+        except urlresolvers.NoReverseMatch:
+            if callable(fallback_url):
+                raise
+            if "/" not in fallback_url and "." not in fallback_url:
+                raise
         # assert the fallback URL is safe to return to caller. if it is
         # determined unsafe then raise an exception as the fallback value comes
         # from the a source the developer choose.
