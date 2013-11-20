@@ -116,7 +116,7 @@ class AnonymousAccount(object):
             self.language = translation.get_language_from_request(request, check_path=True)
 
     def __unicode__(self):
-        return "AnonymousAccount"
+        return u"AnonymousAccount"
 
 
 class SignupCode(models.Model):
@@ -139,7 +139,7 @@ class SignupCode(models.Model):
 
     def __unicode__(self):
         if self.email:
-            return "{0} [{1}]".format(self.email, self.code)
+            return u"{0} [{1}]".format(self.email, self.code)
         else:
             return self.code
 
@@ -247,7 +247,7 @@ class EmailAddress(models.Model):
             unique_together = [("user", "email")]
 
     def __unicode__(self):
-        return "{0} ({1})".format(self.email, self.user)
+        return u"{0} ({1})".format(self.email, self.user)
 
     def set_as_primary(self, conditional=False):
         old_primary = EmailAddress.objects.get_primary(self.user)
@@ -295,7 +295,7 @@ class EmailConfirmation(models.Model):
         verbose_name_plural = _("email confirmations")
 
     def __unicode__(self):
-        return "confirmation for {0}".format(self.email_address)
+        return u"confirmation for {0}".format(self.email_address)
 
     @classmethod
     def create(cls, email_address):
