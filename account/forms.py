@@ -14,7 +14,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 
 from account.conf import settings
-from account.models import EmailAddress
+from account.models import EmailAddress, SignupCode
 
 
 alnum_re = re.compile(r"^\w+$")
@@ -213,3 +213,9 @@ class SettingsForm(forms.Form):
         if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
             return value
         raise forms.ValidationError(_("A user is registered with this email address."))
+
+
+class SignupCodeForm(forms.ModelForm):
+    class Meta:
+        model = SignupCode
+        fields = ('code', 'max_uses', 'email', 'notes',)
