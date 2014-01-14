@@ -268,9 +268,9 @@ class EmailAddress(models.Model):
         self.user.save()
         return True
 
-    def send_confirmation(self):
+    def send_confirmation(self, **kwargs):
         confirmation = EmailConfirmation.create(self)
-        confirmation.send()
+        confirmation.send(**kwargs)
         return confirmation
 
     def change(self, new_email, confirm=True):

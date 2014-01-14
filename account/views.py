@@ -115,7 +115,7 @@ class SignupView(FormView):
         self.create_account(form)
         self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
-            email_address.send_confirmation()
+            self.send_email_confirmation(email_address)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_address.verified:
             return self.email_confirmation_required_response()
         else:
@@ -174,6 +174,9 @@ class SignupView(FormView):
             self.signup_code.use(self.created_user)
             kwargs["verified"] = self.signup_code.email and self.created_user.email == self.signup_code.email
         return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
+
+    def send_email_confirmation(self, email_address):
+        email_address.send_confirmation(site=get_current_site(self.request))
 
     def after_signup(self, form):
         signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
