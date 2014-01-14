@@ -26,7 +26,6 @@ from account.fields import TimeZoneField
 from account.hooks import hookset
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
-from account.utils import random_token
 
 
 class Account(models.Model):
@@ -165,7 +164,7 @@ class SignupCode(models.Model):
             raise cls.AlreadyExists()
         expiry = timezone.now() + datetime.timedelta(hours=kwargs.get("expiry", 24))
         if not code:
-            code = random_token([email]) if email else random_token()
+            code = hookset.generate_signup_code_token(email)
         params = {
             "code": code,
             "max_uses": kwargs.get("max_uses", 0),
@@ -305,7 +304,7 @@ class EmailConfirmation(models.Model):
 
     @classmethod
     def create(cls, email_address):
-        key = random_token([email_address.email])
+        key = hookset.generate_email_confirmation_token(email_address.email)
         return cls._default_manager.create(email_address=email_address, key=key)
 
     def key_expired(self):

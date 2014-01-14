@@ -1,8 +1,6 @@
 from __future__ import unicode_literals
 
 import functools
-import hashlib
-import random
 try:
     from urllib.parse import urlparse, urlunparse
 except ImportError: # python 2
@@ -67,13 +65,6 @@ def ensure_safe_url(url, allowed_protocols=None, allowed_host=None, raise_on_fai
             raise SuspiciousOperation("Unsafe redirect to URL not matching host '{0}'".format(allowed_host))
         safe = False
     return safe
-
-
-def random_token(extra=None, hash_func=hashlib.sha256):
-    if extra is None:
-        extra = []
-    bits = extra + [str(random.SystemRandom().getrandbits(512))]
-    return hash_func("".join(bits).encode("utf-8")).hexdigest()
 
 
 def handle_redirect_to_login(request, **kwargs):
