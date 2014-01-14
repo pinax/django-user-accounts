@@ -14,12 +14,13 @@ from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
 
 import pytz
 
 from account import signals
+from account.compat import AUTH_USER_MODEL, get_user_model
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
@@ -30,7 +31,7 @@ from account.utils import random_token
 
 class Account(models.Model):
 
-    user = models.OneToOneField(User, related_name="account", verbose_name=_("user"))
+    user = models.OneToOneField(AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(_("language"),
         max_length=10,
@@ -68,7 +69,7 @@ class Account(models.Model):
         return account
 
     def __unicode__(self):
-        return self.user.username
+        return unicode(self.user)
 
     def now(self):
         """
@@ -88,8 +89,13 @@ class Account(models.Model):
             value = pytz.timezone(settings.TIME_ZONE).localize(value)
         return value.astimezone(pytz.timezone(timezone))
 
-
-@receiver(post_save, sender=User)
+#
+# The call to get_user_model in global scope could lead to a circular import
+# when the app cache is not fully initialized in some cases. It is rare, but
+# it has happened. If you are debugging this problem and determine this line
+# of code as being problematic, contact the developers right away.
+#
+@receiver(post_save, sender=get_user_model())
 def user_post_save(sender, **kwargs):
     """
     After User.save is called we check to see if it was a created user. If so,
@@ -130,7 +136,7 @@ class SignupCode(models.Model):
     code = models.CharField(max_length=64, unique=True)
     max_uses = models.PositiveIntegerField(default=0)
     expiry = models.DateTimeField(null=True, blank=True)
-    inviter = models.ForeignKey(User, null=True, blank=True)
+    inviter = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True)
     email = models.EmailField(blank=True)
     notes = models.TextField(blank=True)
     sent = models.DateTimeField(null=True, blank=True)
@@ -223,7 +229,7 @@ class SignupCode(models.Model):
 class SignupCodeResult(models.Model):
 
     signup_code = models.ForeignKey(SignupCode)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(AUTH_USER_MODEL)
     timestamp = models.DateTimeField(default=timezone.now)
 
     def save(self, **kwargs):
@@ -233,7 +239,7 @@ class SignupCodeResult(models.Model):
 
 class EmailAddress(models.Model):
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(AUTH_USER_MODEL)
     email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(default=False)
     primary = models.BooleanField(default=False)
@@ -339,7 +345,7 @@ class EmailConfirmation(models.Model):
 
 class AccountDeletion(models.Model):
 
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.EmailField()
     date_requested = models.DateTimeField(default=timezone.now)
     date_expunged = models.DateTimeField(null=True, blank=True)

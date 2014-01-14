@@ -11,8 +11,8 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import auth
-from django.contrib.auth.models import User
 
+from account.compat import get_user_model, get_user_lookup_kwargs
 from account.conf import settings
 from account.models import EmailAddress
 
@@ -49,7 +49,11 @@ class SignupForm(forms.Form):
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
             raise forms.ValidationError(_("Usernames can only contain letters, numbers and underscores."))
-        qs = User.objects.filter(username__iexact=self.cleaned_data["username"])
+        User = get_user_model()
+        lookup_kwargs = get_user_lookup_kwargs({
+            "{username}__iexact": self.cleaned_data["username"]
+        })
+        qs = User.objects.filter(**lookup_kwargs)
         if not qs.exists():
             return self.cleaned_data["username"]
         raise forms.ValidationError(_("This username is already taken. Please choose another."))

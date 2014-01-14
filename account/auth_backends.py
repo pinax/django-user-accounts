@@ -3,16 +3,20 @@ from __future__ import unicode_literals
 from django.db.models import Q
 
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
 
+from account.compat import get_user_model, get_user_lookup_kwargs
 from account.models import EmailAddress
 
 
 class UsernameAuthenticationBackend(ModelBackend):
 
     def authenticate(self, **credentials):
+        User = get_user_model()
+        lookup_kwargs = get_user_lookup_kwargs({
+            "{username}__iexact": credentials["username"]
+        })
         try:
-            user = User.objects.get(username__iexact=credentials["username"])
+            user = User.objects.get(**lookup_kwargs)
         except (User.DoesNotExist, KeyError):
             return None
         else:
