@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.utils import timezone, translation
+from django.utils import timezone, translation, six
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import AnonymousUser
@@ -156,7 +156,7 @@ class SignupCode(models.Model):
             checks.append(Q(code=code))
         if email:
             checks.append(Q(email=code))
-        return cls._default_manager.filter(reduce(operator.or_, checks)).exists()
+        return cls._default_manager.filter(six.moves.reduce(operator.or_, checks)).exists()
 
     @classmethod
     def create(cls, **kwargs):
