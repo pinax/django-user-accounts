@@ -7,152 +7,153 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-user-accounts\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-16 12:29+0200\n"
+"POT-Creation-Date: 2014-01-14 12:08-0700\n"
 "PO-Revision-Date: 2013-04-28 13:33+0100\n"
+"Last-Translator: frank <frank@belege.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: frank <frank@belege.net>\n"
 
-#: forms.py:19 forms.py:95
+#: forms.py:26 forms.py:109
 msgid "Username"
 msgstr "Benutzername"
 
-#: forms.py:25 forms.py:64
+#: forms.py:32 forms.py:78
 msgid "Password"
 msgstr "Passwort"
 
-#: forms.py:29
+#: forms.py:36
 msgid "Password (again)"
 msgstr "Passwort (wiederholen)"
 
-#: forms.py:41
+#: forms.py:40 forms.py:124 forms.py:170 forms.py:199
+msgid "Email"
+msgstr "Email"
+
+#: forms.py:51
 msgid "Usernames can only contain letters, numbers and underscores."
 msgstr ""
 "Benutzernamen können nur Buchstaben, Zahlen und Unterstriche enthalten."
 
-#: forms.py:45
+#: forms.py:59
 msgid "This username is already taken. Please choose another."
 msgstr ""
 "Dieser Benutzername ist bereits vergeben. Bitte wählen Sie einen anderen."
 
-#: forms.py:52 forms.py:197
+#: forms.py:66 forms.py:219
 msgid "A user is registered with this email address."
 msgstr "Ein Benutzer ist bereits unter dieser Email Adresse registriert."
 
-#: forms.py:57 forms.py:142 forms.py:171
+#: forms.py:71 forms.py:164 forms.py:193
 msgid "You must type the same password each time."
 msgstr "Passwörter stimmen nicht überein."
 
-#: forms.py:68
+#: forms.py:82
 msgid "Remember Me"
 msgstr "Angemeldet bleiben"
 
-#: forms.py:81
+#: forms.py:95
 msgid "This account is inactive."
 msgstr "Dieses Konto ist deaktiviert."
 
-#: forms.py:96
+#: forms.py:110
 msgid "The username and/or password you specified are not correct."
 msgstr ""
 "Der Benutzername und/oder das Kennwort, das Sie angegeben sind nicht korrekt."
 
-#: forms.py:106 forms.py:148 forms.py:177
-msgid "Email"
-msgstr "Email"
-
-#: forms.py:107
+#: forms.py:125
 msgid "The email address and/or password you specified are not correct."
 msgstr ""
 "Die e-Mail-Adresse und/oder Passwort, das Sie angegeben sind nicht korrekt."
 
-#: forms.py:118
+#: forms.py:140
 msgid "Current Password"
 msgstr "Aktuelles Passwort"
 
-#: forms.py:122 forms.py:160
+#: forms.py:144 forms.py:182
 msgid "New Password"
 msgstr "Neues Passwort"
 
-#: forms.py:126 forms.py:164
+#: forms.py:148 forms.py:186
 msgid "New Password (again)"
 msgstr "Neues Passwort (wiederholen)"
 
-#: forms.py:136
+#: forms.py:158
 msgid "Please type your current password."
 msgstr "Bitte geben Sie Ihr aktuelles Kennwort ein."
 
-#: forms.py:153
+#: forms.py:175
 msgid "Email address can not be found."
 msgstr "Email Adresse ist für kein Benutzerkonto registriert."
 
-#: forms.py:179
+#: forms.py:201
 msgid "Timezone"
 msgstr "Zeitzone"
 
-#: forms.py:185
+#: forms.py:207
 msgid "Language"
 msgstr "Sprache"
 
-#: models.py:30
+#: models.py:31
 msgid "user"
 msgstr ""
 
-#: models.py:31
+#: models.py:32
 msgid "timezone"
 msgstr ""
 
-#: models.py:32
+#: models.py:33
 msgid "language"
 msgstr ""
 
-#: models.py:243
+#: models.py:247
 msgid "email address"
 msgstr ""
 
-#: models.py:244
+#: models.py:248
 msgid "email addresses"
 msgstr ""
 
-#: models.py:293
+#: models.py:297
 msgid "email confirmation"
 msgstr ""
 
-#: models.py:294
+#: models.py:298
 msgid "email confirmations"
 msgstr ""
 
-#: views.py:37
-#, python-format
-msgid "Confirmation email sent to %(email)s."
+#: views.py:41
+#, fuzzy, python-brace-format
+msgid "Confirmation email sent to {email}."
 msgstr "Bestätigungsemail an  %(email)s gesendet."
 
-#: views.py:41
-#, python-format
-msgid "The code %(code)s is invalid."
+#: views.py:45
+#, fuzzy, python-brace-format
+msgid "The code {code} is invalid."
 msgstr "Der code %(code)s ist ungültig."
 
-#: views.py:306
-#, python-format
-msgid "You have confirmed %(email)s."
+#: views.py:340
+#, fuzzy, python-brace-format
+msgid "You have confirmed {email}."
 msgstr "Sie haben Die Emailadresse %(email)s bestätigt."
 
-#: views.py:376 views.py:513
+#: views.py:413 views.py:546
 msgid "Password successfully changed."
 msgstr "Passwort wurde erfolgreich geändert."
 
-#: views.py:592
+#: views.py:625
 msgid "Account settings updated."
 msgstr "Kontoeinstellungen aktualisiert."
 
-#: views.py:676
-#, python-format
+#: views.py:709
+#, fuzzy, python-brace-format
 msgid ""
 "Your account is now inactive and your data will be expunged in the next "
-"%(expunge_hours)d hours."
+"{expunge_hours} hours."
 msgstr ""
 "Ihr Konto ist nun deaktiviert, Ihre Daten werden innerhalb der nächsten  "
 "%(expunge_hours)d Stunden gelöscht."

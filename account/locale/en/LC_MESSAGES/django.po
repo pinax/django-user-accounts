@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-15 13:38-0600\n"
+"POT-Creation-Date: 2014-01-14 12:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,138 +17,136 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: forms.py:19 forms.py:92
+#: forms.py:26 forms.py:109
 msgid "Username"
 msgstr ""
 
-#: forms.py:25 forms.py:64
+#: forms.py:32 forms.py:78
 msgid "Password"
 msgstr ""
 
-#: forms.py:29
+#: forms.py:36
 msgid "Password (again)"
 msgstr ""
 
-#: forms.py:41
-msgid "Usernames can only contain letters, numbers and underscores."
-msgstr ""
-
-#: forms.py:45
-msgid "This username is already taken. Please choose another."
-msgstr ""
-
-#: forms.py:52 forms.py:211
-msgid "A user is registered with this email address."
-msgstr ""
-
-#: forms.py:57 forms.py:149 forms.py:185
-msgid "You must type the same password each time."
-msgstr ""
-
-#: forms.py:68
-msgid "Remember Me"
-msgstr ""
-
-#: forms.py:81
-msgid "This account is inactive."
-msgstr ""
-
-#: forms.py:93
-msgid "The username and/or password you specified are not correct."
-msgstr ""
-
-#: forms.py:108 forms.py:159 forms.py:191
+#: forms.py:40 forms.py:124 forms.py:170 forms.py:199
 msgid "Email"
 msgstr ""
 
-#: forms.py:109
-msgid "The email address and/or password you specified are not correct."
+#: forms.py:51
+msgid "Usernames can only contain letters, numbers and underscores."
+msgstr ""
+
+#: forms.py:59
+msgid "This username is already taken. Please choose another."
+msgstr ""
+
+#: forms.py:66 forms.py:219
+msgid "A user is registered with this email address."
+msgstr ""
+
+#: forms.py:71 forms.py:164 forms.py:193
+msgid "You must type the same password each time."
+msgstr ""
+
+#: forms.py:82
+msgid "Remember Me"
+msgstr ""
+
+#: forms.py:95
+msgid "This account is inactive."
+msgstr ""
+
+#: forms.py:110
+msgid "The username and/or password you specified are not correct."
 msgstr ""
 
 #: forms.py:125
+msgid "The email address and/or password you specified are not correct."
+msgstr ""
+
+#: forms.py:140
 msgid "Current Password"
 msgstr ""
 
-#: forms.py:129 forms.py:174
+#: forms.py:144 forms.py:182
 msgid "New Password"
 msgstr ""
 
-#: forms.py:133 forms.py:178
+#: forms.py:148 forms.py:186
 msgid "New Password (again)"
 msgstr ""
 
-#: forms.py:143
+#: forms.py:158
 msgid "Please type your current password."
 msgstr ""
 
-#: forms.py:164
-msgid "Email address not verified for any user account"
+#: forms.py:175
+msgid "Email address can not be found."
 msgstr ""
 
-#: forms.py:167
-msgid "Email address not found for any user account"
-msgstr ""
-
-#: forms.py:193
+#: forms.py:201
 msgid "Timezone"
 msgstr ""
 
-#: forms.py:199
+#: forms.py:207
 msgid "Language"
 msgstr ""
 
-#: models.py:29
+#: models.py:31
 msgid "user"
 msgstr ""
 
-#: models.py:30
+#: models.py:32
 msgid "timezone"
 msgstr ""
 
-#: models.py:31
+#: models.py:33
 msgid "language"
 msgstr ""
 
-#: models.py:209
+#: models.py:247
 msgid "email address"
 msgstr ""
 
-#: models.py:210
+#: models.py:248
 msgid "email addresses"
 msgstr ""
 
-#: models.py:246
+#: models.py:297
 msgid "email confirmation"
 msgstr ""
 
-#: models.py:247
+#: models.py:298
 msgid "email confirmations"
 msgstr ""
 
-#: views.py:36
-#, python-format
-msgid "Confirmation email sent to %(email)s."
+#: views.py:41
+#, python-brace-format
+msgid "Confirmation email sent to {email}."
 msgstr ""
 
-#: views.py:40
-#, python-format
-msgid "Successfully logged in as %(user)s."
+#: views.py:45
+#, python-brace-format
+msgid "The code {code} is invalid."
 msgstr ""
 
-#: views.py:44
-#, python-format
-msgid "The code %(code)s is invalid."
+#: views.py:340
+#, python-brace-format
+msgid "You have confirmed {email}."
 msgstr ""
 
-#: views.py:267
-#, python-format
-msgid "You have confirmed %(email)s."
-msgstr ""
-
-#: views.py:340 views.py:441
+#: views.py:413 views.py:546
 msgid "Password successfully changed."
 msgstr ""
 
-#: views.py:502
+#: views.py:625
 msgid "Account settings updated."
+msgstr ""
+
+#: views.py:709
+#, python-brace-format
+msgid ""
+"Your account is now inactive and your data will be expunged in the next "
+"{expunge_hours} hours."
 msgstr ""
