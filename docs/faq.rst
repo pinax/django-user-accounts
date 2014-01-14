@@ -22,3 +22,18 @@ functions and authorization.
 django-user-accounts takes your Django project from having simple log in,
 log out and password reset to a full blown account management system that you
 will end up building anyways.
+
+Why can email addresses get out of sync?
+========================================
+
+django-user-accounts stores email addresses in two locations. The default
+``User`` model contains an ``email`` field and d-u-a provides an
+``EmailAddress`` model. This latter is provided to support multiple email
+addresses per user.
+
+If you use a custom user model you can prevent the double storage. This is
+because you can choose not to do any email address storage.
+
+If you don't use a custom user model then make sure you take extra precaution.
+When editing email addresses either in the shell or admin make sure you update
+in both places. Only the primary email address is stored on the ``User`` model.
