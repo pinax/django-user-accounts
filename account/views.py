@@ -1,10 +1,8 @@
 from __future__ import unicode_literals
 
 from django.http import Http404, HttpResponseForbidden
-from django.core.mail import send_mail
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.http import base36_to_int, int_to_base36
-from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import TemplateResponseMixin, View
@@ -23,7 +21,7 @@ from account.forms import SettingsForm
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion
-from account.utils import default_redirect, user_display
+from account.utils import default_redirect
 
 
 class SignupView(FormView):
@@ -512,6 +510,7 @@ class PasswordResetView(FormView):
         return self.response_class(**response_kwargs)
 
     def send_email(self, email):
+        User = get_user_model()
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         current_site = get_current_site(self.request)
         email_qs = EmailAddress.objects.filter(email__iexact=email)
