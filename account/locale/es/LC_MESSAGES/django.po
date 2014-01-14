@@ -1,23 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# Erik Rivera <erik.river@gmail.com>, 2012.
+# Erik Rivera <erik.river@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: django-user-accounts\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-01-14 12:08-0700\n"
-"PO-Revision-Date: 2012-05-15 18:11+0000\n"
-"Last-Translator: Erik Rivera <erik.river@gmail.com>\n"
-"Language-Team: Spanish (Castilian) (http://www.transifex.net/projects/p/"
-"pinax/language/es/)\n"
-"Language: es\n"
+"PO-Revision-Date: 2014-01-14 19:10+0000\n"
+"Last-Translator: Brian Rosner <brosner@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/pinax/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: forms.py:26 forms.py:109
 msgid "Username"
@@ -37,8 +36,7 @@ msgstr "Correo electrónico"
 
 #: forms.py:51
 msgid "Usernames can only contain letters, numbers and underscores."
-msgstr ""
-"Los nombres de usuario solo pueden contener letras, números y subguiones"
+msgstr "Los nombres de usuario solo pueden contener letras, números y subguiones"
 
 #: forms.py:59
 msgid "This username is already taken. Please choose another."
@@ -62,14 +60,11 @@ msgstr "Esta cuenta está inactiva."
 
 #: forms.py:110
 msgid "The username and/or password you specified are not correct."
-msgstr ""
-"El nombre de usuario y/o la contraseña que ha especificado no son correctas."
+msgstr "El nombre de usuario y/o la contraseña que ha especificado no son correctas."
 
 #: forms.py:125
 msgid "The email address and/or password you specified are not correct."
-msgstr ""
-"La dirección de correo electrónico y/o la contraseña que ha especificado no "
-"son correctas."
+msgstr "La dirección de correo electrónico y/o la contraseña que ha especificado no son correctas."
 
 #: forms.py:140
 msgid "Current Password"
@@ -88,9 +83,8 @@ msgid "Please type your current password."
 msgstr "Por favor escriba su contraseña actual."
 
 #: forms.py:175
-#, fuzzy
 msgid "Email address can not be found."
-msgstr "Correo electrónico no encontrado para ninguna cuenta de usuario."
+msgstr ""
 
 #: forms.py:201
 msgid "Timezone"
@@ -129,19 +123,19 @@ msgid "email confirmations"
 msgstr "confirmaciones de correos electrónicos"
 
 #: views.py:41
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Confirmation email sent to {email}."
-msgstr "La confirmación de correo electrónico se ha enviado a %(email)s."
+msgstr ""
 
 #: views.py:45
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "The code {code} is invalid."
-msgstr "El código %(code)s no es válido."
+msgstr ""
 
 #: views.py:340
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "You have confirmed {email}."
-msgstr "Has confirmado %(email)s."
+msgstr ""
 
 #: views.py:413 views.py:546
 msgid "Password successfully changed."
@@ -157,9 +151,3 @@ msgid ""
 "Your account is now inactive and your data will be expunged in the next "
 "{expunge_hours} hours."
 msgstr ""
-
-#~ msgid "Email address not verified for any user account"
-#~ msgstr "Correo electrónico no verificado para ninguna cuenta de usuario."
-
-#~ msgid "Successfully logged in as %(user)s."
-#~ msgstr "Inicio la sesión satisfactoriamente como %(user)s."
