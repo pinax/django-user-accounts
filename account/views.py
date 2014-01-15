@@ -6,7 +6,7 @@ from django.utils.http import base36_to_int, int_to_base36
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import TemplateResponseMixin, View
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView
 
 from django.contrib import auth, messages
 from django.contrib.sites.models import get_current_site
@@ -17,7 +17,7 @@ from account.compat import get_user_model
 from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
 from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
-from account.forms import SettingsForm
+from account.forms import SettingsForm, SignupCodeForm
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion
@@ -727,3 +727,28 @@ class DeleteView(LogoutView):
         ctx.update(kwargs)
         ctx["ACCOUNT_DELETION_EXPUNGE_HOURS"] = settings.ACCOUNT_DELETION_EXPUNGE_HOURS
         return ctx
+
+
+class InviteUserView(LoginRequiredMixin, CreateView):
+
+    template_name = "account/invite_user.html"
+    form_class = SignupCodeForm
+
+    redirect_field_name = "next"
+    messages = {
+        "password_changed": {
+            "level": messages.SUCCESS,
+            "text": _("Password successfully changed.")
+        }
+    }
+
+    def form_valid(self, form):
+        signup_code = form.save()
+        signup_code.send()
+        messages.success(self.request, _("Invitation sent to user '%s'") % signup_code.email)
+        return super(InviteUserView, self).form_valid(form)
+
+    def get_success_url(self, fallback_url=None, **kwargs):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_INVITE_USER_URL
+        return default_redirect(self.request, fallback_url, **kwargs)
