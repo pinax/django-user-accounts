@@ -14,6 +14,7 @@ from django.contrib import auth
 
 from account.compat import get_user_model, get_user_lookup_kwargs
 from account.conf import settings
+from account.hooks import hookset
 from account.models import EmailAddress
 
 
@@ -98,10 +99,7 @@ class LoginForm(forms.Form):
         return self.cleaned_data
 
     def user_credentials(self):
-        return {
-            "username": self.cleaned_data[self.identifier_field],
-            "password": self.cleaned_data["password"],
-        }
+        return hookset.get_user_credentials(self, self.identifier_field)
 
 
 class LoginUsernameForm(LoginForm):

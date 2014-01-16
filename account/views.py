@@ -35,6 +35,7 @@ class SignupView(FormView):
     form_class = SignupForm
     form_kwargs = {}
     redirect_field_name = "next"
+    identifier_field = "username"
     messages = {
         "email_confirmation_sent": {
             "level": messages.INFO,
@@ -130,6 +131,10 @@ class SignupView(FormView):
                         "email": form.cleaned_data["email"]
                     })
                 )
+            # attach form to self to maintain compatibility with login_user
+            # API. this should only be relied on by d-u-a and it is not a stable
+            # API for site developers.
+            self.form = form
             self.login_user()
         return redirect(self.get_success_url())
 
@@ -180,10 +185,21 @@ class SignupView(FormView):
         signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
 
     def login_user(self):
-        # set backend on User object to bypass needing to call auth.authenticate
-        self.created_user.backend = "django.contrib.auth.backends.ModelBackend"
-        auth.login(self.request, self.created_user)
+        user = self.created_user
+        if settings.ACCOUNT_USE_AUTH_AUTHENTICATE:
+            # call auth.authenticate to ensure we set the correct backend for
+            # future look ups using auth.get_user().
+            user = auth.authenticate(**self.user_credentials())
+        else:
+            # set auth backend to ModelBackend, but this may not be used by
+            # everyone. this code path is deprecated and will be removed in
+            # favor of using auth.authenticate above.
+            user.backend = "django.contrib.auth.backends.ModelBackend"
+        auth.login(self.request, user)
         self.request.session.set_expiry(0)
+
+    def user_credentials(self):
+        return hookset.get_user_credentials(self.form, self.identifier_field)
 
     def is_open(self):
         code = self.request.REQUEST.get("code")

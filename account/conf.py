@@ -53,6 +53,7 @@ class AccountAppConf(AppConf):
         (code, get_language_info(code).get("name_local"))
         for code, lang in settings.LANGUAGES
     ]
+    USE_AUTH_AUTHENTICATE = False
 
     def configure_deletion_mark_callback(self, value):
         return load_path_attr(value)
