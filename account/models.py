@@ -2,7 +2,11 @@ from __future__ import unicode_literals
 
 import datetime
 import operator
-import urllib
+
+try:
+    from urllib.parse import urlencode
+except ImportError: # python 2
+    from urllib import urlencode
 
 from django.core.urlresolvers import reverse
 from django.db import models, transaction
@@ -65,8 +69,8 @@ class Account(models.Model):
             EmailAddress.objects.add_email(account.user, account.user.email, **kwargs)
         return account
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
     def now(self):
         """
@@ -210,7 +214,7 @@ class SignupCode(models.Model):
             protocol,
             current_site.domain,
             reverse("account_signup"),
-            urllib.urlencode({"code": self.code})
+            urlencode({"code": self.code})
         )
         ctx = {
             "signup_code": self,

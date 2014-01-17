@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils import six
 
 from account.conf import settings
 
@@ -11,9 +12,7 @@ except ImportError:
     HAS_SOUTH = False
 
 
-class TimeZoneField(models.CharField):
-
-    __metaclass__ = models.SubfieldBase
+class TimeZoneField(six.with_metaclass(models.SubfieldBase, models.CharField)):
 
     def __init__(self, *args, **kwargs):
         defaults = {
