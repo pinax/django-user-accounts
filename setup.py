@@ -17,6 +17,12 @@ setup(
         "django-appconf>=0.6",
         "pytz>=2013.9"
     ],
+    zip_safe=False,
+    package_data={
+        "account": [
+            "locale/*/LC_MESSAGES/*",
+        ],
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
