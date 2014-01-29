@@ -12,7 +12,6 @@ from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils import timezone, translation, six
 from django.utils.translation import ugettext_lazy as _
 
@@ -22,7 +21,7 @@ from django.contrib.sites.models import Site
 import pytz
 
 from account import signals
-from account.compat import AUTH_USER_MODEL, get_user_model
+from account.compat import AUTH_USER_MODEL, receiver
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
@@ -90,13 +89,8 @@ class Account(models.Model):
             value = pytz.timezone(settings.TIME_ZONE).localize(value)
         return value.astimezone(pytz.timezone(timezone))
 
-#
-# The call to get_user_model in global scope could lead to a circular import
-# when the app cache is not fully initialized in some cases. It is rare, but
-# it has happened. If you are debugging this problem and determine this line
-# of code as being problematic, contact the developers right away.
-#
-@receiver(post_save, sender=get_user_model())
+
+@receiver(post_save, sender=AUTH_USER_MODEL)
 def user_post_save(sender, **kwargs):
     """
     After User.save is called we check to see if it was a created user. If so,
