@@ -1,6 +1,5 @@
 import django
 
-from django.db.models.loading import cache as app_cache
 from django.db.models.signals import class_prepared
 from django.utils import six
 
@@ -48,6 +47,7 @@ def receiver(signal, **kwargs):
         class_prepared.connect(_resolve_references, weak=False)
     def _decorator(func):
         if django.VERSION < (1, 7, 0):
+            from django.db.models.loading import cache as app_cache
             sender = kwargs.get("sender")
             if isinstance(sender, six.string_types):
                 try:
