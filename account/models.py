@@ -173,7 +173,7 @@ class SignupCode(models.Model):
         return cls(**params)
 
     @classmethod
-    def check(cls, code):
+    def check_code(cls, code):
         try:
             signup_code = cls._default_manager.get(code=code)
         except cls.DoesNotExist:

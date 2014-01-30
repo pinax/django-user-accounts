@@ -205,7 +205,7 @@ class SignupView(FormView):
         code = self.request.REQUEST.get("code")
         if code:
             try:
-                self.signup_code = SignupCode.check(code)
+                self.signup_code = SignupCode.check_code(code)
             except SignupCode.InvalidCode:
                 if self.messages.get("invalid_signup_code"):
                     messages.add_message(
