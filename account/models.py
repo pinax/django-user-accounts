@@ -128,15 +128,15 @@ class SignupCode(models.Model):
     class InvalidCode(Exception):
         pass
 
-    code = models.CharField(max_length=64, unique=True)
-    max_uses = models.PositiveIntegerField(default=0)
-    expiry = models.DateTimeField(null=True, blank=True)
+    code = models.CharField(_("code"), max_length=64, unique=True)
+    max_uses = models.PositiveIntegerField(_("max uses"), default=0)
+    expiry = models.DateTimeField(_("expiry"), null=True, blank=True)
     inviter = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True)
     email = models.EmailField(blank=True)
-    notes = models.TextField(blank=True)
-    sent = models.DateTimeField(null=True, blank=True)
-    created = models.DateTimeField(default=timezone.now, editable=False)
-    use_count = models.PositiveIntegerField(editable=False, default=0)
+    notes = models.TextField(_("notes"), blank=True)
+    sent = models.DateTimeField(_("sent"), null=True, blank=True)
+    created = models.DateTimeField(_("created"), default=timezone.now, editable=False)
+    use_count = models.PositiveIntegerField(_("use count"), editable=False, default=0)
 
     class Meta:
         verbose_name = _("signup code")
@@ -240,8 +240,8 @@ class EmailAddress(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL)
     email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
-    verified = models.BooleanField(default=False)
-    primary = models.BooleanField(default=False)
+    verified = models.BooleanField(_("verified"), default=False)
+    primary = models.BooleanField(_("primary"), default=False)
 
     objects = EmailAddressManager()
 
@@ -346,8 +346,8 @@ class AccountDeletion(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.EmailField()
-    date_requested = models.DateTimeField(default=timezone.now)
-    date_expunged = models.DateTimeField(null=True, blank=True)
+    date_requested = models.DateTimeField(_("date requested"), default=timezone.now)
+    date_expunged = models.DateTimeField(_("date expunged"), null=True, blank=True)
 
     class Meta:
         verbose_name = _("account deletion")
