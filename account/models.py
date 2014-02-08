@@ -138,6 +138,10 @@ class SignupCode(models.Model):
     created = models.DateTimeField(default=timezone.now, editable=False)
     use_count = models.PositiveIntegerField(editable=False, default=0)
 
+    class Meta:
+        verbose_name = _("signup code")
+        verbose_name_plural = _("signup codes")
+
     def __unicode__(self):
         if self.email:
             return "{0} [{1}]".format(self.email, self.code)
@@ -344,6 +348,10 @@ class AccountDeletion(models.Model):
     email = models.EmailField()
     date_requested = models.DateTimeField(default=timezone.now)
     date_expunged = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("account deletion")
+        verbose_name_plural = _("account deletions")
 
     @classmethod
     def expunge(cls, hours_ago=None):
