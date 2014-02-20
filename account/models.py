@@ -103,7 +103,7 @@ def user_post_save(sender, **kwargs):
     user, created = kwargs["instance"], kwargs["created"]
     disabled = getattr(user, "_disable_account_creation", not settings.ACCOUNT_CREATE_ON_SAVE)
     if created and not disabled:
-        Account.create(user=user)
+        Account.objects.get_or_create(user=user)
 
 
 class AnonymousAccount(object):
