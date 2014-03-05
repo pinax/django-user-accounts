@@ -27,7 +27,7 @@ Why can email addresses get out of sync?
 ========================================
 
 django-user-accounts stores email addresses in two locations. The default
-``User`` model contains an ``email`` field and d-u-a provides an
+``User`` model contains an ``email`` field and django-user-accounts provides an
 ``EmailAddress`` model. This latter is provided to support multiple email
 addresses per user.
 
