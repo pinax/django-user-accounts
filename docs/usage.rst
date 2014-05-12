@@ -231,7 +231,7 @@ user.
 Example::
 
     IntegrityError: Problem installing fixture \
-          '/home/bjb/work/nova/webforms/code/voices/code/portal/fixtures/bjb_users.json': \
+          ...'/app/fixtures/some_users_and_accounts.json': \
           Could not load account.Account(pk=1): duplicate key value violates unique constraint \
           "account_account_user_id_key"
     DETAIL:  Key (user_id)=(1) already exists.
@@ -253,6 +253,6 @@ file called lib/tests.py::
 
 And in your settings::
 
-    TEST_RUNNER = 'lib.tests.MyTestDiscoverRunner'
+    TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
 
 
