@@ -96,7 +96,7 @@ def user_post_save(sender, **kwargs):
     After User.save is called we check to see if it was a created user. If so,
     we check if the User object wants account creation. If all passes we
     create an Account object.
-    
+
     We only run on user creation to avoid having to check for existence on
     each call to User.save.
     """
@@ -215,6 +215,7 @@ class SignupCode(models.Model):
             "current_site": current_site,
             "signup_url": signup_url,
         }
+        ctx.update(kwargs.get("extra_ctx", {}))
         hookset.send_invitation_email([self.email], ctx)
         self.sent = timezone.now()
         self.save()
