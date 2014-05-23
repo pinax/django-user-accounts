@@ -203,13 +203,16 @@ class SignupCode(models.Model):
 
     def send(self, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
-        signup_url = "{0}://{1}{2}?{3}".format(
-            protocol,
-            current_site.domain,
-            reverse("account_signup"),
-            urlencode({"code": self.code})
-        )
+        if "signup_url" not in kwargs:
+            current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
+            signup_url = "{0}://{1}{2}?{3}".format(
+                protocol,
+                current_site.domain,
+                reverse("account_signup"),
+                urlencode({"code": self.code})
+            )
+        else:
+            signup_url = kwargs["signup_url"]
         ctx = {
             "signup_code": self,
             "current_site": current_site,
