@@ -201,8 +201,11 @@ class SignupView(FormView):
     def user_credentials(self):
         return hookset.get_user_credentials(self.form, self.identifier_field)
 
+    def get_code(self):
+        return self.request.REQUEST.get("code")
+
     def is_open(self):
-        code = self.request.REQUEST.get("code")
+        code = self.get_code()
         if code:
             try:
                 self.signup_code = SignupCode.check_code(code)
