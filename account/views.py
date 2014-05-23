@@ -52,6 +52,25 @@ class SignupView(FormView):
         kwargs["signup_code"] = None
         super(SignupView, self).__init__(*args, **kwargs)
 
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+        self.setup_signup_code()
+        return super(SignupView, self).dispatch(request, *args, **kwargs)
+
+    def setup_signup_code(self):
+        code = self.get_code()
+        if code:
+            try:
+                self.signup_code = SignupCode.check_code(code)
+            except SignupCode.InvalidCode:
+                self.signup_code = None
+            self.signup_code_present = True
+        else:
+            self.signup_code = None
+            self.signup_code_present = False
+
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
@@ -107,6 +126,7 @@ class SignupView(FormView):
         # we want to handle that ourself.
         self.created_user._disable_account_creation = True
         self.created_user.save()
+        self.use_signup_code(self.created_user)
         email_address = self.create_email_address(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_address.verified:
             self.created_user.is_active = False
@@ -174,9 +194,12 @@ class SignupView(FormView):
         kwargs.setdefault("primary", True)
         kwargs.setdefault("verified", False)
         if self.signup_code:
-            self.signup_code.use(self.created_user)
             kwargs["verified"] = self.signup_code.email and self.created_user.email == self.signup_code.email
         return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
+
+    def use_signup_code(self, user):
+        if self.signup_code:
+            self.signup_code.use(user)
 
     def send_email_confirmation(self, email_address):
         email_address.send_confirmation(site=get_current_site(self.request))
@@ -205,24 +228,19 @@ class SignupView(FormView):
         return self.request.REQUEST.get("code")
 
     def is_open(self):
-        code = self.get_code()
-        if code:
-            try:
-                self.signup_code = SignupCode.check_code(code)
-            except SignupCode.InvalidCode:
+        if self.signup_code:
+            return True
+        else:
+            if self.signup_code_present:
                 if self.messages.get("invalid_signup_code"):
                     messages.add_message(
                         self.request,
                         self.messages["invalid_signup_code"]["level"],
                         self.messages["invalid_signup_code"]["text"].format(**{
-                            "code": code
+                            "code": self.get_code(),
                         })
                     )
-                return settings.ACCOUNT_OPEN_SIGNUP
-            else:
-                return True
-        else:
-            return settings.ACCOUNT_OPEN_SIGNUP
+        return settings.ACCOUNT_OPEN_SIGNUP
 
     def email_confirmation_required_response(self):
         if self.request.is_ajax():
