@@ -12,8 +12,8 @@ matrix:
     - python: "3.3"
       env: DJANGO=1.4.10
 install:
-  - pip install -q Django==$DJANGO --use-mirrors
-  - pip install -q django-nose==1.2 --use-mirrors
-  - pip install -e . --use-mirrors
+  - pip install -q Django==$DJANGO
+  - pip install -q django-nose==1.2
+  - pip install -e .
 script:
   - python runtests.py
