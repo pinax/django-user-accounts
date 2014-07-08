@@ -219,3 +219,40 @@ tables for django-user-accounts you will need to migrate the
 ``ACCOUNT_EMAIL_UNIQUE = False`` will allow duplicate email addresses per
 user, but not across users.
 
+
+Including accounts in fixtures
+==============================
+
+If you want to include account_account in your fixture, you may notice
+that when you load that fixture there is a conflict because
+django-user-accounts defaults to creating a new account for each new
+user.
+
+Example::
+
+    IntegrityError: Problem installing fixture \
+          ...'/app/fixtures/some_users_and_accounts.json': \
+          Could not load account.Account(pk=1): duplicate key value violates unique constraint \
+          "account_account_user_id_key"
+    DETAIL:  Key (user_id)=(1) already exists.
+
+To prevent this from happening, subclass DiscoverRunner and in
+setup_test_environment set CREATE_ON_SAVE to False.  For example in a
+file called lib/tests.py::
+
+    from django.test.runner import DiscoverRunner
+    from account.conf import AccountAppConf
+
+    class MyTestDiscoverRunner(DiscoverRunner):
+
+        def setup_test_environment(self, **kwargs):
+            super(MyTestDiscoverRunner, self).setup_test_environment(**kwargs)
+            aac = AccountAppConf()
+            aac.CREATE_ON_SAVE = False
+
+
+And in your settings::
+
+    TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
+
+
