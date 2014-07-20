@@ -13,7 +13,11 @@ matrix:
       env: DJANGO=1.4.10
 install:
   - pip install -q Django==$DJANGO
-  - pip install -q django-nose==1.2
+  - pip install -q django-nose==1.2 coverage coveralls flake8
   - pip install -e .
+before_script:
+  - flake8 --max-line-length=150 --max-complexity=10 --statistics --benchmark account
 script:
-  - python runtests.py
+  - coverage run runtests.py
+after_script:
+  - coveralls
