@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import functools
 try:
     from urllib.parse import urlparse, urlunparse
-except ImportError: # python 2
+except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
 
 from django.core import urlresolvers

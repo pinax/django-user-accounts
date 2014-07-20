@@ -24,7 +24,8 @@ class UsernameAuthenticationBackend(ModelBackend):
                 if user.check_password(credentials["password"]):
                     return user
             except KeyError:
-               return None 
+                return None
+
 
 class EmailAuthenticationBackend(ModelBackend):
 

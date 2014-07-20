@@ -17,9 +17,7 @@ class UserDisplayNode(template.Node):
 
     def render(self, context):
         user = self.user_var.resolve(context)
-        
         display = user_display(user)
-        
         if self.as_var:
             context[self.as_var] = display
             return ""

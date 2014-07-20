@@ -187,8 +187,10 @@ class SignupView(FormView):
         return Account.create(request=self.request, user=self.created_user, create_email=False)
 
     def generate_username(self, form):
-        raise NotImplementedError("Unable to generate username by default. "
-            "Override SignupView.generate_username in a subclass.")
+        raise NotImplementedError(
+            "Unable to generate username by default. "
+            "Override SignupView.generate_username in a subclass."
+        )
 
     def create_email_address(self, form, **kwargs):
         kwargs.setdefault("primary", True)

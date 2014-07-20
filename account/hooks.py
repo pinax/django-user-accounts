@@ -16,7 +16,7 @@ class AccountDefaultHookSet(object):
 
     def send_confirmation_email(self, to, ctx):
         subject = render_to_string("account/email/email_confirmation_subject.txt", ctx)
-        subject = "".join(subject.splitlines()) # remove superfluous line breaks
+        subject = "".join(subject.splitlines())  # remove superfluous line breaks
         message = render_to_string("account/email/email_confirmation_message.txt", ctx)
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, to)
 

@@ -5,7 +5,7 @@ import operator
 
 try:
     from urllib.parse import urlencode
-except ImportError: # python 2
+except ImportError:  # python 2
     from urllib import urlencode
 
 from django.core.urlresolvers import reverse
@@ -33,7 +33,8 @@ class Account(models.Model):
 
     user = models.OneToOneField(AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
     timezone = TimeZoneField(_("timezone"))
-    language = models.CharField(_("language"),
+    language = models.CharField(
+        _("language"),
         max_length=10,
         choices=settings.ACCOUNT_LANGUAGES,
         default=settings.LANGUAGE_CODE

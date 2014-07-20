@@ -30,9 +30,10 @@ def get_user_lookup_kwargs(kwargs):
     return result
 
 
-def receiver(signal, **kwargs):
+def receiver(signal, **kwargs):  # noqa
     if django.VERSION < (1, 7, 0):
         unresolved_references = {}
+
         def _resolve_references(sender, **kwargs):
             opts = sender._meta
             reference = (opts.app_label, opts.object_name)
@@ -45,7 +46,8 @@ def receiver(signal, **kwargs):
                     kwargs["sender"] = sender
                     signal.connect(func, **kwargs)
         class_prepared.connect(_resolve_references, weak=False)
-    def _decorator(func):
+
+    def _decorator(func):  # noqa
         if django.VERSION < (1, 7, 0):
             from django.db.models.loading import cache as app_cache
             sender = kwargs.get("sender")
