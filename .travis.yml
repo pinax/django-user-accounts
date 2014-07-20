@@ -4,13 +4,13 @@ python:
   - "2.7"
   - "3.3"
 env:
-  - DJANGO=1.4.10
-  - DJANGO=1.5.5
-  - DJANGO=1.6.1
+  - DJANGO=1.4.13
+  - DJANGO=1.5.8
+  - DJANGO=1.6.5
 matrix:
   exclude:
     - python: "3.3"
-      env: DJANGO=1.4.10
+      env: DJANGO=1.4.13
 install:
   - pip install -q Django==$DJANGO
   - pip install -q django-nose==1.2 coverage coveralls flake8
