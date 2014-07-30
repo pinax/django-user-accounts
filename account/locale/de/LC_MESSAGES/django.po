@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
@@ -10,12 +10,11 @@ msgstr ""
 "POT-Creation-Date: 2014-07-30 15:12-0600\n"
 "PO-Revision-Date: 2014-01-14 19:17+0000\n"
 "Last-Translator: Brian Rosner <brosner@gmail.com>\n"
-"Language-Team: German (http://www.transifex.com/projects/p/django-user-"
-"accounts/language/de/)\n"
-"Language: de\n"
+"Language-Team: German (http://www.transifex.com/projects/p/django-user-accounts/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: forms.py:27 forms.py:107
