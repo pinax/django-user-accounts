@@ -39,6 +39,7 @@ class SignupForm(forms.Form):
     )
     email = forms.EmailField(
         label=_("Email"),
+        max_length=30,
         widget=forms.TextInput(), required=True)
 
     code = forms.CharField(
