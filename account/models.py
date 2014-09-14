@@ -328,7 +328,7 @@ class EmailConfirmation(models.Model):
         activate_url = "{0}://{1}{2}".format(
             protocol,
             current_site.domain,
-            reverse(settings.EMAIL_CONFIRMATION_URL, args=[self.key])
+            reverse(settings.ACCOUNT_EMAIL_CONFIRMATION_URL, args=[self.key])
         )
         ctx = {
             "email_address": self.email_address,
