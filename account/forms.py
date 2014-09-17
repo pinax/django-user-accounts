@@ -7,6 +7,11 @@ try:
 except ImportError:
     OrderedDict = None
 
+try:
+    from django.utils.module_loading import import_string
+except ImportError:
+    from django.utils.module_loading import import_by_path as import_string
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -157,10 +162,9 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data["password_current"]
 
     def clean_password_new_confirm(self):
-        if "password_new" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
-            if self.cleaned_data["password_new"] != self.cleaned_data["password_new_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
-        return self.cleaned_data["password_new_confirm"]
+        clean_password = import_string(settings.ACCOUNT_CLEAN_PASSWORD_CALLBACK)
+        return clean_password(self.cleaned_data["password_new"],
+                              self.cleaned_data["password_new_confirm"])
 
 
 class PasswordResetForm(forms.Form):
@@ -190,6 +194,10 @@ class PasswordResetTokenForm(forms.Form):
             if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
                 raise forms.ValidationError(_("You must type the same password each time."))
         return self.cleaned_data["password_confirm"]
+    def clean_password_confirm(self):
+        clean_password = import_string(settings.ACCOUNT_CLEAN_PASSWORD_CALLBACK)
+        return clean_password(self.cleaned_data["password_new"],
+                              self.cleaned_data["password_new_confirm"])
 
 
 class SettingsForm(forms.Form):
