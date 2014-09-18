@@ -1,6 +1,8 @@
 import os
 import sys
 
+import django
+
 from django.conf import settings
 
 
@@ -28,6 +30,9 @@ settings.configure(
         os.path.abspath(os.path.join(os.path.dirname(__file__), "account", "tests", "templates")),
     ]
 )
+
+if hasattr(django, "setup"):
+    django.setup()
 
 from django_nose import NoseTestSuiteRunner
 
