@@ -24,7 +24,7 @@ Requirements
 ============
 
 * Django 1.4, 1.6 or 1.7
-* Python 2.6+ or Python 3.3+
+* Python 2.6, 2.7, 3.3 or 3.4
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
