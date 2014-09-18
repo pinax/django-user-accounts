@@ -26,18 +26,18 @@ infrastructure for dealing with user accounts.
 Features
 ========
 
- * Functionality for:
+* Functionality for:
 
-   - Log in (email or username authentication)
-   - Sign up
-   - Email confirmation
-   - Signup tokens for private betas
-   - Password reset
-   - Account management (update account settings and change password)
-   - Account deletion
+  - Log in (email or username authentication)
+  - Sign up
+  - Email confirmation
+  - Signup tokens for private betas
+  - Password reset
+  - Account management (update account settings and change password)
+  - Account deletion
 
- * Extensible class-based views and hooksets
- * Custom ``User`` model support
+* Extensible class-based views and hooksets
+* Custom ``User`` model support
 
 Requirements
 ============
