@@ -12,7 +12,7 @@ from appconf import AppConf
 
 def load_path_attr(path):
     i = path.rfind(".")
-    module, attr = path[:i], path[i+1:]
+    module, attr = path[:i], path[i + 1:]
     try:
         mod = importlib.import_module(module)
     except ImportError as e:
@@ -33,7 +33,7 @@ class AccountAppConf(AppConf):
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
-    REMEMBER_ME_EXPIRY = 60*60*24*365*10
+    REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username
     CREATE_ON_SAVE = True
     EMAIL_UNIQUE = True
