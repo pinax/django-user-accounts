@@ -1,6 +1,8 @@
-==============================================
-django-user-accounts: user accounts for Django
-==============================================
+====================
+django-user-accounts
+====================
+
+*user accounts for Django*
 
 .. image:: https://img.shields.io/travis/pinax/django-user-accounts.svg
     :target: https://travis-ci.org/pinax/django-user-accounts
@@ -18,7 +20,22 @@ django-user-accounts: user accounts for Django
     :target:  https://pypi.python.org/pypi/django-user-accounts/
 
 
-Provides user accounts to a Django project.
+django-user-accounts provides a Django project with a very extensible
+infrastructure for dealing with user accounts.
+
+Features
+========
+
+ * Functionality for:
+ ** Log in (email or username authentication)
+ ** Sign up
+ ** Email confirmation
+ ** Signup tokens for private betas
+ ** Password reset
+ ** Account management (update account settings and change password)
+ ** Account deletion
+ * Extensible class-based views and hooksets
+ * Custom ``User`` model support
 
 Requirements
 ============
@@ -36,3 +53,9 @@ Documentation
 =============
 
 See http://django-user-accounts.readthedocs.org/
+
+Contributing
+============
+
+We accept contributions for everyone! See the `CONTRIBUTING.md` file for more
+information about how to contribute.
