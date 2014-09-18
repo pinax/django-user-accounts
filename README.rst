@@ -20,8 +20,8 @@ django-user-accounts
     :target:  https://pypi.python.org/pypi/django-user-accounts/
 
 
-django-user-accounts provides a Django project with a very extensible
-infrastructure for dealing with user accounts.
+Provides a Django project with a very extensible infrastructure for dealing
+with user accounts.
 
 Features
 ========
