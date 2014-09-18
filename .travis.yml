@@ -3,10 +3,11 @@ python:
   - "2.6"
   - "2.7"
   - "3.3"
+  - "3.4"
 env:
   - DJANGO=1.4.13
-  - DJANGO=1.5.8
   - DJANGO=1.6.5
+  - DJANGO=1.7
 matrix:
   exclude:
     - python: "3.3"
@@ -15,9 +16,8 @@ install:
   - pip install -q Django==$DJANGO
   - pip install -q django-nose==1.2 coverage coveralls flake8
   - pip install -e .
-before_script:
-  - flake8 --max-line-length=150 --max-complexity=10 --statistics --benchmark account
 script:
+  - flake8 account
   - coverage run runtests.py
 after_script:
   - coveralls
