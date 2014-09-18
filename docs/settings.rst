@@ -7,7 +7,7 @@ Settings
 ``ACCOUNT_OPEN_SIGNUP``
 =======================
 
-Default: `True`
+Default: ``True``
 
 ``ACCOUNT_LOGIN_URL``
 =====================
