@@ -7,11 +7,6 @@ try:
 except ImportError:
     OrderedDict = None
 
-try:
-    from django.utils.module_loading import import_string
-except ImportError:
-    from django.utils.module_loading import import_by_path as import_string
-
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
