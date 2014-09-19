@@ -163,9 +163,8 @@ class ChangePasswordForm(forms.Form):
 
     def clean_password_new_confirm(self):
         if "password_new" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
-            clean_password = import_string(settings.ACCOUNT_CLEAN_PASSWORD_CALLBACK)
-            return clean_password(self.cleaned_data["password_new"],
-                                  self.cleaned_data["password_new_confirm"])
+            return hookset.clean_password(self.cleaned_data["password_new"],
+                                          self.cleaned_data["password_new_confirm"])
         return self.cleaned_data["password_new_confirm"]
 
 
@@ -193,9 +192,8 @@ class PasswordResetTokenForm(forms.Form):
 
     def clean_password_confirm(self):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
-            clean_password = import_string(settings.ACCOUNT_CLEAN_PASSWORD_CALLBACK)
-            return clean_password(self.cleaned_data["password"],
-                                  self.cleaned_data["password_confirm"])
+            return hookset.clean_password(self.cleaned_data["password"],
+                                          self.cleaned_data["password_confirm"])
         return self.cleaned_data["password_confirm"]
 
 
