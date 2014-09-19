@@ -1,10 +1,9 @@
 # How to Contribute
 
-There are many ways you can help contribute to django-user-accounts and the
-various apps, themes, and starter projects that it is made up of. Contributing
-code, writing documentation, reporting bugs, as well as reading and providing
-feedback on issues and pull requests, all are valid and necessary ways to
-help.
+There are many ways you can help contribute to django-user-accounts.
+Contributing code, writing documentation, translations, reporting bugs, as well
+as reading and providing feedback on issues and pull requests, all are valid and
+necessary ways to help.
 
 ## Committing Code
 
@@ -46,10 +45,10 @@ a message that will link the commit message to the issue and auto-close it
 if appropriate.
 
     Add ability to travel back in time
-    
+
     You need to be driving 88 miles per hour to generate 1.21 gigawatts of
     power to properly use this feature.
-    
+
     Fixes #88
 
 
@@ -86,51 +85,51 @@ Here is an example of these rules applied:
     # first set of imports are stdlib imports
     # non-from imports go first then from style import in their own group
     import csv
-    
+
     # second set of imports are Django imports with contrib in their own
     # group.
     from django.core.urlresolvers import reverse
     from django.db import models
     from django.utils import timezone
     from django.utils.translation import ugettext_lazy as _
-    
+
     from django.contrib.auth.models import User
-    
+
     # third set of imports are external apps (if applicable)
     from tagging.fields import TagField
-    
+
     # fourth set of imports are local apps
     from .fields import MarkupField
-    
-    
+
+
     class Task(models.Model):
         """
         A model for storing a task.
         """
-        
+
         creator = models.ForeignKey(User)
         created = models.DateTimeField(default=timezone.now)
         modified = models.DateTimeField(default=timezone.now)
-        
+
         objects = models.Manager()
-        
+
         class Meta:
             verbose_name = _("task")
             verbose_name_plural = _("tasks")
-        
+
         def __unicode__(self):
             return self.summary
-        
+
         def save(self, **kwargs):
             self.modified = datetime.now()
             super(Task, self).save(**kwargs)
-        
+
         def get_absolute_url(self):
             return reverse("task_detail", kwargs={"task_id": self.pk})
-        
+
         # custom methods
-    
-    
+
+
     class TaskComment(models.Model):
         # ... you get the point ...
         pass
@@ -160,3 +159,14 @@ one entirely.) Save and exit will complete the rebase. Use a forced push to
 your fork.
 
     git push -f
+
+
+## Translations
+
+We use [Transifex](https://www.transifex.com/) to handle translations. We
+discourage pull requests with changes to translations. Transifex handles
+translations better than dealing them through the pull request system.
+
+Head over to [django-user-accounts on Transifex](https://www.transifex.com/projects/p/django-user-accounts/)
+and find the language you would like to contribute. If you do not find your
+language then please submit an issue and we will get it setup.

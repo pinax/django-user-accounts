@@ -12,7 +12,7 @@ from appconf import AppConf
 
 def load_path_attr(path):
     i = path.rfind(".")
-    module, attr = path[:i], path[i+1:]
+    module, attr = path[:i], path[i + 1:]
     try:
         mod = importlib.import_module(module)
     except ImportError as e:
@@ -36,7 +36,7 @@ class AccountAppConf(AppConf):
     CLEAN_PASSWORD_CALLBACK = "account.callbacks.clean_password"
     CRACKLIB_DICTPATH = None  # Generally "/usr/share/cracklib/pw_dict"
     CRACKLIB_ERROR_TEMPLATE = None
-    REMEMBER_ME_EXPIRY = 60*60*24*365*10
+    REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username
     CREATE_ON_SAVE = True
     EMAIL_UNIQUE = True
@@ -45,6 +45,7 @@ class AccountAppConf(AppConf):
     EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
     EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "account_login"
     EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
+    EMAIL_CONFIRMATION_URL = "account_confirm_email"
     SETTINGS_REDIRECT_URL = "account_settings"
     NOTIFY_ON_PASSWORD_CHANGE = True
     DELETION_MARK_CALLBACK = "account.callbacks.account_delete_mark"

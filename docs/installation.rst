@@ -4,11 +4,11 @@
 Installation
 ============
 
-* Install the development version::
+Install the development version::
 
     pip install django-user-accounts
 
-* Add ``account`` to your ``INSTALLED_APPS`` setting::
+Add ``account`` to your ``INSTALLED_APPS`` setting::
 
     INSTALLED_APPS = (
         # ...
@@ -16,10 +16,10 @@ Installation
         # ...
     )
 
-* See the list of :ref:`settings` to modify the default behavior of
-  django-user-accounts and make adjustments for your website.
+See the list of :ref:`settings` to modify the default behavior of
+django-user-accounts and make adjustments for your website.
 
-* Add ``account.urls`` to your URLs definition::
+Add ``account.urls`` to your URLs definition::
 
     urlpatterns = patterns("",
         ...
@@ -27,7 +27,7 @@ Installation
         ...
     )
 
-* Add ``"account.context_processors.account"`` to ``TEMPLATE_CONTEXT_PROCESSORS``::
+Add ``account.context_processors.account`` to ``TEMPLATE_CONTEXT_PROCESSORS``::
 
     TEMPLATE_CONTEXT_PROCESSORS = [
         ...
@@ -35,8 +35,8 @@ Installation
         ...
     ]
 
-* Add ``"account.middleware.LocaleMiddleware"`` and
-  ``"account.middleware.TimezoneMiddleware"`` to ``MIDDLEWARE_CLASSES``::
+Add ``account.middleware.LocaleMiddleware`` and
+``account.middleware.TimezoneMiddleware`` to ``MIDDLEWARE_CLASSES``::
 
     MIDDLEWARE_CLASSES = [
         ...
@@ -44,6 +44,10 @@ Installation
         "account.middleware.TimezoneMiddleware",
         ...
     ]
+
+Once everything is in place make sure you run ``syncdb`` (Django 1.4 and 1.6)
+or ``migrate`` (Django 1.7) to modify the database with the ``account`` app
+models.
 
 .. _dependencies:
 
