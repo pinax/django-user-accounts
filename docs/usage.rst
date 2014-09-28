@@ -32,14 +32,14 @@ customization during sign up. Here's an example of a custom ``SignupView``
 defined in your project::
 
     import account.views
-    
-    
+
+
     class SignupView(account.views.SignupView):
-        
+
         def after_signup(self, form):
             self.update_profile(form)
             super(SignupView, self).after_signup(form)
-        
+
         def update_profile(self, form):
             profile = self.created_user.get_profile()
             profile.some_attr = "some value"
@@ -51,12 +51,12 @@ the sender, `User` like so::
 
     from django.dispatch import receiver
     from django.db.models.signals import post_save
-    
+
     from django.contrib.auth.models import User
-    
+
     from mysite.profiles.models import UserProfile
-    
-    
+
+
     @receiver(post_save, sender=User)
     def handle_user_save(sender, instance, created, **kwargs):
         if created:
@@ -66,32 +66,32 @@ the sender, `User` like so::
 You can define your own form class to add fields to the sign up process::
 
     # forms.py
-    
+
     from django import forms
     from django.forms.extras.widgets import SelectDateWidget
-    
+
     import account.forms
-    
-    
+
+
     class SignupForm(account.forms.SignupForm):
-        
+
         birthdate = forms.DateField(widget=SelectDateWidget(years=range(1910, 1991)))
-    
+
     # views.py
-    
+
     import account.views
-    
+
     import myproject.forms
-    
-    
+
+
     class SignupView(account.views.SignupView):
-       
+
        form_class = myproject.forms.SignupForm
-       
+
        def after_signup(self, form):
            self.create_profile(form)
            super(SignupView, self).after_signup(form)
-       
+
        def create_profile(self, form):
            profile = self.created_user.get_profile()
            profile.birthdate = form.cleaned_data["birthdate"]
@@ -100,10 +100,10 @@ You can define your own form class to add fields to the sign up process::
 To hook this up for your project you need to override the URL for sign up::
 
     from django.conf.urls import patterns, include, url
-    
+
     import myproject.views
-    
-    
+
+
     urlpatterns = patterns("",
         url(r"^account/signup/$", myproject.views.SignupView.as_view(), name="account_signup"),
         url(r"^account/", include("account.urls")),
@@ -124,27 +124,27 @@ or get rid of them entirely.
 To enable email authentication do the following:
 
 1. check your settings for the following values::
-   
+
        ACCOUNT_EMAIL_UNIQUE = True
        ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
-   
+
    .. note::
-   
+
        If you need to change the value of ``ACCOUNT_EMAIL_UNIQUE`` make sure your
        database schema is modified to support a unique email column in
        ``account_emailaddress``.
-   
+
    ``ACCOUNT_EMAIL_CONFIRMATION_REQUIRED`` is optional, but highly
    recommended to be ``True``.
 
 2. define your own ``LoginView`` in your project::
-   
+
        import account.forms
        import account.views
-       
-       
+
+
        class LoginView(account.views.LoginView):
-           
+
            form_class = account.forms.LoginEmailForm
 
 3. ensure ``"account.auth_backends.EmailAuthenticationBackend"`` is in ``AUTHENTICATION_BACKENDS``
@@ -152,29 +152,29 @@ To enable email authentication do the following:
 If you want to get rid of username you'll need to do some extra work:
 
 1. define your own ``SignupForm`` and ``SignupView`` in your project::
-   
+
        # forms.py
-       
+
        import account.forms
-       
-       
+
+
        class SignupForm(account.forms.SignupForm):
-           
+
            def __init__(self, *args, **kwargs):
                super(SignupForm, self).__init__(*args, **kwargs)
                del self.fields["username"]
-       
+
        # views.py
-       
+
        import account.views
-       
+
        import myproject.forms
-       
-       
+
+
        class SignupView(account.views.SignupView):
-           
+
            form_class = myproject.forms.SignupForm
-           
+
            def generate_username(self, form):
                # do something to generate a unique username (required by the
                # Django User model, unfortunately)
@@ -186,19 +186,19 @@ If you want to get rid of username you'll need to do some extra work:
    when representing the user in the user interface. Keep in mind not
    everything you include in your project will do what you expect when
    removing usernames entirely.
-   
+
    Set ``ACCOUNT_USER_DISPLAY`` in settings to a callable suitable for your
    site::
-   
+
        ACCOUNT_USER_DISPLAY = lambda user: user.email
-   
+
    Your Python code can use ``user_display`` to handle user representation::
-   
+
        from account.utils import user_display
        user_display(user)
-   
+
    Your templates can use ``{% user_display request.user %}``::
-   
+
        {% load account_tags %}
        {% user_display request.user %}
 
@@ -254,5 +254,3 @@ file called lib/tests.py::
 And in your settings::
 
     TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
-
-
