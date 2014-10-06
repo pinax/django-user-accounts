@@ -1,0 +1,5 @@
+Django
+django-appconf>=0.6
+django-nose
+nose
+pytz>=2013.9
