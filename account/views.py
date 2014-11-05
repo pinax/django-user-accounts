@@ -9,7 +9,12 @@ from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
-from django.contrib.sites.shortcuts import get_current_site
+
+try:
+    from django.contrib.sites.shortcuts import get_current_site
+except ImportError:
+    from django.contrib.sites.models import get_current_site
+
 from django.contrib.auth.tokens import default_token_generator
 
 from account import signals
