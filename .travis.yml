@@ -21,7 +21,7 @@ matrix:
     - python: "3.4"
       env: DJANGO=1.6
 install:
-  - pip install -q Django>=$DJANGO_VERSION_MIN,<$DJANGO_VERSION_MAX
+  - pip install -q "Django>=$DJANGO_VERSION_MIN,<$DJANGO_VERSION_MAX"
   - pip install -q django-nose==1.2 coverage coveralls flake8
   - pip install -e .
 script:
