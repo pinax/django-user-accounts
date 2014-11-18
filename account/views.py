@@ -467,8 +467,8 @@ class ChangePasswordView(FormView):
         user = self.request.user
         user.set_password(form.cleaned_data["password_new"])
         user.save()
-        # Django >= 1.7 requires this call to stay logged in.
-        if hasattr(auth, 'update_session_auth_hash'):
+        # required on Django >= 1.7 to keep the user authenticated
+        if hasattr(auth, "update_session_auth_hash"):
             auth.update_session_auth_hash(self.request, user)
 
     def after_change_password(self):
