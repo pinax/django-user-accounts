@@ -705,11 +705,21 @@ class SettingsView(LoginRequiredMixin, FormView):
         email = form.cleaned_data["email"].strip()
         if not self.primary_email_address:
             user.email = email
-            EmailAddress.objects.add_email(self.request.user, email, primary=True, confirm=confirm)
+            EmailAddress.objects.add_email(
+                self.request.user,
+                email,
+                primary=True,
+                confirm=confirm,
+                site=get_current_site(self.request)
+            )
             user.save()
         else:
             if email != self.primary_email_address.email:
-                self.primary_email_address.change(email, confirm=confirm)
+                self.primary_email_address.change(
+                    email,
+                    confirm=confirm,
+                    site=get_current_site(self.request)
+                )
 
     def get_context_data(self, **kwargs):
         ctx = kwargs

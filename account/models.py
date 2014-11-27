@@ -277,10 +277,12 @@ class EmailAddress(models.Model):
         confirmation.send(**kwargs)
         return confirmation
 
-    def change(self, new_email, confirm=True):
+    def change(self, new_email, **kwargs):
         """
         Given a new email address, change self and re-confirm.
         """
+        confirm = kwargs.pop("confirm", True)
+        current_site = kwargs.pop("site", Site.objects.get_current())
         with transaction.commit_on_success():
             self.user.email = new_email
             self.user.save()
@@ -288,7 +290,7 @@ class EmailAddress(models.Model):
             self.verified = False
             self.save()
             if confirm:
-                self.send_confirmation()
+                self.send_confirmation(site=current_site)
 
 
 class EmailConfirmation(models.Model):

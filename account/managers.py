@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.contrib.sites.models import Site
 from django.db import models
 
 
@@ -7,9 +8,10 @@ class EmailAddressManager(models.Manager):
 
     def add_email(self, user, email, **kwargs):
         confirm = kwargs.pop("confirm", False)
+        current_site = kwargs.pop("site", Site.objects.get_current())
         email_address = self.create(user=user, email=email, **kwargs)
         if confirm and not email_address.verified:
-            email_address.send_confirmation()
+            email_address.send_confirmation(site=current_site)
         return email_address
 
     def get_primary(self, user):
