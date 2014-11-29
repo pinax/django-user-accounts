@@ -33,6 +33,7 @@ class AccountAppConf(AppConf):
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
+    MIN_PASSWORD_LEN = 8
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username
     CREATE_ON_SAVE = True

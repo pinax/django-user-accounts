@@ -148,3 +148,8 @@ Default::
 =================================
 
 Default: ``False``
+
+``ACCOUNT_MIN_PASSWORD_LEN``
+=================================
+
+Default: ``8``

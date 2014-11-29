@@ -31,6 +31,7 @@ class SignupForm(forms.Form):
     )
     password = forms.CharField(
         label=_("Password"),
+        min_length=settings.ACCOUNT_MIN_PASSWORD_LEN,
         widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
@@ -140,6 +141,7 @@ class ChangePasswordForm(forms.Form):
     )
     password_new = forms.CharField(
         label=_("New Password"),
+        min_length=settings.ACCOUNT_MIN_PASSWORD_LEN,
         widget=forms.PasswordInput(render_value=False)
     )
     password_new_confirm = forms.CharField(
