@@ -12,6 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import auth
 
+from django.conf import settings
+
 from account.compat import get_user_model, get_user_lookup_kwargs
 from account.conf import settings
 from account.hooks import hookset
@@ -31,6 +33,7 @@ class SignupForm(forms.Form):
     )
     password = forms.CharField(
         label=_("Password"),
+        min_length=settings.MIN_PASSWORD_LEN,
         widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
@@ -140,6 +143,7 @@ class ChangePasswordForm(forms.Form):
     )
     password_new = forms.CharField(
         label=_("New Password"),
+        min_length=settings.MIN_PASSWORD_LEN,
         widget=forms.PasswordInput(render_value=False)
     )
     password_new_confirm = forms.CharField(
