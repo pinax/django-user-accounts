@@ -61,13 +61,6 @@ This is bundled with Django. It is enabled by default with all new Django
 projects, but if you adding django-user-accounts to an existing project you
 need to make sure ``django.contrib.auth`` is installed.
 
-``django.contrib.sites``
-------------------------
-
-This is bundled with Django. It is enabled by default with all new Django
-projects. It is used to provide links back to the site in emails or various
-places in templates that need an absolute URL.
-
 django-appconf_
 ---------------
 
