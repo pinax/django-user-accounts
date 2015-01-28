@@ -10,10 +10,10 @@ from account.models import EmailAddress
 
 class UsernameAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
+    def authenticate(self, username, password):
         User = get_user_model()
         lookup_kwargs = get_user_lookup_kwargs({
-            "{username}__iexact": credentials["username"]
+            "{username}__iexact": username,
         })
         try:
             user = User.objects.get(**lookup_kwargs)
@@ -21,7 +21,7 @@ class UsernameAuthenticationBackend(ModelBackend):
             return None
         else:
             try:
-                if user.check_password(credentials["password"]):
+                if user.check_password(password):
                     return user
             except KeyError:
                 return None
@@ -29,16 +29,16 @@ class UsernameAuthenticationBackend(ModelBackend):
 
 class EmailAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
+    def authenticate(self, username, password):
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
         try:
-            email_address = qs.get(email__iexact=credentials["username"])
+            email_address = qs.get(email__iexact=username)
         except (EmailAddress.DoesNotExist, KeyError):
             return None
         else:
             user = email_address.user
             try:
-                if user.check_password(credentials["password"]):
+                if user.check_password(password):
                     return user
             except KeyError:
                 return None
