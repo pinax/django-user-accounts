@@ -114,7 +114,7 @@ class SignupView(FormView):
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
             sender=SignupForm,
-            username=get_form_data(form, "username"),
+            username=get_form_data(form, self.identifier_field),
             email=get_form_data(form, "email"),
             result=form.is_valid()
         )
