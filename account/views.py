@@ -21,7 +21,7 @@ from account.forms import SettingsForm
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion
-from account.utils import default_redirect
+from account.utils import default_redirect, get_form_data
 
 
 class SignupView(FormView):
@@ -114,8 +114,8 @@ class SignupView(FormView):
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
             sender=SignupForm,
-            username=form.data.get("username"),
-            email=form.data.get("email"),
+            username=get_form_data(form, self.identifier_field),
+            email=get_form_data(form, "email"),
             result=form.is_valid()
         )
         return super(SignupView, self).form_invalid(form)
@@ -307,7 +307,7 @@ class LoginView(FormView):
     def form_invalid(self, form):
         signals.user_login_attempt.send(
             sender=LoginView,
-            username=form.data.get(form.identifier_field),
+            username=get_form_data(form, form.identifier_field),
             result=form.is_valid()
         )
         return super(LoginView, self).form_invalid(form)

@@ -88,3 +88,11 @@ def handle_redirect_to_login(request, **kwargs):
         querystring[redirect_field_name] = next_url
         url_bits[4] = querystring.urlencode(safe="/")
     return HttpResponseRedirect(urlunparse(url_bits))
+
+
+def get_form_data(form, field_name, default=None):
+    if form.prefix:
+        key = "-".join([form.prefix, field_name])
+    else:
+        key = field_name
+    return form.data.get(key, default)
