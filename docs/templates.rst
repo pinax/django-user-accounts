@@ -60,12 +60,12 @@ Template Tags
 
 To use the built in template tags you must first load them within the templates:
 
-.. code-block:: python
+.. code-block:: jinja
 
     {% load account_tags %}
 
 To display the current logged-in user:
 
-.. code-block:: python
+.. code-block:: jinja
 
     {% user_display request.user %}
