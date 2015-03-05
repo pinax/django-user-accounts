@@ -2,12 +2,13 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import importlib
 from django.utils.translation import get_language_info
 
 import pytz
 
 from appconf import AppConf
+
+from .compat import importlib
 
 
 def load_path_attr(path):
