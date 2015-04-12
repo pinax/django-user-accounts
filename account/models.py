@@ -28,6 +28,12 @@ from account.hooks import hookset
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 
+# Django 1.6
+if hasattr(transaction, 'atomic'):
+    commit_on_success = transaction.atomic
+else:
+    commit_on_success = transaction.commit_on_success
+
 
 class Account(models.Model):
 
@@ -282,11 +288,13 @@ class EmailAddress(models.Model):
         Given a new email address, change self and re-confirm.
         """
         confirm = kwargs.pop("confirm", True)
+
         if confirm:
             confirm_kwargs = {}
             if "site" in kwargs:
                 confirm_kwargs.update({"site": kwargs.pop("site")})
-        with transaction.commit_on_success():
+
+        with commit_on_success():
             self.user.email = new_email
             self.user.save()
             self.email = new_email

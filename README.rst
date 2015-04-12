@@ -59,5 +59,5 @@ See http://django-user-accounts.readthedocs.org/
 Contributing
 ============
 
-We accept contributions for everyone! See the ``CONTRIBUTING.md`` file for more
+We accept contributions from everyone! See the ``CONTRIBUTING.md`` file for more
 information about how to contribute.

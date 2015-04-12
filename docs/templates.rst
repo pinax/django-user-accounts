@@ -58,10 +58,14 @@ Emails (actual emails themselves)::
 Template Tags
 =============
 
-To use the built in template tags you must first load them within the templates::
+To use the built in template tags you must first load them within the templates:
+
+.. code-block:: jinja
 
     {% load account_tags %}
 
-To display the current logged-in user::
+To display the current logged-in user:
+
+.. code-block:: jinja
 
     {% user_display request.user %}
