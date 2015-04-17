@@ -9,7 +9,12 @@ from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
-from django.contrib.sites.models import get_current_site
+
+try:
+    from django.contrib.sites.shortcuts import get_current_site
+except ImportError:
+    from django.contrib.sites.models import get_current_site
+
 from django.contrib.auth.tokens import default_token_generator
 
 from account import signals
@@ -709,7 +714,7 @@ class SettingsView(LoginRequiredMixin, FormView):
             user.save()
         else:
             if email != self.primary_email_address.email:
-                self.primary_email_address.change(email, confirm=confirm)
+                self.primary_email_address.change(email, confirm=confirm, site=get_current_site(self.request))
 
     def get_context_data(self, **kwargs):
         ctx = kwargs

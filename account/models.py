@@ -16,7 +16,6 @@ from django.utils import timezone, translation, six
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.sites.models import Site
 
 import pytz
 
@@ -208,7 +207,7 @@ class SignupCode(models.Model):
 
     def send(self, **kwargs):
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
+        current_site = kwargs.get("site")
         if "signup_url" not in kwargs:
             signup_url = "{0}://{1}{2}?{3}".format(
                 protocol,
@@ -277,7 +276,7 @@ class EmailAddress(models.Model):
         confirmation.send(**kwargs)
         return confirmation
 
-    def change(self, new_email, confirm=True):
+    def change(self, new_email, confirm=True, **kwargs):
         """
         Given a new email address, change self and re-confirm.
         """
@@ -288,7 +287,7 @@ class EmailAddress(models.Model):
             self.verified = False
             self.save()
             if confirm:
-                self.send_confirmation()
+                self.send_confirmation(**kwargs)
 
 
 class EmailConfirmation(models.Model):
@@ -327,8 +326,8 @@ class EmailConfirmation(models.Model):
             return email_address
 
     def send(self, **kwargs):
-        current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        current_site = kwargs.get("site")
         activate_url = "{0}://{1}{2}".format(
             protocol,
             current_site.domain,
