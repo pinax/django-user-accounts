@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Brian Rosner <brosner@gmail.com>, 2015
 # Eugene MechanisM <contact@mechanism.name>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: django-user-accounts\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-30 15:12-0600\n"
-"PO-Revision-Date: 2014-07-31 20:44+0000\n"
+"PO-Revision-Date: 2015-04-23 15:27+0000\n"
 "Last-Translator: Brian Rosner <brosner@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/django-user-accounts/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -64,7 +65,7 @@ msgstr "Имя пользователя и/или пароль введено н
 
 #: forms.py:123
 msgid "The email address and/or password you specified are not correct."
-msgstr "Email-адрес и/или пароль введено некорректно."
+msgstr "Email-адрес и/или пароль введен некорректно."
 
 #: forms.py:138
 msgid "Current Password"
