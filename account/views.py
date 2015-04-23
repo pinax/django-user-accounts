@@ -616,6 +616,8 @@ class PasswordResetTokenView(FormView):
     def after_change_password(self):
         user = self.get_user()
         signals.password_changed.send(sender=PasswordResetTokenView, user=user)
+        if settings.ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE:
+            self.send_email(user)
         if self.messages.get("password_changed"):
             messages.add_message(
                 self.request,
@@ -654,6 +656,16 @@ class PasswordResetTokenView(FormView):
             "context": self.get_context_data()
         }
         return self.response_class(**response_kwargs)
+
+    def send_email(self, user):
+        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        current_site = get_current_site(self.request)
+        ctx = {
+            "user": user,
+            "protocol": protocol,
+            "current_site": current_site,
+        }
+        hookset.send_password_change_email([user.email], ctx)
 
 
 class SettingsView(LoginRequiredMixin, FormView):
