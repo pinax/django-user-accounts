@@ -8,7 +8,7 @@ env:
   - DJANGO=1.8 DJANGO_VERSION_MIN=1.8 DJANGO_VERSION_MAX=1.9
 install:
   - pip install -q "Django>=$DJANGO_VERSION_MIN,<$DJANGO_VERSION_MAX"
-  - pip install -q django-nose==1.2 coverage coveralls flake8
+  - pip install -q django-nose coverage coveralls flake8
   - pip install -e .
 script:
   - flake8 account
