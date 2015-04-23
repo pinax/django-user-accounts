@@ -41,7 +41,7 @@ defined in your project::
             super(SignupView, self).after_signup(form)
 
         def update_profile(self, form):
-            profile = self.created_user.get_profile()
+            profile = self.created_user.profile  # replace with your reverse one-to-one profile attribute
             profile.some_attr = "some value"
             profile.save()
 
@@ -93,7 +93,7 @@ You can define your own form class to add fields to the sign up process::
            super(SignupView, self).after_signup(form)
 
        def create_profile(self, form):
-           profile = self.created_user.get_profile()
+           profile = self.created_user.profile  # replace with your reverse one-to-one profile attribute
            profile.birthdate = form.cleaned_data["birthdate"]
            profile.save()
 
