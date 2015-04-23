@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import importlib
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import get_language_info
@@ -7,8 +9,6 @@ from django.utils.translation import get_language_info
 import pytz
 
 from appconf import AppConf
-
-from .compat import importlib
 
 
 def load_path_attr(path):

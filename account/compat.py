@@ -9,11 +9,6 @@ except ImportError:
     auth_get_user_model = None
     from django.contrib.auth.models import User
 
-try:
-    import importlib
-except ImportError:
-    from django.utils import importlib  # noqa
-
 from account.conf import settings
 
 
