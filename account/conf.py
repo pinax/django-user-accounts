@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
+import importlib
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import importlib
 from django.utils.translation import get_language_info
 
 import pytz
@@ -34,7 +35,7 @@ class AccountAppConf(AppConf):
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
-    USER_DISPLAY = lambda user: user.username
+    USER_DISPLAY = lambda user: user.username  # flake8: noqa
     CREATE_ON_SAVE = True
     EMAIL_UNIQUE = True
     EMAIL_CONFIRMATION_REQUIRED = False
