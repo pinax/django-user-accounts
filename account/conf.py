@@ -10,6 +10,8 @@ import pytz
 
 from appconf import AppConf
 
+from account.timezones import TIMEZONES
+
 
 def load_path_attr(path):
     i = path.rfind(".")
@@ -50,7 +52,7 @@ class AccountAppConf(AppConf):
     DELETION_EXPUNGE_CALLBACK = "account.callbacks.account_delete_expunge"
     DELETION_EXPUNGE_HOURS = 48
     HOOKSET = "account.hooks.AccountDefaultHookSet"
-    TIMEZONES = list(zip(pytz.all_timezones, pytz.all_timezones))
+    TIMEZONES = TIMEZONES
     LANGUAGES = [
         (code, get_language_info(code).get("name_local"))
         for code, lang in settings.LANGUAGES
