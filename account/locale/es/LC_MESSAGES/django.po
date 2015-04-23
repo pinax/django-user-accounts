@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Erik Rivera <erik.river@gmail.com>, 2012
-# nqnwebs <gaitan@gmail.com>, 2014
-# nqnwebs <gaitan@gmail.com>, 2014
+# Martin Gaitan <gaitan@gmail.com>, 2014
+# Martin Gaitan <gaitan@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: django-user-accounts\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-30 15:12-0600\n"
-"PO-Revision-Date: 2014-02-20 13:24+0000\n"
-"Last-Translator: nqnwebs <gaitan@gmail.com>\n"
+"PO-Revision-Date: 2014-07-31 20:44+0000\n"
+"Last-Translator: Brian Rosner <brosner@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/django-user-accounts/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
