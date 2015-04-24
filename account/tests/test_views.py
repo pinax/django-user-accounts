@@ -1,3 +1,7 @@
+from importlib import import_module
+
+from django.apps import apps
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -108,6 +112,9 @@ class SignupViewTestCase(TestCase):
         self.assertRedirects(response, next_url, fetch_redirect_response=False)
 
     def test_session_next_url(self):
+        # session setup due to bug in Django 1.7
+        setup_session(self.client)
+
         next_url = "/next-url/"
         session = self.client.session
         session["redirect_to"] = next_url
@@ -128,3 +135,15 @@ class LoginViewTestCase(TestCase):
         response = self.client.get(reverse("account_login"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.template_name, ["account/login.html"])
+
+
+def setup_session(client):
+    assert apps.is_installed("django.contrib.sessions"), "sessions not installed"
+    engine = import_module(settings.SESSION_ENGINE)
+    cookie = client.cookies.get(settings.SESSION_COOKIE_NAME, None)
+    if cookie:
+        return engine.SessionStore(cookie.value)
+    s = engine.SessionStore()
+    s.save()
+    client.cookies[settings.SESSION_COOKIE_NAME] = s.session_key
+    return s
