@@ -84,6 +84,43 @@ class SignupViewTestCase(TestCase):
             response = self.client.post(reverse("account_signup"), data)
             self.assertEqual(response.status_code, 404)
 
+    def test_get_next_url(self):
+        next_url = "/next-url/"
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+        }
+        response = self.client.post("{}?next={}".format(reverse("account_signup"), next_url), data)
+        self.assertRedirects(response, next_url, fetch_redirect_response=False)
+
+    def test_post_next_url(self):
+        next_url = "/next-url/"
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+            "next": next_url,
+        }
+        response = self.client.post(reverse("account_signup"), data)
+        self.assertRedirects(response, next_url, fetch_redirect_response=False)
+
+    def test_session_next_url(self):
+        next_url = "/next-url/"
+        session = self.client.session
+        session["redirect_to"] = next_url
+        session.save()
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+        }
+        response = self.client.post(reverse("account_signup"), data)
+        self.assertRedirects(response, next_url, fetch_redirect_response=False)
+
 
 class LoginViewTestCase(TestCase):
 
