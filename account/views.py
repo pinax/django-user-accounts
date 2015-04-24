@@ -79,6 +79,8 @@ class SignupView(FormView):
         return super(SignupView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
+        if self.request.user.is_authenticated():
+            raise Http404()
         if not self.is_open():
             return self.closed()
         return super(SignupView, self).post(*args, **kwargs)
