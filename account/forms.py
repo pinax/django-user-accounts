@@ -11,11 +11,12 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import auth
+from django.contrib.auth import get_user_model
 
-from account.compat import get_user_model, get_user_lookup_kwargs
 from account.conf import settings
 from account.hooks import hookset
 from account.models import EmailAddress
+from account.utils import get_user_lookup_kwargs
 
 
 alnum_re = re.compile(r"^\w+$")

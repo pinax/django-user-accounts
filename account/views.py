@@ -9,11 +9,11 @@ from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
+from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 
 from account import signals
-from account.compat import get_user_model
 from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
 from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm

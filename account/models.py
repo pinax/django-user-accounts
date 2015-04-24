@@ -12,6 +12,7 @@ from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone, translation, six
 from django.utils.translation import ugettext_lazy as _
 
@@ -21,7 +22,6 @@ from django.contrib.sites.models import Site
 import pytz
 
 from account import signals
-from account.compat import AUTH_USER_MODEL, receiver
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
@@ -31,7 +31,7 @@ from account.signals import signup_code_sent, signup_code_used
 
 class Account(models.Model):
 
-    user = models.OneToOneField(AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(
         _("language"),
@@ -91,7 +91,7 @@ class Account(models.Model):
         return value.astimezone(pytz.timezone(timezone))
 
 
-@receiver(post_save, sender=AUTH_USER_MODEL)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def user_post_save(sender, **kwargs):
     """
     After User.save is called we check to see if it was a created user. If so,
@@ -132,7 +132,7 @@ class SignupCode(models.Model):
     code = models.CharField(_("code"), max_length=64, unique=True)
     max_uses = models.PositiveIntegerField(_("max uses"), default=0)
     expiry = models.DateTimeField(_("expiry"), null=True, blank=True)
-    inviter = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True)
+    inviter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     email = models.EmailField(blank=True)
     notes = models.TextField(_("notes"), blank=True)
     sent = models.DateTimeField(_("sent"), null=True, blank=True)
@@ -235,7 +235,7 @@ class SignupCode(models.Model):
 class SignupCodeResult(models.Model):
 
     signup_code = models.ForeignKey(SignupCode)
-    user = models.ForeignKey(AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     timestamp = models.DateTimeField(default=timezone.now)
 
     def save(self, **kwargs):
@@ -245,7 +245,7 @@ class SignupCodeResult(models.Model):
 
 class EmailAddress(models.Model):
 
-    user = models.ForeignKey(AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(_("verified"), default=False)
     primary = models.BooleanField(_("primary"), default=False)
@@ -351,7 +351,7 @@ class EmailConfirmation(models.Model):
 
 class AccountDeletion(models.Model):
 
-    user = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.EmailField()
     date_requested = models.DateTimeField(_("date requested"), default=timezone.now)
     date_expunged = models.DateTimeField(_("date expunged"), null=True, blank=True)

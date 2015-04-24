@@ -10,7 +10,17 @@ from django.core import urlresolvers
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
 
+from django.contrib.auth import get_user_model
+
 from account.conf import settings
+
+
+def get_user_lookup_kwargs(kwargs):
+    result = {}
+    username_field = getattr(get_user_model(), "USERNAME_FIELD", "username")
+    for key, value in kwargs.items():
+        result[key.format(username=username_field)] = value
+    return result
 
 
 def default_redirect(request, fallback_url, **kwargs):
