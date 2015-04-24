@@ -156,6 +156,8 @@ class SignupCode(models.Model):
             checks.append(Q(code=code))
         if email:
             checks.append(Q(email=code))
+        if not checks:
+            return False
         return cls._default_manager.filter(six.moves.reduce(operator.or_, checks)).exists()
 
     @classmethod

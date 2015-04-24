@@ -1,6 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from account.models import SignupCode
+
 
 class SignupViewTestCase(TestCase):
 
@@ -29,6 +31,20 @@ class SignupViewTestCase(TestCase):
             response = self.client.post(reverse("account_signup"), data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.template_name, "account/signup_closed.html")
+
+    def test_code(self):
+        signup_code = SignupCode.create()
+        signup_code.save()
+        with self.settings(ACCOUNT_OPEN_SIGNUP=False):
+            data = {
+                "username": "foo",
+                "password": "bar",
+                "password_confirm": "bar",
+                "email": "foobar@example.com",
+                "code": signup_code.code,
+            }
+            response = self.client.post(reverse("account_signup"), data)
+            self.assertEqual(response.status_code, 302)
 
 
 class LoginViewTestCase(TestCase):

@@ -39,7 +39,10 @@ class AccountDefaultHookSet(object):
         return hash_func("".join(bits).encode("utf-8")).hexdigest()
 
     def generate_signup_code_token(self, email=None):
-        return self.generate_random_token([email])
+        extra = []
+        if email:
+            extra.append(email)
+        return self.generate_random_token(extra)
 
     def generate_email_confirmation_token(self, email):
         return self.generate_random_token([email])
