@@ -15,7 +15,7 @@ from account.conf import settings
 
 def default_redirect(request, fallback_url, **kwargs):
     redirect_field_name = kwargs.get("redirect_field_name", "next")
-    next_url = request.REQUEST.get(redirect_field_name)
+    next_url = request.POST.get(redirect_field_name, request.GET.get(redirect_field_name))
     if not next_url:
         # try the session if available
         if hasattr(request, "session"):
