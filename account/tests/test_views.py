@@ -32,7 +32,7 @@ class SignupViewTestCase(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.template_name, "account/signup_closed.html")
 
-    def test_code(self):
+    def test_valid_code(self):
         signup_code = SignupCode.create()
         signup_code.save()
         with self.settings(ACCOUNT_OPEN_SIGNUP=False):
@@ -45,6 +45,19 @@ class SignupViewTestCase(TestCase):
             }
             response = self.client.post(reverse("account_signup"), data)
             self.assertEqual(response.status_code, 302)
+
+    def test_invalid_code(self):
+        with self.settings(ACCOUNT_OPEN_SIGNUP=False):
+            data = {
+                "username": "foo",
+                "password": "bar",
+                "password_confirm": "bar",
+                "email": "foobar@example.com",
+                "code": "abc123",
+            }
+            response = self.client.post(reverse("account_signup"), data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.template_name, "account/signup_closed.html")
 
 
 class LoginViewTestCase(TestCase):
