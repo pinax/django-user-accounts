@@ -1,0 +1,19 @@
+site_name: Django User Accounts
+site_url: http://amfarrell.com/django-user-accounts
+site_description: Django User Accounts
+pages:
+- [index.md, Home]
+- [installation.md, Installation]
+- [usage.md, Usage]
+- [settings.md, Settings]
+- [templates.md, Templates]
+- [signals.md, Signals]
+- [changelog.md, Changelog]
+- [migration.md, Migration]
+- [faq.md, FAQ]
+theme: readthedocs
+dev_addr: '0.0.0.0:8000'
+copyright: "2014, James Tauber and contributors"
+markdown_extensions:
+    codehilite:
+        pygments_style: 'sphinx'

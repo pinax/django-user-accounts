@@ -170,3 +170,10 @@ translations better than dealing them through the pull request system.
 Head over to [django-user-accounts on Transifex](https://www.transifex.com/projects/p/django-user-accounts/)
 and find the language you would like to contribute. If you do not find your
 language then please submit an issue and we will get it setup.
+
+## Documentation
+
+We use [Mkdocs](http://www.mkdocs.org/) to build documentation and welcome contributions.
+To get started, first run `pip install -r docs-requirements` and then `mkdocs serve`, then visit
+the existing documentation in your brower at http://0.0.0.0:8000.
+Please view your changes to the documentation by 
