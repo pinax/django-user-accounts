@@ -27,7 +27,6 @@ class EmailAddressAdmin(AccountAdmin):
 
     list_display = ["user", "email", "verified", "primary"]
     search_fields = ["email", "user__username"]
-    list_filter = ["user"]
 
 
 admin.site.register(Account, AccountAdmin)
