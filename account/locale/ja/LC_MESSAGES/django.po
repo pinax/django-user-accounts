@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: django-user-account\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-20 11:21+0900\n"
+"PO-Revision-Date: 2015-07-20 11:35+0900\n"
+"Last-Translator: Hiroshi Miura <miurahr@linux.com>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: forms.py:28 forms.py:108
+msgid "Username"
+msgstr "ユーザ名"
+
+#: forms.py:34 forms.py:80
+msgid "Password"
+msgstr "パスワード"
+
+#: forms.py:38
+msgid "Password (again)"
+msgstr "パスワード（確認）"
+
+#: forms.py:42 forms.py:123 forms.py:169 forms.py:198
+msgid "Email"
+msgstr "電子メールアドレス"
+
+#: forms.py:53
+msgid "Usernames can only contain letters, numbers and underscores."
+msgstr ""
+"ユーザ名には、半角英数字(A-Za-z0-9)とアンダースコア('_')のみが使用可能です。"
+
+#: forms.py:61
+msgid "This username is already taken. Please choose another."
+msgstr "ユーザ名がすでに使われています。他の名前をご利用ください。"
+
+#: forms.py:68 forms.py:218
+msgid "A user is registered with this email address."
+msgstr "このメールアドレスで登録されたユーザがいます。"
+
+#: forms.py:73 forms.py:163 forms.py:192
+msgid "You must type the same password each time."
+msgstr "２つのパスワードが異なります。"
+
+#: forms.py:84
+msgid "Remember Me"
+msgstr "ログインを覚えておく。"
+
+#: forms.py:97
+msgid "This account is inactive."
+msgstr "このアカウントは、無効にされています。"
+
+#: forms.py:109
+msgid "The username and/or password you specified are not correct."
+msgstr "入力されたユーザ名かパスワードが違うようです。"
+
+#: forms.py:124
+msgid "The email address and/or password you specified are not correct."
+msgstr "入力された電子メールかパスワードが違うようです。"
+
+#: forms.py:139
+msgid "Current Password"
+msgstr "現在のパスワード"
+
+#: forms.py:143 forms.py:181
+msgid "New Password"
+msgstr "新規パスワード"
+
+#: forms.py:147 forms.py:185
+msgid "New Password (again)"
+msgstr "新規パスワード（確認）"
+
+#: forms.py:157
+msgid "Please type your current password."
+msgstr "現在使用中のパスワードを入力してください。"
+
+#: forms.py:174
+msgid "Email address can not be found."
+msgstr "電子メールアドレスが見つかりません。"
+
+#: forms.py:200
+msgid "Timezone"
+msgstr "タイムゾーン"
+
+#: forms.py:206
+msgid "Language"
+msgstr "言語"
+
+#: models.py:34
+msgid "user"
+msgstr "ユーザ"
+
+#: models.py:35
+msgid "timezone"
+msgstr "タイムゾーン"
+
+#: models.py:37
+msgid "language"
+msgstr "言語"
+
+#: models.py:132
+msgid "code"
+msgstr "コード"
+
+#: models.py:133
+msgid "max uses"
+msgstr "最大使用可能数"
+
+#: models.py:134
+msgid "expiry"
+msgstr "有効期限"
+
+#: models.py:137
+msgid "notes"
+msgstr "備考"
+
+#: models.py:138
+msgid "sent"
+msgstr "送信日"
+
+#: models.py:139
+msgid "created"
+msgstr "作成日"
+
+#: models.py:140
+msgid "use count"
+msgstr "使用された回数"
+
+#: models.py:143
+msgid "signup code"
+msgstr "ユーザ登録コード"
+
+#: models.py:144
+msgid "signup codes"
+msgstr "ユーザ登録コード"
+
+#: models.py:250
+msgid "verified"
+msgstr "確認済み"
+
+#: models.py:251
+msgid "primary"
+msgstr "第一優先アドレス"
+
+#: models.py:256
+msgid "email address"
+msgstr "電子メールアドレス"
+
+#: models.py:257
+msgid "email addresses"
+msgstr "電子メールアドレス"
+
+#: models.py:306
+msgid "email confirmation"
+msgstr "メールアドレスの確認"
+
+#: models.py:307
+msgid "email confirmations"
+msgstr "メールアドレスの確認"
+
+#: models.py:356
+msgid "date requested"
+msgstr "削除要求日"
+
+#: models.py:357
+msgid "date expunged"
+msgstr "削除実行日"
+
+#: models.py:360
+msgid "account deletion"
+msgstr "アカウントの削除"
+
+#: models.py:361
+msgid "account deletions"
+msgstr "アカウントの削除"
+
+#: views.py:42
+#, python-brace-format
+msgid "Confirmation email sent to {email}."
+msgstr " {email}に確認メールが送信されました。"
+
+#: views.py:46
+#, python-brace-format
+msgid "The code {code} is invalid."
+msgstr "コード {code} が不正です。"
+
+#: views.py:381
+#, python-brace-format
+msgid "You have confirmed {email}."
+msgstr "{email}　は確認されました。"
+
+#: views.py:454 views.py:590
+msgid "Password successfully changed."
+msgstr "パスワードを変更しました。"
+
+#: views.py:681
+msgid "Account settings updated."
+msgstr "アカウント設定が更新されました。"
+
+#: views.py:765
+#, python-brace-format
+msgid ""
+"Your account is now inactive and your data will be expunged in the next "
+"{expunge_hours} hours."
+msgstr ""
+"アカウントは無効になっています。あなたの登録データは、 {expunge_hours} 時間後"
+"に削除される予定です。"
