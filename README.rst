@@ -4,6 +4,9 @@ django-user-accounts
 
 *user accounts for Django*
 
+.. image:: http://slack.pinaxproject.com/badge.svg
+   :target: http://slack.pinaxproject.com/
+
 .. image:: https://img.shields.io/travis/pinax/django-user-accounts.svg
     :target: https://travis-ci.org/pinax/django-user-accounts
 
