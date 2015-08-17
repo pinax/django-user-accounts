@@ -2,6 +2,10 @@
 django-user-accounts
 ====================
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/pinax/django-user-accounts
+   :target: https://gitter.im/pinax/django-user-accounts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 *user accounts for Django*
 
 .. image:: http://slack.pinaxproject.com/badge.svg
