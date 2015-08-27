@@ -71,7 +71,7 @@ The Pinax documentation is available at http://pinaxproject.com/pinax/.
 
 
 Contributing
-============
+--------------
 
 We accept contributions from everyone! See the ``CONTRIBUTING.md`` file for more
 information about how to contribute.
