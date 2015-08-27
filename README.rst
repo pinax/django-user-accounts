@@ -38,7 +38,7 @@ with user accounts.
 
 
 Features
-========
+----------
 
 * Functionality for:
 
@@ -55,7 +55,7 @@ Features
 
 
 Requirements
-============
+--------------
 
 * Django 1.7 or 1.8
 * Python 2.7, 3.3 or 3.4
@@ -64,7 +64,7 @@ Requirements
 
 
 Documentation
-=============
+----------------
 
 See http://django-user-accounts.readthedocs.org/.
 The Pinax documentation is available at http://pinaxproject.com/pinax/.
