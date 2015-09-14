@@ -11,6 +11,7 @@ import pytz
 from appconf import AppConf
 
 from account.timezones import TIMEZONES
+from account.language_list import ACCOUNT_LANGUAGES_LIST
 
 
 def load_path_attr(path):
@@ -53,10 +54,7 @@ class AccountAppConf(AppConf):
     DELETION_EXPUNGE_HOURS = 48
     HOOKSET = "account.hooks.AccountDefaultHookSet"
     TIMEZONES = TIMEZONES
-    LANGUAGES = [
-        (code, get_language_info(code).get("name_local"))
-        for code, lang in settings.LANGUAGES
-    ]
+    LANGUAGES = ACCOUNT_LANGUAGES_LIST
     USE_AUTH_AUTHENTICATE = False
 
     def configure_deletion_mark_callback(self, value):
