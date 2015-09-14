@@ -133,7 +133,7 @@ class SignupCode(models.Model):
     max_uses = models.PositiveIntegerField(_("max uses"), default=0)
     expiry = models.DateTimeField(_("expiry"), null=True, blank=True)
     inviter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(max_length=254, blank=True)
     notes = models.TextField(_("notes"), blank=True)
     sent = models.DateTimeField(_("sent"), null=True, blank=True)
     created = models.DateTimeField(_("created"), default=timezone.now, editable=False)
@@ -246,7 +246,7 @@ class SignupCodeResult(models.Model):
 class EmailAddress(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
+    email = models.EmailField(max_length=254, unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(_("verified"), default=False)
     primary = models.BooleanField(_("primary"), default=False)
 
@@ -352,7 +352,7 @@ class EmailConfirmation(models.Model):
 class AccountDeletion(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-    email = models.EmailField()
+    email = models.EmailField(max_length=254)
     date_requested = models.DateTimeField(_("date requested"), default=timezone.now)
     date_expunged = models.DateTimeField(_("date expunged"), null=True, blank=True)
 
