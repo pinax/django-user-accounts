@@ -15,7 +15,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "django-appconf>=0.6",
-        "pytz>=2013.9"
+        "pytz>=2015.6"
     ],
     zip_safe=False,
     package_data={
