@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import sys
 
@@ -6,15 +7,9 @@ import django
 from django.conf import settings
 
 
-settings.configure(
+DEFAULT_SETTINGS = dict(
     DEBUG=True,
     USE_TZ=True,
-    DATABASES={
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-        }
-    },
-    ROOT_URLCONF="account.urls",
     INSTALLED_APPS=[
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -22,6 +17,7 @@ settings.configure(
         "django.contrib.sites",
         "django.contrib.messages",
         "account",
+        "account.tests",
     ],
     MIDDLEWARE_CLASSES=[
         "django.contrib.sessions.middleware.SessionMiddleware",
@@ -29,19 +25,39 @@ settings.configure(
         "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
     ],
+    DATABASES={
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    },
     SITE_ID=1,
-    TEMPLATE_DIRS=[
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "account", "tests", "templates")),
-    ]
+    ROOT_URLCONF="account.tests.urls",
+    SECRET_KEY="notasecret",
 )
 
-if hasattr(django, "setup"):
+
+def runtests(*test_args):
+    if not settings.configured:
+        settings.configure(**DEFAULT_SETTINGS)
+
     django.setup()
 
-from django_nose import NoseTestSuiteRunner
+    parent = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, parent)
 
-test_runner = NoseTestSuiteRunner(verbosity=1)
-failures = test_runner.run_tests(["account"])
+    try:
+        from django.test.runner import DiscoverRunner
+        runner_class = DiscoverRunner
+        test_args = ["account.tests"]
+    except ImportError:
+        from django.test.simple import DjangoTestSuiteRunner
+        runner_class = DjangoTestSuiteRunner
+        test_args = ["tests"]
 
-if failures:
+    failures = runner_class(verbosity=1, interactive=True, failfast=False).run_tests(test_args)
     sys.exit(failures)
+
+
+if __name__ == "__main__":
+    runtests(*sys.argv[1:])

@@ -23,6 +23,7 @@ setup(
             "locale/*/LC_MESSAGES/*",
         ],
     },
+    test_suite="runtests.runtests",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
