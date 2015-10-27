@@ -67,7 +67,7 @@ Documentation
 ----------------
 
 See http://django-user-accounts.readthedocs.org/ for the ``django-user-accounts`` documentation.
-The Pinax documentation is available at http://pinaxproject.com/pinax/.
+The Pinax documentation is available at http://pinaxproject.com/pinax/. If you would like to help us improve our documentation or write more documentation, please join our Slack channel and let us know!
 
 
 Contributing
