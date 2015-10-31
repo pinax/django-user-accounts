@@ -137,12 +137,7 @@ Default: ``list(zip(pytz.all_timezones, pytz.all_timezones))``
 ``ACCOUNT_LANGUAGES``
 =====================
 
-Default::
-
-    [
-        (code, get_language_info(code).get("name_local"))
-        for code, lang in settings.LANGUAGES
-    ]
+See full list in: https://github.com/pinax/django-user-accounts/blob/master/account/language_list.py
 
 ``ACCOUNT_USE_AUTH_AUTHENTICATE``
 =================================
