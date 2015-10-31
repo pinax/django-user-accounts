@@ -14,6 +14,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone, translation, six
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import AnonymousUser
@@ -29,6 +30,7 @@ from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 
 
+@python_2_unicode_compatible
 class Account(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
@@ -107,6 +109,7 @@ def user_post_save(sender, **kwargs):
         Account.create(user=user)
 
 
+@python_2_unicode_compatible
 class AnonymousAccount(object):
 
     def __init__(self, request=None):
@@ -117,10 +120,11 @@ class AnonymousAccount(object):
         else:
             self.language = translation.get_language_from_request(request, check_path=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "AnonymousAccount"
 
 
+@python_2_unicode_compatible
 class SignupCode(models.Model):
 
     class AlreadyExists(Exception):
@@ -143,7 +147,7 @@ class SignupCode(models.Model):
         verbose_name = _("signup code")
         verbose_name_plural = _("signup codes")
 
-    def __unicode__(self):
+    def __str__(self):
         if self.email:
             return "{0} [{1}]".format(self.email, self.code)
         else:
@@ -243,6 +247,7 @@ class SignupCodeResult(models.Model):
         self.signup_code.calculate_use_count()
 
 
+@python_2_unicode_compatible
 class EmailAddress(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -258,7 +263,7 @@ class EmailAddress(models.Model):
         if not settings.ACCOUNT_EMAIL_UNIQUE:
             unique_together = [("user", "email")]
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0} ({1})".format(self.email, self.user)
 
     def set_as_primary(self, conditional=False):
@@ -293,6 +298,7 @@ class EmailAddress(models.Model):
                 self.send_confirmation()
 
 
+@python_2_unicode_compatible
 class EmailConfirmation(models.Model):
 
     email_address = models.ForeignKey(EmailAddress)
@@ -306,7 +312,7 @@ class EmailConfirmation(models.Model):
         verbose_name = _("email confirmation")
         verbose_name_plural = _("email confirmations")
 
-    def __unicode__(self):
+    def __str__(self):
         return "confirmation for {0}".format(self.email_address)
 
     @classmethod
