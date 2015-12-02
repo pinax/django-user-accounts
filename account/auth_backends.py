@@ -13,10 +13,10 @@ class UsernameAuthenticationBackend(ModelBackend):
 
     def authenticate(self, **credentials):
         User = get_user_model()
-        lookup_kwargs = get_user_lookup_kwargs({
-            "{username}__iexact": credentials["username"]
-        })
         try:
+            lookup_kwargs = get_user_lookup_kwargs({
+                "{username}__iexact": credentials["username"]
+            })
             user = User.objects.get(**lookup_kwargs)
         except (User.DoesNotExist, KeyError):
             return None
