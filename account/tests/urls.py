@@ -1,7 +1,6 @@
-from django.conf.urls import patterns, include
+from django.conf.urls import include, url
 
 
-urlpatterns = patterns(
-    "",
-    (r"^", include("account.urls")),
-)
+urlpatterns = [
+    url(r"^", include("account.urls")),
+]

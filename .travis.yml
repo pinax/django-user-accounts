@@ -2,15 +2,23 @@ sudo: false
 language: python
 python:
   - "2.7"
+  - "3.2"
   - "3.3"
   - "3.4"
   - "3.5"
 env:
   - DJANGO=1.7
   - DJANGO=1.8
+  - DJANGO=1.9
   - DJANGO=master
 matrix:
   exclude:
+    - python: "3.2"
+      env: DJANGO=1.9
+    - python: "3.3"
+      env: DJANGO=1.9
+    - python: "3.2"
+      env: DJANGO=master
     - python: "3.3"
       env: DJANGO=master
     - python: "3.5"
@@ -19,5 +27,5 @@ install:
   - pip install tox coveralls
 script:
   - tox -e py${TRAVIS_PYTHON_VERSION//[.]/}-$DJANGO
-after_script:
+after_success:
   - coveralls
