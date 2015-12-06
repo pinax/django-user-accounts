@@ -19,12 +19,12 @@ Django User Accounts
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :target:  https://pypi.python.org/pypi/django-user-accounts/
-    
-    
+
+
 Pinax
 -------
 
-Pinax is an open-source platform built on the Django Web Framework. It is an ecosystem of reusable Django apps, themes, and starter project templates. 
+Pinax is an open-source platform built on the Django Web Framework. It is an ecosystem of reusable Django apps, themes, and starter project templates.
 This collection can be found at http://pinaxproject.com.
 
 This app was developed as part of the Pinax ecosystem but is just a Django app and can be used independently of other Pinax apps.
@@ -57,8 +57,8 @@ Features
 Requirements
 --------------
 
-* Django 1.7 or 1.8
-* Python 2.7, 3.3 or 3.4
+* Django 1.7, 1.8 or 1.9
+* Python 2.7, 3.3, 3.4 or 3.5
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
