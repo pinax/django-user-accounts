@@ -4,6 +4,7 @@
 
  * added Python 3.5 and Django 1.9 compatibility
  * added Japanese translations
+ * added model kwarg to SignupView.create_user enabling sign up for complex user hierarchies
 
 ## 1.2.0
 
