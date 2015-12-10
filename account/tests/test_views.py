@@ -7,7 +7,7 @@ from django.test import TestCase
 
 from django.contrib.auth.models import User
 
-from account.models import SignupCode
+from account.models import SignupCode, EmailConfirmation
 
 
 class SignupViewTestCase(TestCase):
@@ -135,6 +135,26 @@ class LoginViewTestCase(TestCase):
         response = self.client.get(reverse("account_login"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.template_name, ["account/login.html"])
+
+
+class ConfirmEmailViewTestCase(TestCase):
+
+    def test_get_good_key(self):
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+            "code": "abc123",
+        }
+        self.client.post(reverse("account_signup"), data)
+        email_confirmation = EmailConfirmation.objects.get()
+        response = self.client.get(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_bad_key(self):
+        response = self.client.get(reverse("account_confirm_email", kwargs={"key": "badkey"}))
+        self.assertEqual(response.status_code, 404)
 
 
 def setup_session(client):
