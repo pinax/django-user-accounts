@@ -3,7 +3,7 @@ from importlib import import_module
 from django.apps import apps
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from django.contrib.auth.models import User
 
@@ -139,7 +139,7 @@ class LoginViewTestCase(TestCase):
 
 class ConfirmEmailViewTestCase(TestCase):
 
-    def test_get_good_key(self):
+    def signup(self):
         data = {
             "username": "foo",
             "password": "bar",
@@ -148,13 +148,47 @@ class ConfirmEmailViewTestCase(TestCase):
             "code": "abc123",
         }
         self.client.post(reverse("account_signup"), data)
-        email_confirmation = EmailConfirmation.objects.get()
+        return EmailConfirmation.objects.get()
+
+    def test_get_good_key(self):
+        email_confirmation = self.signup()
         response = self.client.get(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template_name, ["account/email_confirm.html"])
 
     def test_get_bad_key(self):
         response = self.client.get(reverse("account_confirm_email", kwargs={"key": "badkey"}))
         self.assertEqual(response.status_code, 404)
+
+    @override_settings(ACCOUNT_EMAIL_CONFIRMATION_REQUIRED=True)
+    def test_post_required(self):
+        email_confirmation = self.signup()
+        response = self.client.post(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}), {})
+        self.assertRedirects(
+            response,
+            reverse(settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL),
+            fetch_redirect_response=False
+        )
+
+    @override_settings(ACCOUNT_EMAIL_CONFIRMATION_REQUIRED=False)
+    def test_post_not_required(self):
+        email_confirmation = self.signup()
+        response = self.client.post(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}), {})
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_LOGIN_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
+
+    @override_settings(ACCOUNT_EMAIL_CONFIRMATION_REQUIRED=False, ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/somewhere/")
+    def test_post_not_required_redirect_override(self):
+        email_confirmation = self.signup()
+        response = self.client.post(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}), {})
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
 
 
 def setup_session(client):
