@@ -2,6 +2,7 @@ from importlib import import_module
 
 from django.apps import apps
 from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
@@ -189,6 +190,77 @@ class ConfirmEmailViewTestCase(TestCase):
             settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL,
             fetch_redirect_response=False
         )
+
+
+class ChangePasswordViewTestCase(TestCase):
+
+    def signup(self):
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+            "code": "abc123",
+        }
+        self.client.post(reverse("account_signup"), data)
+        mail.outbox = []
+        return User.objects.get(username="foo")
+
+    def test_get_anonymous(self):
+        response = self.client.get(reverse("account_password"))
+        self.assertRedirects(
+            response,
+            reverse("account_password_reset"),
+            fetch_redirect_response=False
+        )
+
+    def test_get_authenticated(self):
+        self.signup()
+        response = self.client.get(reverse("account_password"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template_name, ["account/password_change.html"])
+
+    def test_post_anonymous(self):
+        data = {
+            "password_current": "password",
+            "password_new": "new-password",
+            "password_new_confirm": "new-password",
+        }
+        response = self.client.post(reverse("account_password"), data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_post_authenticated_success(self):
+        user = self.signup()
+        data = {
+            "password_current": "bar",
+            "password_new": "new-bar",
+            "password_new_confirm": "new-bar",
+        }
+        response = self.client.post(reverse("account_password"), data)
+        self.assertRedirects(
+            response,
+            reverse(settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL),
+            fetch_redirect_response=False
+        )
+        updated_user = User.objects.get(username=user.username)
+        self.assertNotEqual(user.password, updated_user.password)
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE=False)
+    def test_post_authenticated_success_no_mail(self):
+        self.signup()
+        data = {
+            "password_current": "bar",
+            "password_new": "new-bar",
+            "password_new_confirm": "new-bar",
+        }
+        response = self.client.post(reverse("account_password"), data)
+        self.assertRedirects(
+            response,
+            reverse(settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL),
+            fetch_redirect_response=False
+        )
+        self.assertEqual(len(mail.outbox), 0)
 
 
 def setup_session(client):
