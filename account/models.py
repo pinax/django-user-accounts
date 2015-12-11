@@ -44,14 +44,13 @@ class Account(models.Model):
 
     @classmethod
     def for_request(cls, request):
-        if request.user.is_authenticated():
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated():
             try:
-                account = Account._default_manager.get(user=request.user)
+                return Account._default_manager.get(user=user)
             except Account.DoesNotExist:
-                account = AnonymousAccount(request)
-        else:
-            account = AnonymousAccount(request)
-        return account
+                pass
+        return AnonymousAccount(request)
 
     @classmethod
     def create(cls, request=None, **kwargs):
