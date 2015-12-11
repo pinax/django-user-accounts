@@ -113,9 +113,6 @@ class SignupViewTestCase(TestCase):
         self.assertRedirects(response, next_url, fetch_redirect_response=False)
 
     def test_session_next_url(self):
-        # session setup due to bug in Django 1.7
-        setup_session(self.client)
-
         next_url = "/next-url/"
         session = self.client.session
         session["redirect_to"] = next_url
@@ -261,15 +258,3 @@ class ChangePasswordViewTestCase(TestCase):
             fetch_redirect_response=False
         )
         self.assertEqual(len(mail.outbox), 0)
-
-
-def setup_session(client):
-    assert apps.is_installed("django.contrib.sessions"), "sessions not installed"
-    engine = import_module(settings.SESSION_ENGINE)
-    cookie = client.cookies.get(settings.SESSION_COOKIE_NAME, None)
-    if cookie:
-        return engine.SessionStore(cookie.value)
-    s = engine.SessionStore()
-    s.save()
-    client.cookies[settings.SESSION_COOKIE_NAME] = s.session_key
-    return s
