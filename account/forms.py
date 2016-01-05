@@ -32,10 +32,12 @@ class SignupForm(forms.Form):
     )
     password = forms.CharField(
         label=_("Password"),
+        min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
         widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
         label=_("Password (again)"),
+        min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
         widget=forms.PasswordInput(render_value=False)
     )
     email = forms.EmailField(
@@ -141,10 +143,12 @@ class ChangePasswordForm(forms.Form):
     )
     password_new = forms.CharField(
         label=_("New Password"),
+        min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
         widget=forms.PasswordInput(render_value=False)
     )
     password_new_confirm = forms.CharField(
         label=_("New Password (again)"),
+        min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
         widget=forms.PasswordInput(render_value=False)
     )
 
@@ -179,10 +183,12 @@ class PasswordResetTokenForm(forms.Form):
 
     password = forms.CharField(
         label=_("New Password"),
+        min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
         widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
         label=_("New Password (again)"),
+        min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
         widget=forms.PasswordInput(render_value=False)
     )
 

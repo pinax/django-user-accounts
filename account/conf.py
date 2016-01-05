@@ -37,6 +37,7 @@ class AccountAppConf(AppConf):
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
+    MINIMUM_PASSWORD_LENGTH = 8
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username  # flake8: noqa
     CREATE_ON_SAVE = True

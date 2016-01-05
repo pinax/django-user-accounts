@@ -143,3 +143,8 @@ See full list in: https://github.com/pinax/django-user-accounts/blob/master/acco
 =================================
 
 Default: ``False``
+
+``ACCOUNT_MINIMUM_PASSWORD_LENGTH``
+=================================
+
+Default: ``8``
