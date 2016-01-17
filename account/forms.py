@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import re
-
 try:
     from collections import OrderedDict
 except ImportError:
@@ -11,15 +9,11 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import auth
-from django.contrib.auth import get_user_model
 
 from account.conf import settings
 from account.hooks import hookset
 from account.models import EmailAddress
-from account.utils import get_user_lookup_kwargs
-
-
-alnum_re = re.compile(r"^\w+$")
+from account.validators import Validator
 
 
 class SignupForm(forms.Form):
@@ -49,28 +43,31 @@ class SignupForm(forms.Form):
     )
 
     def clean_username(self):
-        if not alnum_re.search(self.cleaned_data["username"]):
-            raise forms.ValidationError(_("Usernames can only contain letters, numbers and underscores."))
-        User = get_user_model()
-        lookup_kwargs = get_user_lookup_kwargs({
-            "{username}__iexact": self.cleaned_data["username"]
-        })
-        qs = User.objects.filter(**lookup_kwargs)
-        if not qs.exists():
-            return self.cleaned_data["username"]
-        raise forms.ValidationError(_("This username is already taken. Please choose another."))
+        username = self.cleaned_data["username"]
+        msg = Validator.clean_username(username)
+
+        if msg:
+            raise forms.ValidationError(msg)
+
+        return username
 
     def clean_email(self):
-        value = self.cleaned_data["email"]
-        qs = EmailAddress.objects.filter(email__iexact=value)
-        if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
-            return value
-        raise forms.ValidationError(_("A user is registered with this email address."))
+        email = self.cleaned_data["email"]
+        msg = Validator.clean_email(email)
+
+        if msg:
+            raise forms.ValidationError(msg)
+
+        return email
 
     def clean(self):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
-            if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
+            msg = Validator.compare_passwords(self.cleaned_data["password"],
+                                              self.cleaned_data["password_confirm"])
+
+            if msg:
+                raise forms.ValidationError(msg)
+
         return self.cleaned_data
 
 
@@ -212,7 +209,9 @@ class SettingsForm(forms.Form):
         value = self.cleaned_data["email"]
         if self.initial.get("email") == value:
             return value
-        qs = EmailAddress.objects.filter(email__iexact=value)
-        if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
-            return value
-        raise forms.ValidationError(_("A user is registered with this email address."))
+        msg = Validator.clean_email(value)
+
+        if msg:
+            raise forms.ValidationError(msg)
+
+        return value
