@@ -53,6 +53,13 @@ class AccountDefaultHookSet(object):
             "password": form.cleaned_data["password"],
         }
 
+    def account_delete_mark(self, deletion):
+        deletion.user.is_active = False
+        deletion.user.save()
+
+    def account_delete_expunge(self, deletion):
+        deletion.user.delete()
+
 
 class HookProxy(object):
 
