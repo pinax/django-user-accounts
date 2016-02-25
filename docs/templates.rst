@@ -30,6 +30,13 @@ following context:
 ``form``
     The login form.
 
+``redirect_field_name``
+    The name of the hidden field that will hold the url where to redirect the
+user after login.
+
+``redirect_field_value``
+    The actual url where the user will be redirected after login.
+
 **account/logout.html**
 
 The default template shown after the user has been logged out. 
@@ -42,10 +49,17 @@ following context:
 ``form``
     The form used to create the new user.
 
+``redirect_field_name``
+    The name of the hidden field that will hold the url where to redirect the
+user after signing up.
+
+``redirect_field_value``
+    The actual url where the user will be redirected after signing up.
+
 **account/signup_closed.html**
 
 A template to inform the user that creating new users is not allowed (mainly
-because settings.ACCOUNT_OPEN_SIGNUP is False).
+because ``settings.ACCOUNT_OPEN_SIGNUP`` is ``False``).
 
 Email Confirmation Templates
 ----------------------------
@@ -53,6 +67,9 @@ Email Confirmation Templates
 **account/email_confirm.html**
 
 A template to confirm an email address. The template has the following context:
+
+``email``
+    The email address where the activation link has been sent.
 
 ``confirmation``
     The EmailConfirmation instance to be confirmed.
@@ -67,12 +84,16 @@ the following context:
     The email address where the activation link has been sent.
 
 ``success_url``
-    A url where the user can be redirected from this page.
+    A url where the user can be redirected from this page. For example to
+show a link to go back.
 
 **account/email_confirmed.html**
 
 A template shown after an email address has been confirmed. The template
 context is the same as in email_confirm.html.
+
+``email``
+    The email address that has been confirmed.
 
 Password Management Templates
 -----------------------------
@@ -96,7 +117,15 @@ The template has the following context:
 **account/password_reset_sent.html**
 
 A template to inform the user that his password has been reset and that he
-should receive an email with a link to create a new password.
+should receive an email with a link to create a new password. The template has
+the following context:
+
+``form``
+    An instance of ``PasswordResetForm``. Usually the fields of this form
+must be hidden.
+
+``resend``
+    If ``True`` it means that the reset link has been resent to the user.
 
 **account/password_reset_token.html**
 
@@ -110,7 +139,11 @@ has the following context:
 **account/password_reset_token_fail.html**
 
 A template to inform the user that he is not allowed to change the password,
-because the authentication token is wrong.
+because the authentication token is wrong. The template has the following
+context:
+
+``url``
+    The url to request a new reset token.
 
 Account Settings
 ----------------
