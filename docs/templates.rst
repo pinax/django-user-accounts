@@ -1,19 +1,22 @@
 .. _templates:
 
-============
+=========
 Templates
-============
-This document covers the implementation of django-user-accounts within django 
-templates. The pinax-theme-bootstrap-account package provides a good starting 
-point to build off of. Note, this document assumes you have read the 
-installation docs.
+=========
+
+This document covers the implementation of django-user-accounts within Django
+templates. The `pinax-theme-bootstrap`_ package provides a good `starting point`_
+to build from. Note, this document assumes you have read the installation docs.
+
+.. _pinax-theme-bootstrap: https://github.com/pinax/pinax-theme-bootstrap
+.. _starting point: https://github.com/pinax/pinax-theme-bootstrap/tree/master/pinax_theme_bootstrap/templates/account
 
 Template Files
 ===============
 
-By default, django-user-accounts expects the following templates. If you 
-don't use ``pinax-theme-bootstrap-account``, then you will have to create 
-these templates yourself.
+By default, django-user-accounts expects the following templates. If you
+don't use ``pinax-theme-bootstrap``, then you will have to create these
+templates yourself.
 
 
 Login/Registration/Signup Templates
@@ -209,10 +212,15 @@ context is the same as in password_reset.txt.
 
 Template Tags
 =============
-To use the built in template tags you must first load them within the templates::
 
-{% load account_tags %}
+To use the built in template tags you must first load them within the templates:
 
-To display the current logged-in user::
+.. code-block:: jinja
 
-{% user_display request.user %}
+    {% load account_tags %}
+
+To display the current logged-in user:
+
+.. code-block:: jinja
+
+    {% user_display request.user %}

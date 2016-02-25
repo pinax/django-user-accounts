@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import functools
 
 from django.utils.decorators import available_attrs

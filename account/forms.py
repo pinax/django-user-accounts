@@ -1,20 +1,29 @@
+from __future__ import unicode_literals
+
 import re
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = None
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import auth
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from account.conf import settings
+from account.hooks import hookset
 from account.models import EmailAddress
+from account.utils import get_user_lookup_kwargs
 
 
 alnum_re = re.compile(r"^\w+$")
 
 
 class SignupForm(forms.Form):
-    
+
     username = forms.CharField(
         label=_("Username"),
         max_length=30,
@@ -29,28 +38,35 @@ class SignupForm(forms.Form):
         label=_("Password (again)"),
         widget=forms.PasswordInput(render_value=False)
     )
-    email = forms.EmailField(widget=forms.TextInput(), required=True)
+    email = forms.EmailField(
+        label=_("Email"),
+        widget=forms.TextInput(), required=True)
+
     code = forms.CharField(
         max_length=64,
         required=False,
         widget=forms.HiddenInput()
     )
-    
+
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
             raise forms.ValidationError(_("Usernames can only contain letters, numbers and underscores."))
-        qs = User.objects.filter(username__iexact=self.cleaned_data["username"])
+        User = get_user_model()
+        lookup_kwargs = get_user_lookup_kwargs({
+            "{username}__iexact": self.cleaned_data["username"]
+        })
+        qs = User.objects.filter(**lookup_kwargs)
         if not qs.exists():
             return self.cleaned_data["username"]
         raise forms.ValidationError(_("This username is already taken. Please choose another."))
-    
+
     def clean_email(self):
         value = self.cleaned_data["email"]
         qs = EmailAddress.objects.filter(email__iexact=value)
         if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
             return value
         raise forms.ValidationError(_("A user is registered with this email address."))
-    
+
     def clean(self):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
             if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
@@ -59,17 +75,17 @@ class SignupForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    
+
     password = forms.CharField(
         label=_("Password"),
         widget=forms.PasswordInput(render_value=False)
     )
     remember = forms.BooleanField(
-        label = _("Remember Me"),
-        required = False
+        label=_("Remember Me"),
+        required=False
     )
     user = None
-    
+
     def clean(self):
         if self._errors:
             return
@@ -82,38 +98,43 @@ class LoginForm(forms.Form):
         else:
             raise forms.ValidationError(self.authentication_fail_message)
         return self.cleaned_data
-    
+
     def user_credentials(self):
-        return {
-            "username": self.cleaned_data[self.identifier_field],
-            "password": self.cleaned_data["password"],
-        }
+        return hookset.get_user_credentials(self, self.identifier_field)
 
 
 class LoginUsernameForm(LoginForm):
-    
+
     username = forms.CharField(label=_("Username"), max_length=30)
     authentication_fail_message = _("The username and/or password you specified are not correct.")
     identifier_field = "username"
-    
+
     def __init__(self, *args, **kwargs):
         super(LoginUsernameForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ["username", "password", "remember"]
+        field_order = ["username", "password", "remember"]
+        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+            self.fields.keyOrder = field_order
+        else:
+            self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
 
 
 class LoginEmailForm(LoginForm):
-    
+
     email = forms.EmailField(label=_("Email"))
     authentication_fail_message = _("The email address and/or password you specified are not correct.")
     identifier_field = "email"
-    
+
     def __init__(self, *args, **kwargs):
         super(LoginEmailForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ["email", "password", "remember"]
+        field_order = ["email", "password", "remember"]
+        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+            self.fields.keyOrder = field_order
+        else:
+            self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
 
 
 class ChangePasswordForm(forms.Form):
-    
+
     password_current = forms.CharField(
         label=_("Current Password"),
         widget=forms.PasswordInput(render_value=False)
@@ -126,16 +147,16 @@ class ChangePasswordForm(forms.Form):
         label=_("New Password (again)"),
         widget=forms.PasswordInput(render_value=False)
     )
-    
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
         super(ChangePasswordForm, self).__init__(*args, **kwargs)
-    
+
     def clean_password_current(self):
         if not self.user.check_password(self.cleaned_data.get("password_current")):
             raise forms.ValidationError(_("Please type your current password."))
         return self.cleaned_data["password_current"]
-    
+
     def clean_password_new_confirm(self):
         if "password_new" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
             if self.cleaned_data["password_new"] != self.cleaned_data["password_new_confirm"]:
@@ -144,9 +165,9 @@ class ChangePasswordForm(forms.Form):
 
 
 class PasswordResetForm(forms.Form):
-    
+
     email = forms.EmailField(label=_("Email"), required=True)
-    
+
     def clean_email(self):
         value = self.cleaned_data["email"]
         if not EmailAddress.objects.filter(email__iexact=value).exists():
@@ -155,16 +176,16 @@ class PasswordResetForm(forms.Form):
 
 
 class PasswordResetTokenForm(forms.Form):
-    
+
     password = forms.CharField(
-        label = _("New Password"),
-        widget = forms.PasswordInput(render_value=False)
+        label=_("New Password"),
+        widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
-        label = _("New Password (again)"),
-        widget = forms.PasswordInput(render_value=False)
+        label=_("New Password (again)"),
+        widget=forms.PasswordInput(render_value=False)
     )
-    
+
     def clean_password_confirm(self):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
             if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
@@ -173,7 +194,7 @@ class PasswordResetTokenForm(forms.Form):
 
 
 class SettingsForm(forms.Form):
-    
+
     email = forms.EmailField(label=_("Email"), required=True)
     timezone = forms.ChoiceField(
         label=_("Timezone"),
@@ -186,7 +207,7 @@ class SettingsForm(forms.Form):
             choices=settings.ACCOUNT_LANGUAGES,
             required=False
         )
-    
+
     def clean_email(self):
         value = self.cleaned_data["email"]
         if self.initial.get("email") == value:
