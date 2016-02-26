@@ -33,7 +33,7 @@ This app was developed as part of the Pinax ecosystem but is just a Django app a
 django-user-accounts
 -------------------------
 
-django-user-accounts provides a Django project with a very extensible infrastructure for dealing
+``django-user-accounts`` provides a Django project with a very extensible infrastructure for dealing
 with user accounts.
 
 
