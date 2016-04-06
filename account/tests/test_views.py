@@ -126,10 +126,89 @@ class SignupViewTestCase(TestCase):
 
 class LoginViewTestCase(TestCase):
 
+    def signup(self):
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+            "code": "abc123",
+        }
+        self.client.post(reverse("account_signup"), data)
+        self.client.logout()
+
     def test_get(self):
         response = self.client.get(reverse("account_login"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.template_name, ["account/login.html"])
+
+    def test_post_empty(self):
+        data = {}
+        response = self.client.post(reverse("account_login"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["form"].is_valid())
+
+    @override_settings(
+        AUTHENTICATION_BACKENDS=[
+            "account.auth_backends.UsernameAuthenticationBackend",
+        ]
+    )
+    def test_post_success(self):
+        self.signup()
+        data = {
+            "username": "foo",
+            "password": "bar",
+        }
+        response = self.client.post(reverse("account_login"), data)
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_LOGIN_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
+
+
+class LogoutViewTestCase(TestCase):
+
+    def signup(self):
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+            "code": "abc123",
+        }
+        self.client.post(reverse("account_signup"), data)
+
+    def test_get_anonymous(self):
+        response = self.client.get(reverse("account_logout"))
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_LOGOUT_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
+
+    def test_get_authenticated(self):
+        self.signup()
+        response = self.client.get(reverse("account_logout"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template_name, ["account/logout.html"])
+
+    def test_post_anonymous(self):
+        response = self.client.post(reverse("account_logout"), {})
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_LOGOUT_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
+
+    def test_post_authenticated(self):
+        self.signup()
+        response = self.client.post(reverse("account_logout"), {})
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_LOGOUT_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
 
 
 class ConfirmEmailViewTestCase(TestCase):
