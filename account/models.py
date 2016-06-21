@@ -102,6 +102,11 @@ def user_post_save(sender, **kwargs):
     We only run on user creation to avoid having to check for existence on
     each call to User.save.
     """
+
+    # Disable post_save during manage.py loaddata
+    if kwargs.get('raw', False):
+        return False
+
     user, created = kwargs["instance"], kwargs["created"]
     disabled = getattr(user, "_disable_account_creation", not settings.ACCOUNT_CREATE_ON_SAVE)
     if created and not disabled:
