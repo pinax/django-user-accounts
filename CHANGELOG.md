@@ -6,6 +6,7 @@ version with these. Your code will need to be updated to continue working.
 ## 2.0.0
 
  * BI: account deletion callbacks moved to hooksets
+ * BI: dropped Django 1.7 support
  * added Turkish translations
  * fixed migration with language codes to dynamically set
 
