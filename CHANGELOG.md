@@ -1,5 +1,12 @@
 # ChangeLog
 
+BI indicates a backward incompatible change. Take caution when upgrading to a
+version with these. Your code will need to be updated to continue working.
+
+## 2.0.0
+
+ * BI: account deletion callbacks moved to hooksets
+
 ## 1.3.0
 
  * added Python 3.5 and Django 1.9 compatibility
