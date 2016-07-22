@@ -201,7 +201,7 @@ class SignupView(FormView):
         kwargs.setdefault("primary", True)
         kwargs.setdefault("verified", False)
         if self.signup_code:
-            kwargs["verified"] = self.signup_code.email and self.created_user.email == self.signup_code.email
+            kwargs["verified"] = self.created_user.email == self.signup_code.email if self.signup_code.email else False
         return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
 
     def use_signup_code(self, user):
