@@ -45,9 +45,8 @@ Add ``account.middleware.LocaleMiddleware`` and
         ...
     ]
 
-Once everything is in place make sure you run ``syncdb`` (Django 1.4 and 1.6)
-or ``migrate`` (Django 1.7) to modify the database with the ``account`` app
-models.
+Once everything is in place make sure you run ``migrate`` to modify the
+database with the ``account`` app models.
 
 .. _dependencies:
 

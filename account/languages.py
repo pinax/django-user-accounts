@@ -9,9 +9,6 @@ from __future__ import unicode_literals
 #     for code, lang in settings.LANGUAGES
 # ]
 #
-# List is stored here instead of getting it on runtime because
-# there was changes in that list between Django version 1.7 and 1.8.
-# This in turn causes Django 1.7 to think that there is unmigrated changes
 
 LANGUAGES = [
     ("af", "Afrikaans"),

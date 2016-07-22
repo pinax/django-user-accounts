@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-04-11 21:57+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: account/forms.py:28 account/forms.py:108
+msgid "Username"
+msgstr "Kullanıcı adı"
+
+#: account/forms.py:34 account/forms.py:80
+msgid "Password"
+msgstr "Şifre"
+
+#: account/forms.py:38
+msgid "Password (again)"
+msgstr "Şifre (tekrar)"
+
+#: account/forms.py:42 account/forms.py:123 account/forms.py:169
+#: account/forms.py:198
+msgid "Email"
+msgstr "Eposta"
+
+#: account/forms.py:53
+msgid "Usernames can only contain letters, numbers and underscores."
+msgstr "Kullanıcı adı sadece harfler, sayılar ve alt çizgiler içerebilir."
+
+#: account/forms.py:61
+msgid "This username is already taken. Please choose another."
+msgstr "Bu kullanıcı adı daha önce alınmış. Lütfen başka bir tane seçiniz."
+
+#: account/forms.py:68 account/forms.py:218
+msgid "A user is registered with this email address."
+msgstr "Bir kullanıcı bu eposta adresi ile kaydedildi."
+
+#: account/forms.py:73 account/forms.py:163 account/forms.py:192
+msgid "You must type the same password each time."
+msgstr "Şifrenizi her seferinde aynı girmelisiniz."
+
+#: account/forms.py:84
+msgid "Remember Me"
+msgstr "Beni Hatırla"
+
+#: account/forms.py:97
+msgid "This account is inactive."
+msgstr "Bu hesap inaktif."
+
+#: account/forms.py:109
+msgid "The username and/or password you specified are not correct."
+msgstr "Belirttiğiniz kullanıcı adı ve/veya şifre doğru değil."
+
+#: account/forms.py:124
+msgid "The email address and/or password you specified are not correct."
+msgstr "Belirttiğiniz eposta adresi ve/veya şifre doğru değil."
+
+#: account/forms.py:139
+msgid "Current Password"
+msgstr "Şuanki Şifre"
+
+#: account/forms.py:143 account/forms.py:181
+msgid "New Password"
+msgstr "Yeni Şifre"
+
+#: account/forms.py:147 account/forms.py:185
+msgid "New Password (again)"
+msgstr "Yeni Şifre (tekrar)"
+
+#: account/forms.py:157
+msgid "Please type your current password."
+msgstr "Lütfen şimdiki şifrenizi giriniz."
+
+#: account/forms.py:174
+msgid "Email address can not be found."
+msgstr "Eposta adresiniz bulunamıyor."
+
+#: account/forms.py:200
+msgid "Timezone"
+msgstr "Zaman Dilimi"
+
+#: account/forms.py:206
+msgid "Language"
+msgstr "Dil"
+
+#: account/models.py:36
+msgid "user"
+msgstr "kullanıcı"
+
+#: account/models.py:37
+msgid "timezone"
+msgstr "zaman dilimi"
+
+#: account/models.py:39
+msgid "language"
+msgstr "dil"
+
+#: account/models.py:135
+msgid "code"
+msgstr "kod"
+
+#: account/models.py:136
+msgid "max uses"
+msgstr "maximum kullanım"
+
+#: account/models.py:137
+msgid "expiry"
+msgstr "zaman aşımı"
+
+#: account/models.py:140
+msgid "notes"
+msgstr "notlar"
+
+#: account/models.py:141
+msgid "sent"
+msgstr "gönderildi"
+
+#: account/models.py:142
+msgid "created"
+msgstr "oluşturuldu"
+
+#: account/models.py:143
+msgid "use count"
+msgstr "kullanım sayısı"
+
+#: account/models.py:146
+msgid "signup code"
+msgstr "kayıt kodu"
+
+#: account/models.py:147
+msgid "signup codes"
+msgstr "kayıt kodları"
+
+#: account/models.py:254
+msgid "verified"
+msgstr "onaylandı"
+
+#: account/models.py:255
+msgid "primary"
+msgstr "birincil"
+
+#: account/models.py:260
+msgid "email address"
+msgstr "eposta adresi"
+
+#: account/models.py:261
+msgid "email addresses"
+msgstr "eposta adresleri"
+
+#: account/models.py:311
+msgid "email confirmation"
+msgstr "eposta onayı"
+
+#: account/models.py:312
+msgid "email confirmations"
+msgstr "eposta onayları"
+
+#: account/models.py:361
+msgid "date requested"
+msgstr "istenen tarih"
+
+#: account/models.py:362
+msgid "date expunged"
+msgstr "silinen tarih"
+
+#: account/models.py:365
+msgid "account deletion"
+msgstr "hesap silinmesi"
+
+#: account/models.py:366
+msgid "account deletions"
+msgstr "hespa silinmeleri"
+
+#: account/views.py:42
+#, python-brace-format
+msgid "Confirmation email sent to {email}."
+msgstr "Onay epostası {email} adresine yollandı."
+
+#: account/views.py:46
+#, python-brace-format
+msgid "The code {code} is invalid."
+msgstr "{code} kodu geçersiz."
+
+#: account/views.py:384
+#, python-brace-format
+msgid "You have confirmed {email}."
+msgstr "{email} adresini onayladınız."
+
+#: account/views.py:457 account/views.py:593
+msgid "Password successfully changed."
+msgstr "Şifre başarıyla değiştirildi."
+
+#: account/views.py:684
+msgid "Account settings updated."
+msgstr "Hesap ayarları güncelendi."
+
+#: account/views.py:768
+#, python-brace-format
+msgid ""
+"Your account is now inactive and your data will be expunged in the next "
+"{expunge_hours} hours."
+msgstr "Hesabınız inaktiftir ve verileriniz"
+"{expunge_hours} saat sonra silinecektir."
+

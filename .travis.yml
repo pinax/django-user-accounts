@@ -6,7 +6,6 @@ python:
   - "3.4"
   - "3.5"
 env:
-  - DJANGO=1.7
   - DJANGO=1.8
   - DJANGO=1.9
   - DJANGO=master
@@ -16,11 +15,11 @@ matrix:
       env: DJANGO=1.9
     - python: "3.3"
       env: DJANGO=master
-    - python: "3.5"
-      env: DJANGO=1.7
 install:
   - pip install tox coveralls
 script:
   - tox -e py${TRAVIS_PYTHON_VERSION//[.]/}-$DJANGO
 after_success:
   - coveralls
+notifications:
+  slack: pinax:7G2T4nTnSuv4ZhmJJ3StMM3m
