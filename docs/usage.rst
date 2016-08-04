@@ -254,3 +254,27 @@ file called lib/tests.py::
 And in your settings::
 
     TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
+
+Restricting views to authenticated users
+========================================
+
+``django.contrib.auth`` includes a convenient decorator and a mixin to restrict
+views to authenticated users. ``django-user-accounts`` includes a modified
+version of these decorator and mixin that should be used instead of the
+usual ones.
+
+If you want to restrict a function based view, use the decorator::
+
+    from account.decorators import login_required
+
+    @login_required
+    def restricted_view(request):
+        pass
+
+To do the same with class based views, use the mixin::
+
+    from account.mixins import LoginRequiredMixin
+
+    class RestrictedView(LoginRequiredMixin, View):
+        pass
+
