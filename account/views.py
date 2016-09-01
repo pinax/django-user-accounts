@@ -446,7 +446,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         user.save()
 
 
-class ChangePasswordMixin():
+class ChangePasswordMixin(object):
     """
     Mixin handling common elements of password change.
 
