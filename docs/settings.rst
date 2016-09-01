@@ -40,6 +40,16 @@ Default: ``"account_password"``
 
 Default: ``"account_login"``
 
+``ACCOUNT_PASSWORD_EXPIRY``
+=======================================
+
+Default: ``0``
+
+``ACCOUNT_PASSWORD_USE_HISTORY``
+=======================================
+
+Default: ``False``
+
 ``ACCOUNT_REMEMBER_ME_EXPIRY``
 ==============================
 

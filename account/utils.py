@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import datetime
 import functools
 try:
     from urllib.parse import urlparse, urlunparse
@@ -13,6 +14,10 @@ from django.http import HttpResponseRedirect, QueryDict
 from django.contrib.auth import get_user_model
 
 from account.conf import settings
+from .models import (
+    PasswordHistory,
+    PasswordExpiry,
+)
 
 
 def get_user_lookup_kwargs(kwargs):
@@ -106,3 +111,29 @@ def get_form_data(form, field_name, default=None):
     else:
         key = field_name
     return form.data.get(key, default)
+
+
+def check_password_expired(user):
+    """
+    Return True if password is expired, False otherwise.
+    """
+    if not settings.ACCOUNT_PASSWORD_USE_HISTORY:
+        return False
+
+    try:
+        # look for user-specific value
+        expiry = user.password_expiry.get()
+    except PasswordExpiry.DoesNotExist:
+        # use global value
+        expiry = settings.ACCOUNT_PASSWORD_EXPIRY
+
+    try:
+        # get latest password info
+        latest = user.password_history.latest("timestamp")
+    except PasswordHistory.DoesNotExist:
+        return False
+
+    if datetime.datetime.now() < (latest + datetime.timedelta(seconds=expiry)):
+        return False
+
+    return True

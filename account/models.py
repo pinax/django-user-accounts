@@ -385,3 +385,20 @@ class AccountDeletion(models.Model):
         account_deletion.save()
         settings.ACCOUNT_DELETION_MARK_CALLBACK(account_deletion)
         return account_deletion
+
+
+class PasswordHistory(models.Model):
+    """
+    Contains single password history for user.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="password_history")
+    password = models.CharField(max_length=255)  # encrypted password
+    timestamp = models.DateTimeField(auto_now=True)
+
+
+class PasswordExpiry(models.Model):
+    """
+    Holds the password expiration period for a single user.
+    """
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="password_expiry", verbose_name=_("user"))
+    expiry = models.PositiveIntegerField(default=0)
