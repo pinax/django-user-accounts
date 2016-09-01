@@ -446,10 +446,24 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         user.save()
 
 
-class ChangePasswordView(FormView):
+class ChangePasswordMixin():
+    """
+    Mixin handling common elements of password change.
 
-    template_name = "account/password_change.html"
-    form_class = ChangePasswordForm
+    Required attributes in inheriting class:
+
+      form_password_field - example: "password"
+      fallback_url_setting - example: "ACCOUNT_PASSWORD_RESET_REDIRECT_URL"
+
+    Required methods in inheriting class:
+
+      get_user()
+      change_password()
+      after_change_password()
+      get_redirect_field_name()
+
+    """
+
     redirect_field_name = "next"
     messages = {
         "password_changed": {
@@ -458,27 +472,26 @@ class ChangePasswordView(FormView):
         }
     }
 
-    def get(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
-            return redirect("account_password_reset")
-        return super(ChangePasswordView, self).get(*args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
-            return HttpResponseForbidden()
-        return super(ChangePasswordView, self).post(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        ctx = super(ChangePasswordMixin, self).get_context_data(**kwargs)
+        redirect_field_name = self.get_redirect_field_name()
+        ctx.update({
+            "redirect_field_name": redirect_field_name,
+            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+        })
+        return ctx
 
     def change_password(self, form):
-        user = self.request.user
-        user.set_password(form.cleaned_data["password_new"])
+        user = self.get_user()
+        user.set_password(form.cleaned_data[self.form_password_field])
         user.save()
         # required on Django >= 1.7 to keep the user authenticated
         if hasattr(auth, "update_session_auth_hash"):
             auth.update_session_auth_hash(self.request, user)
 
     def after_change_password(self):
-        user = self.request.user
-        signals.password_changed.send(sender=ChangePasswordView, user=user)
+        user = self.get_user()
+        signals.password_changed.send(sender=self, user=user)
         if settings.ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE:
             self.send_email(user)
         if self.messages.get("password_changed"):
@@ -488,38 +501,17 @@ class ChangePasswordView(FormView):
                 self.messages["password_changed"]["text"]
             )
 
-    def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instantiating the form.
-        """
-        kwargs = {"user": self.request.user, "initial": self.get_initial()}
-        if self.request.method in ["POST", "PUT"]:
-            kwargs.update({
-                "data": self.request.POST,
-                "files": self.request.FILES,
-            })
-        return kwargs
-
     def form_valid(self, form):
         self.change_password(form)
         self.after_change_password()
         return redirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        ctx = super(ChangePasswordView, self).get_context_data(**kwargs)
-        redirect_field_name = self.get_redirect_field_name()
-        ctx.update({
-            "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
-        })
-        return ctx
 
     def get_redirect_field_name(self):
         return self.redirect_field_name
 
     def get_success_url(self, fallback_url=None, **kwargs):
         if fallback_url is None:
-            fallback_url = settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL
+            fallback_url = getattr(settings, self.fallback_url_setting, None)
         kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
         return default_redirect(self.request, fallback_url, **kwargs)
 
@@ -532,6 +524,46 @@ class ChangePasswordView(FormView):
             "current_site": current_site,
         }
         hookset.send_password_change_email([user.email], ctx)
+
+
+class ChangePasswordView(ChangePasswordMixin, FormView):
+
+    template_name = "account/password_change.html"
+    form_class = ChangePasswordForm
+    redirect_field_name = "next"
+    messages = {
+        "password_changed": {
+            "level": messages.SUCCESS,
+            "text": _("Password successfully changed.")
+        }
+    }
+    form_password_field = "password_new"
+    fallback_url_setting = "ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL"
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return redirect("account_password_reset")
+        return super(ChangePasswordView, self).get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return HttpResponseForbidden()
+        return super(ChangePasswordView, self).post(*args, **kwargs)
+
+    def get_user(self):
+        return self.request.user
+
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instantiating the form.
+        """
+        kwargs = {"user": self.request.user, "initial": self.get_initial()}
+        if self.request.method in ["POST", "PUT"]:
+            kwargs.update({
+                "data": self.request.POST,
+                "files": self.request.FILES,
+            })
+        return kwargs
 
 
 class PasswordResetView(FormView):
@@ -586,13 +618,8 @@ class PasswordResetTokenView(FormView):
     template_name_fail = "account/password_reset_token_fail.html"
     form_class = PasswordResetTokenForm
     token_generator = default_token_generator
-    redirect_field_name = "next"
-    messages = {
-        "password_changed": {
-            "level": messages.SUCCESS,
-            "text": _("Password successfully changed.")
-        },
-    }
+    form_password_field = "password"
+    fallback_url_setting = "ACCOUNT_PASSWORD_RESET_REDIRECT_URL"
 
     def get(self, request, **kwargs):
         form_class = self.get_form_class()
@@ -604,45 +631,11 @@ class PasswordResetTokenView(FormView):
 
     def get_context_data(self, **kwargs):
         ctx = super(PasswordResetTokenView, self).get_context_data(**kwargs)
-        redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "uidb36": self.kwargs["uidb36"],
             "token": self.kwargs["token"],
-            "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
-
-    def change_password(self, form):
-        user = self.get_user()
-        user.set_password(form.cleaned_data["password"])
-        user.save()
-
-    def after_change_password(self):
-        user = self.get_user()
-        signals.password_changed.send(sender=PasswordResetTokenView, user=user)
-        if settings.ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE:
-            self.send_email(user)
-        if self.messages.get("password_changed"):
-            messages.add_message(
-                self.request,
-                self.messages["password_changed"]["level"],
-                self.messages["password_changed"]["text"]
-            )
-
-    def form_valid(self, form):
-        self.change_password(form)
-        self.after_change_password()
-        return redirect(self.get_success_url())
-
-    def get_redirect_field_name(self):
-        return self.redirect_field_name
-
-    def get_success_url(self, fallback_url=None, **kwargs):
-        if fallback_url is None:
-            fallback_url = settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL
-        kwargs.setdefault("redirect_field_name", self.get_redirect_field_name())
-        return default_redirect(self.request, fallback_url, **kwargs)
 
     def get_user(self):
         try:
@@ -661,16 +654,6 @@ class PasswordResetTokenView(FormView):
             "context": self.get_context_data()
         }
         return self.response_class(**response_kwargs)
-
-    def send_email(self, user):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-        current_site = get_current_site(self.request)
-        ctx = {
-            "user": user,
-            "protocol": protocol,
-            "current_site": current_site,
-        }
-        hookset.send_password_change_email([user.email], ctx)
 
 
 class SettingsView(LoginRequiredMixin, FormView):
