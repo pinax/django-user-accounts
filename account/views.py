@@ -102,8 +102,9 @@ class PasswordMixin(object):
             password = form.cleaned_data[self.form_password_field]
             PasswordHistory.objects.create(
                 user=self.request.user,
-                password = make_password(password)
+                password=make_password(password)
             )
+
 
 class SignupView(PasswordMixin, FormView):
 
@@ -340,6 +341,7 @@ class SignupView(PasswordMixin, FormView):
             "template": template_name,
         }
         return self.response_class(**response_kwargs)
+
 
 class LoginView(FormView):
 
