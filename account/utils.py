@@ -15,10 +15,7 @@ from django.http import HttpResponseRedirect, QueryDict
 from django.contrib.auth import get_user_model
 
 from account.conf import settings
-from .models import (
-    PasswordHistory,
-    PasswordExpiry,
-)
+from .models import PasswordHistory
 
 
 def get_user_lookup_kwargs(kwargs):

@@ -58,7 +58,7 @@ class PasswordExpirationTestCase(TestCase):
         self.history.save()
 
         # get login
-        u = self.client.login(username=self.email, password=self.password)
+        self.client.login(username=self.email, password=self.password)
 
         response = self.client.get(reverse("account_login"))
         self.assertRedirects(response, reverse("account_password"))
@@ -74,7 +74,6 @@ class PasswordExpirationTestCase(TestCase):
             post_data
         )
         self.assertEquals(response.status_code, 200)
-
 
     def test_login_not_expired(self):
         """
