@@ -282,16 +282,7 @@ class SignupView(PasswordMixin, FormView):
         signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
 
     def login_user(self):
-        user = self.created_user
-        if settings.ACCOUNT_USE_AUTH_AUTHENTICATE:
-            # call auth.authenticate to ensure we set the correct backend for
-            # future look ups using auth.get_user().
-            user = auth.authenticate(**self.user_credentials())
-        else:
-            # set auth backend to ModelBackend, but this may not be used by
-            # everyone. this code path is deprecated and will be removed in
-            # favor of using auth.authenticate above.
-            user.backend = "django.contrib.auth.backends.ModelBackend"
+        user = auth.authenticate(**self.user_credentials())
         auth.login(self.request, user)
         self.request.session.set_expiry(0)
 

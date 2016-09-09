@@ -55,7 +55,6 @@ class AccountAppConf(AppConf):
     HOOKSET = "account.hooks.AccountDefaultHookSet"
     TIMEZONES = TIMEZONES
     LANGUAGES = LANGUAGES
-    USE_AUTH_AUTHENTICATE = False
 
     def configure_hookset(self, value):
         return load_path_attr(value)()

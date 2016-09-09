@@ -7,6 +7,7 @@ version with these. Your code will need to be updated to continue working.
 
  * BI: account deletion callbacks moved to hooksets
  * BI: dropped Django 1.7 support
+ * BI: removed deprecated `ACCOUNT_USE_AUTH_AUTHENTICATE` setting with behavior matching its `True` value 
  * added Turkish translations
  * fixed migration with language codes to dynamically set
 
