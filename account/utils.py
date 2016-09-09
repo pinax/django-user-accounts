@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import datetime
 import functools
+import pytz
 try:
     from urllib.parse import urlparse, urlunparse
 except ImportError:  # python 2
@@ -120,10 +121,10 @@ def check_password_expired(user):
     if not settings.ACCOUNT_PASSWORD_USE_HISTORY:
         return False
 
-    try:
-        # look for user-specific value
-        expiry = user.password_expiry.get()
-    except PasswordExpiry.DoesNotExist:
+    if hasattr(user, "password_expiry"):
+        # user-specific value
+        expiry = user.password_expiry.expiry
+    else:
         # use global value
         expiry = settings.ACCOUNT_PASSWORD_EXPIRY
 
@@ -133,7 +134,7 @@ def check_password_expired(user):
     except PasswordHistory.DoesNotExist:
         return False
 
-    if datetime.datetime.now() < (latest + datetime.timedelta(seconds=expiry)):
+    if datetime.datetime.now(tz=pytz.UTC) > (latest.timestamp + datetime.timedelta(seconds=expiry)):
         return False
 
     return True
