@@ -254,3 +254,25 @@ file called lib/tests.py::
 And in your settings::
 
     TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
+
+
+Enabling password expiration
+============================
+
+Password expiration is disabled by default. In order to enable password expiration
+you must add two entries to your settings file::
+
+    PASSWORD_EXPIRY = 60*60*24*5  # seconds until pw expires, this example shows five days
+    PASSWORD_USE_HISTORY = True
+
+PASSWORD_EXPIRY indicates the duration a password will stay valid. After that period
+the password must be reset in order to log in. If PASSWORD_EXPIRY is zero (0)
+then passwords never expire.
+
+If PASSWORD_USE_HISTORY is False, no history will be generated and password
+expiration WILL NOT be checked.
+
+If PASSWORD_USE_HISTORY is True, a password history entry is created each time
+the user changes their password. This entry links the user with their most recent
+(encrypted) password and a timestamp. Unless deleted manually, PasswordHistory items
+are saved forever, allowing password history checking for new passwords.

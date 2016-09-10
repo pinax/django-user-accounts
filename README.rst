@@ -47,6 +47,7 @@ Features
   - Email confirmation
   - Signup tokens for private betas
   - Password reset
+  - Password expiration
   - Account management (update account settings and change password)
   - Account deletion
 
@@ -57,7 +58,7 @@ Features
 Requirements
 --------------
 
-* Django 1.8 or 1.9
+* Django 1.8, 1.9, or 1.10
 * Python 2.7, 3.3, 3.4 or 3.5
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
@@ -79,13 +80,13 @@ See this blog post http://blog.pinaxproject.com/2016/02/26/recap-february-pinax-
 
 In case of any questions we recommend you join our Pinax Slack team (http://slack.pinaxproject.com) and ping us there instead of creating an issue on GitHub. Creating issues on GitHub is of course also valid but we are usually able to help you faster if you ping us in Slack.
 
-We also highly recommend reading our Open Source and Self-Care blog post (http://blog.pinaxproject.com/2016/01/19/open-source-and-self-care/).  
+We also highly recommend reading our Open Source and Self-Care blog post (http://blog.pinaxproject.com/2016/01/19/open-source-and-self-care/).
 
 
 Code of Conduct
 -----------------
 
-In order to foster a kind, inclusive, and harassment-free community, the Pinax Project has a code of conduct, which can be found here  http://pinaxproject.com/pinax/code_of_conduct/. 
+In order to foster a kind, inclusive, and harassment-free community, the Pinax Project has a code of conduct, which can be found here  http://pinaxproject.com/pinax/code_of_conduct/.
 We ask you to treat everyone as a smart human programmer that shares an interest in Python, Django, and Pinax with you.
 
 

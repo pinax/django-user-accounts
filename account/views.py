@@ -97,11 +97,11 @@ class PasswordMixin(object):
         }
         hookset.send_password_change_email([user.email], ctx)
 
-    def create_password_history(self, form):
+    def create_password_history(self, form, user):
         if settings.ACCOUNT_PASSWORD_USE_HISTORY:
             password = form.cleaned_data[self.form_password_field]
             PasswordHistory.objects.create(
-                user=self.request.user,
+                user=user,
                 password=make_password(password)
             )
 
@@ -209,7 +209,7 @@ class SignupView(PasswordMixin, FormView):
             self.created_user.is_active = False
             self.created_user.save()
         self.create_account(form)
-        self.create_password_history(form)
+        self.create_password_history(form, self.created_user)
         self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
             self.send_email_confirmation(email_address)
@@ -535,7 +535,7 @@ class ChangePasswordView(PasswordMixin, FormView):
 
     def form_valid(self, form):
         self.change_password(form)
-        self.create_password_history(form)
+        self.create_password_history(form, self.request.user)
         self.after_change_password()
         return redirect(self.get_success_url())
 
@@ -634,7 +634,7 @@ class PasswordResetTokenView(PasswordMixin, FormView):
 
     def form_valid(self, form):
         self.change_password(form)
-        self.create_password_history(form)
+        self.create_password_history(form, self.request.user)
         self.after_change_password()
         return redirect(self.get_success_url())
 

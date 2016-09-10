@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
@@ -12,12 +13,10 @@ from ..models import (
     PasswordExpiry,
     PasswordHistory,
 )
+from ..utils import check_password_expired
 
 
 @override_settings(
-    AUTHENTICATION_BACKENDS=[
-        "account.auth_backends.EmailAuthenticationBackend"
-    ],
     ACCOUNT_PASSWORD_USE_HISTORY=True
 )
 class PasswordExpirationTestCase(TestCase):
@@ -27,7 +26,7 @@ class PasswordExpirationTestCase(TestCase):
         self.email = "user1@example.com"
         self.password = "changeme"
         self.user = User.objects.create_user(
-            self.email,
+            self.username,
             email=self.email,
             password=self.password,
         )
@@ -44,42 +43,73 @@ class PasswordExpirationTestCase(TestCase):
 
     def test_signup(self):
         """
-        Ensure new user has one PasswordExpiry and one PasswordHistory.
+        Ensure new user has one PasswordHistory and no PasswordExpiry.
         """
-        # PasswordExpiry.expiry should be same as ACCOUNT_PASSWORD_EXPIRY
-        pass
+        email = "foobar@example.com"
+        post_data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": email,
+        }
+        response = self.client.post(reverse("account_signup"), post_data)
+        self.assertEqual(response.status_code, 302)
+        user = User.objects.get(email=email)
+        self.assertFalse(hasattr(user, "password_expiry"))
+        self.assertTrue(hasattr(user, "password_history"))
+
+        # verify password is not expired
+        self.assertFalse(check_password_expired(user))
+
+    def test_login_not_expired(self):
+        """
+        Ensure user can log in successfully without redirect.
+        """
+        # get login
+        self.client.login(username=self.username, password=self.password)
+
+        response = self.client.get(reverse("account_login"))
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
 
     def test_login_expired(self):
         """
         Ensure user is redirected to change password if pw is expired.
         """
         # set PasswordHistory timestamp in past so pw is expired.
-        self.history.timestamp = datetime.datetime.now() - datetime.timedelta(minutes=2)
+        self.history.timestamp = datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(days=1, seconds=self.expiry.expiry)
         self.history.save()
 
         # get login
-        self.client.login(username=self.email, password=self.password)
+        self.client.login(username=self.username, password=self.password)
 
         response = self.client.get(reverse("account_login"))
         self.assertRedirects(response, reverse("account_password"))
 
-        # post login
+    def test_pw_expiration_reset(self):
+        """
+        Ensure changing password results in new PasswordHistory.
+        """
+        qs = PasswordHistory.objects.all()
+        self.assertEquals(qs.count(), 1)
+
+        # get login
+        self.client.login(username=self.username, password=self.password)
+
+        # post new password to reset PasswordHistory
+        new_password = "lynyrdskynyrd"
         post_data = {
-            "username": self.username,
-            "email": self.email,
-            "password": self.password,
+            "password_current": self.password,
+            "password_new": new_password,
+            "password_new_confirm": new_password,
         }
-        response = self.client.post(
-            reverse("account_login"),
+        self.client.post(
+            reverse("account_password"),
             post_data
         )
-        self.assertEquals(response.status_code, 200)
 
-    def test_login_not_expired(self):
-        """
-        Ensure user logs in successfully without redirect.
-        """
-        # set PasswordHistory timestamp so pw is not expired.
-        # attempt login
-        # assert success and user logged in
-        pass
+        qs = PasswordHistory.objects.all()
+        self.assertEquals(qs.count(), 2)
+
+        latest = PasswordHistory.objects.latest("timestamp")
+        self.assertTrue(latest != self.history)
+        self.assertTrue(latest.timestamp > self.history.timestamp)

@@ -398,7 +398,7 @@ class PasswordHistory(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="password_history")
     password = models.CharField(max_length=255)  # encrypted password
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 
 class PasswordExpiry(models.Model):
