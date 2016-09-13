@@ -81,7 +81,7 @@ class PasswordExpirationTestCase(TestCase):
         """
         self.client.login(username=self.username, password=self.password)
 
-        # get account settings page
+        # get account settings page (could be any application page)
         response = self.client.get(reverse("account_settings"))
         self.assertEquals(response.status_code, 200)
 
@@ -96,7 +96,7 @@ class PasswordExpirationTestCase(TestCase):
 
         self.client.login(username=self.username, password=self.password)
 
-        # get account settings page
+        # get account settings page (could be any application page)
         response = self.client.get(reverse("account_settings"))
         self.assertRedirects(response, reverse("account_password"))
 
@@ -158,7 +158,7 @@ class ExistingUserNoHistoryTestCase(TestCase):
         with override_settings(
             ACCOUNT_PASSWORD_USE_HISTORY=True
         ):
-            # get account settings page
+            # get account settings page (could be any application page)
             response = self.client.get(reverse("account_settings"))
             self.assertEquals(response.status_code, 200)
 

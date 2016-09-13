@@ -113,7 +113,8 @@ def get_form_data(form, field_name, default=None):
 
 def check_password_expired(user):
     """
-    Return True if password is expired, False otherwise.
+    Return True if password is expired and system is using
+    password expiration, False otherwise.
     """
     if not settings.ACCOUNT_PASSWORD_USE_HISTORY:
         return False
