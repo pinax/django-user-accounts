@@ -71,7 +71,7 @@ class ExpiredPasswordMiddleware(object):
                     messages.add_message(
                         request,
                         messages.WARNING,
-                        _("Password is expired.")
+                        _("Your password has expired. Please save a new password.")
                     )
                     return redirect(
                         settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL

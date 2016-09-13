@@ -44,6 +44,9 @@ class PasswordExpiryAdmin(admin.ModelAdmin):
 class PasswordHistoryAdmin(admin.ModelAdmin):
 
     raw_id_fields = ["user"]
+    list_display = ["user", "timestamp"]
+    list_filter = ["user"]
+    ordering = ["user__username", "-timestamp"]
 
 
 admin.site.register(Account, AccountAdmin)
