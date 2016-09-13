@@ -285,4 +285,5 @@ the user changes their password. This entry links the user with their most recen
 are saved forever, allowing password history checking for new passwords.
 
 For an authenticated user, ``ExpiredPasswordMiddleware`` prevents retrieving or posting
-to any page (except the password change page!) when the user password is expired.
+to any page except the password change page and log out page when the user password is expired.
+However, if the user is "staff" (can access the Django admin site), the password check is skipped.
