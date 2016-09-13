@@ -273,7 +273,7 @@ and include `ExpiredPasswordMiddleware` with your middleware settings::
     }
 
 ``ACCOUNT_PASSWORD_EXPIRY`` indicates the duration a password will stay valid. After that period
-the password must be reset in order to log in. If ``ACCOUNT_PASSWORD_EXPIRY`` is zero (0)
+the password must be reset in order to view any page. If ``ACCOUNT_PASSWORD_EXPIRY`` is zero (0)
 then passwords never expire.
 
 If ``ACCOUNT_PASSWORD_USE_HISTORY`` is False, no history will be generated and password
