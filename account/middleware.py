@@ -1,10 +1,13 @@
 from __future__ import unicode_literals
 
+from django.core.urlresolvers import resolve
+from django.shortcuts import redirect
 from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
 
 from account.conf import settings
 from account.models import Account
+from account.utils import check_password_expired
 
 
 class LocaleMiddleware(object):
@@ -51,3 +54,16 @@ class TimezoneMiddleware(object):
             if account:
                 tz = settings.TIME_ZONE if not account.timezone else account.timezone
                 timezone.activate(tz)
+
+
+class ExpiredPasswordMiddleware(object):
+
+    def process_request(self, request):
+        if request.user.is_authenticated() and not request.user.is_staff:
+            url_name = resolve(request.path).url_name
+            # All users must be allowed to access "change password" url.
+            if url_name not in settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL:
+                if check_password_expired(request.user):
+                    return redirect(
+                        settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL
+                    )

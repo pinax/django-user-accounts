@@ -260,10 +260,17 @@ Enabling password expiration
 ============================
 
 Password expiration is disabled by default. In order to enable password expiration
-you must add two entries to your settings file::
+you must add entries to your settings file::
 
-    PASSWORD_EXPIRY = 60*60*24*5  # seconds until pw expires, this example shows five days
-    PASSWORD_USE_HISTORY = True
+    ACCOUNT_PASSWORD_EXPIRY = 60*60*24*5  # seconds until pw expires, this example shows five days
+    ACCOUNT_PASSWORD_USE_HISTORY = True
+
+and include `ExpiredPasswordMiddleware` with your middleware settings::
+
+    MIDDLEWARE_CLASSES = {
+        ...
+        "account.middleware.ExpiredPasswordMiddleware",
+    }
 
 PASSWORD_EXPIRY indicates the duration a password will stay valid. After that period
 the password must be reset in order to log in. If PASSWORD_EXPIRY is zero (0)
@@ -276,3 +283,6 @@ If PASSWORD_USE_HISTORY is True, a password history entry is created each time
 the user changes their password. This entry links the user with their most recent
 (encrypted) password and a timestamp. Unless deleted manually, PasswordHistory items
 are saved forever, allowing password history checking for new passwords.
+
+For an authenticated user, `ExpiredPasswordMiddleware` prevents retrieving or posting
+to any page (except the password change page!) when the user password is expired.

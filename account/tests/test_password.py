@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import (
     TestCase,
+    modify_settings,
     override_settings,
 )
 
@@ -21,6 +22,11 @@ from ..utils import check_password_expired
 
 @override_settings(
     ACCOUNT_PASSWORD_USE_HISTORY=True
+)
+@modify_settings(
+    MIDDLEWARE_CLASSES={
+        'append': 'account.middleware.ExpiredPasswordMiddleware'
+    }
 )
 class PasswordExpirationTestCase(TestCase):
 
@@ -68,31 +74,33 @@ class PasswordExpirationTestCase(TestCase):
         # verify raw password matches encrypted password in history
         self.assertTrue(check_password(password, latest_history.password))
 
-    def test_login_not_expired(self):
+    def test_get_not_expired(self):
         """
-        Ensure user can log in successfully without redirect.
+        Ensure authenticated user can retrieve account settings page
+        without "password change" redirect.
         """
         self.client.login(username=self.username, password=self.password)
 
-        # get login
-        response = self.client.get(reverse("account_login"))
-        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        # get account settings page
+        response = self.client.get(reverse("account_settings"))
+        self.assertEquals(response.status_code, 200)
 
-    def test_login_expired(self):
+    def test_get_expired(self):
         """
-        Ensure user is redirected to change password if pw is expired.
+        Ensure authenticated user is redirected to change password
+        when retrieving account settings page if password is expired.
         """
-        # set PasswordHistory timestamp in past so pw is expired.
+        # set PasswordHistory timestamp in past so password is expired.
         self.history.timestamp = datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(days=1, seconds=self.expiry.expiry)
         self.history.save()
 
         self.client.login(username=self.username, password=self.password)
 
-        # get login
-        response = self.client.get(reverse("account_login"))
+        # get account settings page
+        response = self.client.get(reverse("account_settings"))
         self.assertRedirects(response, reverse("account_password"))
 
-    def test_pw_expiration_reset(self):
+    def test_password_expiration_reset(self):
         """
         Ensure changing password results in new PasswordHistory.
         """
@@ -120,6 +128,11 @@ class PasswordExpirationTestCase(TestCase):
         self.assertTrue(latest.timestamp > self.history.timestamp)
 
 
+@modify_settings(
+    MIDDLEWARE_CLASSES={
+        'append': 'account.middleware.ExpiredPasswordMiddleware'
+    }
+)
 class ExistingUserNoHistoryTestCase(TestCase):
     """
     Tests where user has no PasswordHistory.
@@ -135,23 +148,21 @@ class ExistingUserNoHistoryTestCase(TestCase):
             password=self.password,
         )
 
-    @override_settings(
-        ACCOUNT_PASSWORD_USE_HISTORY=True
-    )
-    def test_login_not_expired(self):
+    def test_get_no_history(self):
         """
-        Ensure user without history can log in successfully without redirect.
+        Ensure authenticated user without password history can retrieve
+        account settings page without "password change" redirect.
         """
         self.client.login(username=self.username, password=self.password)
 
-        # get login
-        response = self.client.get(reverse("account_login"))
-        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        with override_settings(
+            ACCOUNT_PASSWORD_USE_HISTORY=True
+        ):
+            # get account settings page
+            response = self.client.get(reverse("account_settings"))
+            self.assertEquals(response.status_code, 200)
 
-    @override_settings(
-        ACCOUNT_PASSWORD_USE_HISTORY=True
-    )
-    def test_pw_expiration_reset(self):
+    def test_password_expiration_reset(self):
         """
         Ensure changing password results in new PasswordHistory,
         even when no PasswordHistory exists.
@@ -168,16 +179,16 @@ class ExistingUserNoHistoryTestCase(TestCase):
             "password_new": new_password,
             "password_new_confirm": new_password,
         }
-        self.client.post(
-            reverse("account_password"),
-            post_data
-        )
-        # Should see one more history entry for this user
-        self.assertEquals(self.user.password_history.count(), history_count + 1)
+        with override_settings(
+            ACCOUNT_PASSWORD_USE_HISTORY=True
+        ):
+            self.client.post(
+                reverse("account_password"),
+                post_data
+            )
+            # Should see one more history entry for this user
+            self.assertEquals(self.user.password_history.count(), history_count + 1)
 
-    @override_settings(
-        ACCOUNT_PASSWORD_USE_HISTORY=False
-    )
     def test_password_reset(self):
         """
         Ensure changing password results in NO new PasswordHistory
@@ -193,9 +204,12 @@ class ExistingUserNoHistoryTestCase(TestCase):
             "password_new": new_password,
             "password_new_confirm": new_password,
         }
-        self.client.post(
-            reverse("account_password"),
-            post_data
-        )
-        # history count should be zero
-        self.assertEquals(self.user.password_history.count(), 0)
+        with override_settings(
+            ACCOUNT_PASSWORD_USE_HISTORY=False
+        ):
+            self.client.post(
+                reverse("account_password"),
+                post_data
+            )
+            # history count should be zero
+            self.assertEquals(self.user.password_history.count(), 0)

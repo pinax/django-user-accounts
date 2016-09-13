@@ -21,6 +21,5 @@ Contents
  settings
  templates
  signals
- changelog
  migration
  faq

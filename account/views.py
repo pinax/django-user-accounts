@@ -22,7 +22,7 @@ from account.forms import SettingsForm
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion, PasswordHistory
-from account.utils import check_password_expired, default_redirect, get_form_data
+from account.utils import default_redirect, get_form_data
 
 
 class PasswordMixin(object):
@@ -344,11 +344,6 @@ class LoginView(FormView):
 
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
-
-            # Check for password expiration, redirect if needed.
-            if check_password_expired(self.request.user):
-                return redirect("account_password")
-
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
 
