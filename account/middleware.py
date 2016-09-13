@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
 
+from django.contrib import messages
 from django.core.urlresolvers import resolve
 from django.shortcuts import redirect
 from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
+from django.utils.translation import ugettext_lazy as _
 
 from account.conf import settings
 from account.models import Account
@@ -64,6 +66,11 @@ class ExpiredPasswordMiddleware(object):
             # All users must be allowed to access "change password" url.
             if url_name not in settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL:
                 if check_password_expired(request.user):
+                    messages.add_message(
+                        request,
+                        messages.WARNING,
+                        _("Password is expired.")
+                    )
                     return redirect(
                         settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL
                     )
