@@ -1,8 +1,13 @@
 from __future__ import unicode_literals
 
+try:
+    from urllib.parse import urlparse, urlunparse
+except ImportError:  # python 2
+    from urlparse import urlparse, urlunparse
+
 from django.contrib import messages
 from django.core.urlresolvers import resolve, reverse
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect, QueryDict
 from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
 from django.utils.translation import ugettext_lazy as _
@@ -63,11 +68,13 @@ class ExpiredPasswordMiddleware(object):
 
     def process_request(self, request):
         if request.user.is_authenticated() and not request.user.is_staff:
-            url_name = resolve(request.path).url_name
-            # All users must be allowed to access "change password" url.
-            if url_name not in [
-                    settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL,
-                    ]:
+            next_url = resolve(request.path).url_name
+            # Authenticated users must be allowed to access
+            # "change password" page and "log out" page.
+            # even if password is expired.
+            if next_url not in [settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL,
+                                settings.ACCOUNT_LOGOUT_URL,
+                                ]:
                 if check_password_expired(request.user):
                     signals.password_expired.send(sender=self, user=request.user)
                     messages.add_message(
@@ -75,6 +82,12 @@ class ExpiredPasswordMiddleware(object):
                         messages.WARNING,
                         _("Your password has expired. Please save a new password.")
                     )
-                    redirect_url = "{}?next={}".format(reverse(settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL), url_name)
+                    redirect_field_name = "next"  # fragile!
 
-                    return redirect(redirect_url)
+                    change_password_url = reverse(settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
+                    url_bits = list(urlparse(change_password_url))
+                    querystring = QueryDict(url_bits[4], mutable=True)
+                    querystring[redirect_field_name] = next_url
+                    url_bits[4] = querystring.urlencode(safe="/")
+
+                    return HttpResponseRedirect(urlunparse(url_bits))
