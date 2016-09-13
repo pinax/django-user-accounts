@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.core.management.base import LabelCommand
 
 from account.conf import settings
@@ -6,17 +7,24 @@ from account.models import PasswordExpiry
 
 class Command(LabelCommand):
 
-    help = "Create user-specific password expiration."
+    help = "Create user-specific password expiration period."
     label = "username"
 
     def add_arguments(self, parser):
         super(Command, self).add_arguments(parser)
-        parser.add_argument("-e", "--expire", default=settings.ACCOUNT_PASSWORD_EXPIRY)
+        parser.add_argument(
+            "-e", "--expire",
+            type=int,
+            nargs="?",
+            default=settings.ACCOUNT_PASSWORD_EXPIRY,
+            help="number of seconds until password expires"
+        )
 
     def handle_label(self, username, **options):
+        User = get_user_model()
         try:
-            user = settings.AUTH_USER_MODEL.objects.get(username=username)
-        except settings.AUTH_USER_MODEL.DoesNotExist:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
             return "User \"{}\" not found".format(username)
 
         expire = options["expire"]
@@ -28,4 +36,4 @@ class Command(LabelCommand):
             user.password_expiry.expiry = expire
             user.password_expiry.save()
 
-        return "User \"{}\" password expiration now {} seconds".format(username, expire)
+        return "User \"{}\" password expiration set to {} seconds".format(username, expire)

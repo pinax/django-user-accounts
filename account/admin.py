@@ -2,7 +2,14 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from account.models import Account, SignupCode, AccountDeletion, EmailAddress
+from account.models import (
+    Account,
+    AccountDeletion,
+    EmailAddress,
+    PasswordExpiry,
+    PasswordHistory,
+    SignupCode,
+)
 
 
 class SignupCodeAdmin(admin.ModelAdmin):
@@ -29,7 +36,19 @@ class EmailAddressAdmin(AccountAdmin):
     search_fields = ["email", "user__username"]
 
 
+class PasswordExpiryAdmin(admin.ModelAdmin):
+
+    raw_id_fields = ["user"]
+
+
+class PasswordHistoryAdmin(admin.ModelAdmin):
+
+    raw_id_fields = ["user"]
+
+
 admin.site.register(Account, AccountAdmin)
 admin.site.register(SignupCode, SignupCodeAdmin)
 admin.site.register(AccountDeletion, AccountDeletionAdmin)
 admin.site.register(EmailAddress, EmailAddressAdmin)
+admin.site.register(PasswordExpiry, PasswordExpiryAdmin)
+admin.site.register(PasswordHistory, PasswordHistoryAdmin)
