@@ -7,6 +7,7 @@ from django.utils import translation, timezone
 from django.utils.cache import patch_vary_headers
 from django.utils.translation import ugettext_lazy as _
 
+from account import signals
 from account.conf import settings
 from account.models import Account
 from account.utils import check_password_expired
@@ -66,6 +67,7 @@ class ExpiredPasswordMiddleware(object):
             # All users must be allowed to access "change password" url.
             if url_name not in settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL:
                 if check_password_expired(request.user):
+                    signals.password_expired.send(sender=self, user=request.user)
                     messages.add_message(
                         request,
                         messages.WARNING,

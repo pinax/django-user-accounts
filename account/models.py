@@ -396,6 +396,10 @@ class PasswordHistory(models.Model):
     """
     Contains single password history for user.
     """
+    class Meta:
+        verbose_name = _("password history")
+        verbose_name_plural = _("password histories")
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="password_history")
     password = models.CharField(max_length=255)  # encrypted password
     timestamp = models.DateTimeField(default=timezone.now)  # password creation time
