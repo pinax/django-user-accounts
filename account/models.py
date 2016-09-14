@@ -8,6 +8,7 @@ try:
 except ImportError:  # python 2
     from urllib import urlencode
 
+from django import forms
 from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.db.models import Q
@@ -300,6 +301,16 @@ class EmailAddress(models.Model):
             self.save()
             if confirm:
                 self.send_confirmation()
+
+    def validate_unique(self, exclude=None):
+        super(EmailAddress, self).validate_unique(exclude=exclude)
+
+        qs = EmailAddress.objects.filter(email__iexact=self.email)
+
+        if qs.exists() and settings.ACCOUNT_EMAIL_UNIQUE:
+            raise forms.ValidationError({
+                'email': _("A user is registered with this email address."),
+            })
 
 
 @python_2_unicode_compatible
