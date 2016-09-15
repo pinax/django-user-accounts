@@ -12,7 +12,7 @@ have a password history.
 
 Accepts two optional arguments::
 
-    -d --days - Sets the age of the current password. Default is 10 days.
+    -d --days <days> - Sets the age of the current password. Default is 10 days.
     -f --force - Sets a new password history for ALL users, regardless of prior history.
 
 user_password_expiry
@@ -30,8 +30,8 @@ Requires one argument::
 
 Accepts one optional argument::
 
-    -e --expire - Sets the number of seconds for password expiration.
-                  Default is the current global ACCOUNT_PASSWORD_EXPIRY value.
+    -e --expire <seconds> - Sets the number of seconds for password expiration.
+                            Default is the current global ACCOUNT_PASSWORD_EXPIRY value.
 
 After creation, you can modify user password expiration from the Django
 admin. Find the desired user at ``/admin/account/passwordexpiry/`` and change the ``expiry`` value.
