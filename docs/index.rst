@@ -21,5 +21,6 @@ Contents
  settings
  templates
  signals
+ commands
  migration
  faq
