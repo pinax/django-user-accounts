@@ -34,4 +34,4 @@ Accepts one optional argument::
                   Default is the current global ACCOUNT_PASSWORD_EXPIRY value.
 
 After creation, you can modify user password expiration from the Django
-admin.  for "account.PasswordExpiry" and find the desired user.
+admin. Find the desired user at ``/admin/account/passwordexpiry/`` and change the ``expiry`` value.
