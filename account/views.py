@@ -279,7 +279,7 @@ class SignupView(PasswordMixin, FormView):
         email_address.send_confirmation(site=get_current_site(self.request))
 
     def after_signup(self, form):
-        signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
+        signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form, request=self.request)
 
     def login_user(self):
         user = auth.authenticate(**self.user_credentials())
@@ -697,6 +697,10 @@ class SettingsView(LoginRequiredMixin, FormView):
     def update_settings(self, form):
         self.update_email(form)
         self.update_account(form)
+        self.after_update_account()
+        
+    def after_update_account(self):
+        signals.updated_account.send(sender=SettingsView, user=self.request.user, request=self.request)
 
     def update_email(self, form, confirm=None):
         user = self.request.user
