@@ -6,6 +6,7 @@ except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
 
 from django.contrib import messages
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.urlresolvers import resolve, reverse
 from django.http import HttpResponseRedirect, QueryDict
 from django.utils import translation, timezone
@@ -82,7 +83,7 @@ class ExpiredPasswordMiddleware(object):
                         messages.WARNING,
                         _("Your password has expired. Please save a new password.")
                     )
-                    redirect_field_name = "next"  # fragile!
+                    redirect_field_name = REDIRECT_FIELD_NAME
 
                     change_password_url = reverse(settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL)
                     url_bits = list(urlparse(change_password_url))
