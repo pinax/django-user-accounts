@@ -254,3 +254,36 @@ file called lib/tests.py::
 And in your settings::
 
     TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
+
+
+Enabling password expiration
+============================
+
+Password expiration is disabled by default. In order to enable password expiration
+you must add entries to your settings file::
+
+    ACCOUNT_PASSWORD_EXPIRY = 60*60*24*5  # seconds until pw expires, this example shows five days
+    ACCOUNT_PASSWORD_USE_HISTORY = True
+
+and include `ExpiredPasswordMiddleware` with your middleware settings::
+
+    MIDDLEWARE_CLASSES = {
+        ...
+        "account.middleware.ExpiredPasswordMiddleware",
+    }
+
+``ACCOUNT_PASSWORD_EXPIRY`` indicates the duration a password will stay valid. After that period
+the password must be reset in order to view any page. If ``ACCOUNT_PASSWORD_EXPIRY`` is zero (0)
+then passwords never expire.
+
+If ``ACCOUNT_PASSWORD_USE_HISTORY`` is False, no history will be generated and password
+expiration WILL NOT be checked.
+
+If ``ACCOUNT_PASSWORD_USE_HISTORY`` is True, a password history entry is created each time
+the user changes their password. This entry links the user with their most recent
+(encrypted) password and a timestamp. Unless deleted manually, PasswordHistory items
+are saved forever, allowing password history checking for new passwords.
+
+For an authenticated user, ``ExpiredPasswordMiddleware`` prevents retrieving or posting
+to any page except the password change page and log out page when the user password is expired.
+However, if the user is "staff" (can access the Django admin site), the password check is skipped.

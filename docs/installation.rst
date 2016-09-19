@@ -45,6 +45,15 @@ Add ``account.middleware.LocaleMiddleware`` and
         ...
     ]
 
+Optionally include ``account.middleware.ExpiredPasswordMiddleware`` in
+``MIDDLEWARE_CLASSES`` if you need password expiration support::
+
+    MIDDLEWARE_CLASSES = [
+        ...
+        "account.middleware.ExpiredPasswordMiddleware",
+        ...
+    ]
+
 Once everything is in place make sure you run ``migrate`` to modify the
 database with the ``account`` app models.
 
