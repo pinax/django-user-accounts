@@ -5,6 +5,8 @@ try:
 except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
 
+import django
+
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.urlresolvers import resolve, reverse
@@ -19,7 +21,13 @@ from account.models import Account
 from account.utils import check_password_expired
 
 
-class LocaleMiddleware(object):
+if django.VERSION >= (1, 10):
+    from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
+else:
+    BaseMiddleware = object
+
+
+class LocaleMiddleware(BaseMiddleware):
     """
     This is a very simple middleware that parses a request
     and decides what translation object to install in the current
@@ -48,7 +56,7 @@ class LocaleMiddleware(object):
         return response
 
 
-class TimezoneMiddleware(object):
+class TimezoneMiddleware(BaseMiddleware):
     """
     This middleware sets the timezone used to display dates in
     templates to the user's timezone.
@@ -65,7 +73,7 @@ class TimezoneMiddleware(object):
                 timezone.activate(tz)
 
 
-class ExpiredPasswordMiddleware(object):
+class ExpiredPasswordMiddleware(BaseMiddleware):
 
     def process_request(self, request):
         if request.user.is_authenticated() and not request.user.is_staff:
