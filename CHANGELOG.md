@@ -13,6 +13,7 @@ version with these. Your code will need to be updated to continue working.
  * added Turkish translations
  * fixed migration with language codes to dynamically set
  * added password expiration
+ * added password stripping by default
 
 ## 1.3.0
 
