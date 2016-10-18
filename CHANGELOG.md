@@ -14,6 +14,7 @@ version with these. Your code will need to be updated to continue working.
  * fixed migration with language codes to dynamically set
  * added password expiration
  * added password stripping by default
+ * added `ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN` feature (default is `False`)
 
 ## 1.3.0
 

@@ -458,6 +458,10 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         self.object = confirmation = self.get_object()
         confirmation.confirm()
         self.after_confirmation(confirmation)
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN:
+            self.user = self.login_user(confirmation.email_address.user)
+        else:
+            self.user = self.request.user
         redirect_url = self.get_redirect_url()
         if not redirect_url:
             ctx = self.get_context_data()
@@ -491,7 +495,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         return ctx
 
     def get_redirect_url(self):
-        if self.request.user.is_authenticated():
+        if self.user.is_authenticated():
             if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
                 return settings.ACCOUNT_LOGIN_REDIRECT_URL
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
@@ -502,6 +506,11 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         user = confirmation.email_address.user
         user.is_active = True
         user.save()
+
+    def login_user(self, user):
+        user.backend = "django.contrib.auth.backends.ModelBackend"
+        auth.login(self.request, user)
+        return user
 
 
 class ChangePasswordView(PasswordMixin, FormView):
