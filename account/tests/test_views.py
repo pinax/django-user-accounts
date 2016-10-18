@@ -264,6 +264,20 @@ class ConfirmEmailViewTestCase(TestCase):
             fetch_redirect_response=False
         )
 
+    @override_settings(
+        ACCOUNT_EMAIL_CONFIRMATION_REQUIRED=True,
+        ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN=True,
+        ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/somewhere/",
+    )
+    def test_post_auto_login(self):
+        email_confirmation = self.signup()
+        response = self.client.post(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}), {})
+        self.assertRedirects(
+            response,
+            settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL,
+            fetch_redirect_response=False
+        )
+
 
 class ChangePasswordViewTestCase(TestCase):
 
