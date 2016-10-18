@@ -1,6 +1,8 @@
 import datetime
 import pytz
 
+import django
+
 from django.contrib.auth.hashers import (
     check_password,
     make_password,
@@ -20,13 +22,21 @@ from ..models import (
 from ..utils import check_password_expired
 
 
+def middleware_kwarg(value):
+    if django.VERSION >= (1, 10):
+        kwarg = "MIDDLEWARE"
+    else:
+        kwarg = "MIDDLEWARE_CLASSES"
+    return {kwarg: value}
+
+
 @override_settings(
     ACCOUNT_PASSWORD_USE_HISTORY=True
 )
 @modify_settings(
-    MIDDLEWARE_CLASSES={
-        'append': 'account.middleware.ExpiredPasswordMiddleware'
-    }
+    **middleware_kwarg({
+        "append": "account.middleware.ExpiredPasswordMiddleware"
+    })
 )
 class PasswordExpirationTestCase(TestCase):
 
@@ -133,9 +143,9 @@ class PasswordExpirationTestCase(TestCase):
 
 
 @modify_settings(
-    MIDDLEWARE_CLASSES={
-        'append': 'account.middleware.ExpiredPasswordMiddleware'
-    }
+    **middleware_kwarg({
+        "append": "account.middleware.ExpiredPasswordMiddleware"
+    })
 )
 class ExistingUserNoHistoryTestCase(TestCase):
     """
