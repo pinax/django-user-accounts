@@ -14,13 +14,12 @@ from django.utils.cache import patch_vary_headers
 from django.utils.translation import ugettext_lazy as _
 
 from account import signals
-from account.compat import MiddlewareMixin
 from account.conf import settings
 from account.models import Account
 from account.utils import check_password_expired
 
 
-class LocaleMiddleware(MiddlewareMixin):
+class LocaleMiddleware(object):
     """
     This is a very simple middleware that parses a request
     and decides what translation object to install in the current
@@ -49,7 +48,7 @@ class LocaleMiddleware(MiddlewareMixin):
         return response
 
 
-class TimezoneMiddleware(MiddlewareMixin):
+class TimezoneMiddleware(object):
     """
     This middleware sets the timezone used to display dates in
     templates to the user's timezone.
@@ -66,7 +65,7 @@ class TimezoneMiddleware(MiddlewareMixin):
                 timezone.activate(tz)
 
 
-class ExpiredPasswordMiddleware(MiddlewareMixin):
+class ExpiredPasswordMiddleware(object):
 
     def process_request(self, request):
         if request.user.is_authenticated() and not request.user.is_staff:
