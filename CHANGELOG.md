@@ -5,14 +5,14 @@ version with these. Your code will need to be updated to continue working.
 
 ## 2.0.0
 
- * BI: account deletion callbacks moved to hooksets
+ * BI: moved account deletion callbacks to hooksets
  * BI: dropped Django 1.7 support
+ * BI: dropped Python 3.2 support
  * BI: removed deprecated `ACCOUNT_USE_AUTH_AUTHENTICATE` setting with behavior matching its `True` value
- * BI: remove Python 3.2 from test compatibility matrix
- * add Django v1.10 to test compatibility matrix
+ * added Django v1.10 to test compatibility matrix
  * added Turkish translations
  * fixed migration with language codes to dynamically set
- * add password expiration
+ * added password expiration
 
 ## 1.3.0
 
