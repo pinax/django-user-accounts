@@ -40,6 +40,16 @@ Default: ``"account_password"``
 
 Default: ``"account_login"``
 
+``ACCOUNT_PASSWORD_EXPIRY``
+=======================================
+
+Default: ``0``
+
+``ACCOUNT_PASSWORD_USE_HISTORY``
+=======================================
+
+Default: ``False``
+
 ``ACCOUNT_REMEMBER_ME_EXPIRY``
 ==============================
 
@@ -138,8 +148,3 @@ Default: ``list(zip(pytz.all_timezones, pytz.all_timezones))``
 =====================
 
 See full list in: https://github.com/pinax/django-user-accounts/blob/master/account/language_list.py
-
-``ACCOUNT_USE_AUTH_AUTHENTICATE``
-=================================
-
-Default: ``False``

@@ -1,4 +1,11 @@
+include .coveragerc
+include CHANGELOG.md
+include CONTRIBUTING.md
+include LICENSE
+include tox.ini
 include README.rst
 include runtests.py
+recursive-include account *.html
+recursive-include account *.txt
 recursive-include account/locale *
 recursive-include docs Makefile conf.py *.rst
