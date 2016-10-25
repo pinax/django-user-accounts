@@ -593,7 +593,7 @@ class PasswordResetView(FormView):
         current_site = get_current_site(self.request)
         email_qs = EmailAddress.objects.filter(email__iexact=email)
         for user in User.objects.filter(pk__in=email_qs.values("user")):
-            uid = int_to_base36(user.id)
+            uid = int_to_base36(int(user.id))
             token = self.make_token(user)
             password_reset_url = "{0}://{1}{2}".format(
                 protocol,
