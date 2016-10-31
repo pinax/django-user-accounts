@@ -22,7 +22,7 @@ from account.forms import SettingsForm
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
 from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion, PasswordHistory
-from account.utils import check_password_expired, default_redirect, get_form_data
+from account.utils import default_redirect, get_form_data
 
 
 class PasswordMixin(object):
@@ -97,11 +97,11 @@ class PasswordMixin(object):
         }
         hookset.send_password_change_email([user.email], ctx)
 
-    def create_password_history(self, form):
+    def create_password_history(self, form, user):
         if settings.ACCOUNT_PASSWORD_USE_HISTORY:
             password = form.cleaned_data[self.form_password_field]
             PasswordHistory.objects.create(
-                user=self.request.user,
+                user=user,
                 password=make_password(password)
             )
 
@@ -209,7 +209,7 @@ class SignupView(PasswordMixin, FormView):
             self.created_user.is_active = False
             self.created_user.save()
         self.create_account(form)
-        self.create_password_history(form)
+        self.create_password_history(form, self.created_user)
         self.after_signup(form)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
             self.send_email_confirmation(email_address)
@@ -344,11 +344,6 @@ class LoginView(FormView):
 
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
-
-            # Check for password expiration, redirect if needed.
-            if check_password_expired(self.request.user):
-                return redirect("account_password")
-
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
 
@@ -463,6 +458,10 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         self.object = confirmation = self.get_object()
         confirmation.confirm()
         self.after_confirmation(confirmation)
+        if settings.ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN:
+            self.user = self.login_user(confirmation.email_address.user)
+        else:
+            self.user = self.request.user
         redirect_url = self.get_redirect_url()
         if not redirect_url:
             ctx = self.get_context_data()
@@ -496,7 +495,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         return ctx
 
     def get_redirect_url(self):
-        if self.request.user.is_authenticated():
+        if self.user.is_authenticated():
             if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
                 return settings.ACCOUNT_LOGIN_REDIRECT_URL
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
@@ -507,6 +506,11 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         user = confirmation.email_address.user
         user.is_active = True
         user.save()
+
+    def login_user(self, user):
+        user.backend = "django.contrib.auth.backends.ModelBackend"
+        auth.login(self.request, user)
+        return user
 
 
 class ChangePasswordView(PasswordMixin, FormView):
@@ -535,7 +539,7 @@ class ChangePasswordView(PasswordMixin, FormView):
 
     def form_valid(self, form):
         self.change_password(form)
-        self.create_password_history(form)
+        self.create_password_history(form, self.request.user)
         self.after_change_password()
         return redirect(self.get_success_url())
 
@@ -634,7 +638,7 @@ class PasswordResetTokenView(PasswordMixin, FormView):
 
     def form_valid(self, form):
         self.change_password(form)
-        self.create_password_history(form)
+        self.create_password_history(form, self.request.user)
         self.after_change_password()
         return redirect(self.get_success_url())
 

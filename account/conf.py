@@ -32,6 +32,7 @@ class AccountAppConf(AppConf):
 
     OPEN_SIGNUP = True
     LOGIN_URL = "account_login"
+    LOGOUT_URL = "account_logout"
     SIGNUP_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL = "/"
     LOGOUT_REDIRECT_URL = "/"
@@ -39,6 +40,7 @@ class AccountAppConf(AppConf):
     PASSWORD_RESET_REDIRECT_URL = "account_login"
     PASSWORD_EXPIRY = 0
     PASSWORD_USE_HISTORY = False
+    PASSWORD_STRIP = True
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username  # flake8: noqa
     CREATE_ON_SAVE = True
@@ -46,6 +48,7 @@ class AccountAppConf(AppConf):
     EMAIL_CONFIRMATION_REQUIRED = False
     EMAIL_CONFIRMATION_EMAIL = True
     EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+    EMAIL_CONFIRMATION_AUTO_LOGIN = False
     EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "account_login"
     EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
     EMAIL_CONFIRMATION_URL = "account_confirm_email"

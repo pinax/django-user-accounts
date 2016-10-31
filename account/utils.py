@@ -113,7 +113,8 @@ def get_form_data(form, field_name, default=None):
 
 def check_password_expired(user):
     """
-    Return True if password is expired, False otherwise.
+    Return True if password is expired and system is using
+    password expiration, False otherwise.
     """
     if not settings.ACCOUNT_PASSWORD_USE_HISTORY:
         return False
@@ -125,13 +126,19 @@ def check_password_expired(user):
         # use global value
         expiry = settings.ACCOUNT_PASSWORD_EXPIRY
 
+    if expiry == 0:  # zero indicates no expiration
+        return False
+
     try:
         # get latest password info
         latest = user.password_history.latest("timestamp")
     except PasswordHistory.DoesNotExist:
         return False
 
-    if datetime.datetime.now(tz=pytz.UTC) > (latest.timestamp + datetime.timedelta(seconds=expiry)):
-        return False
+    now = datetime.datetime.now(tz=pytz.UTC)
+    expiration = latest.timestamp + datetime.timedelta(seconds=expiry)
 
-    return True
+    if expiration < now:
+        return True
+    else:
+        return False
