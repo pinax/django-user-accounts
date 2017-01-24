@@ -21,6 +21,11 @@ this app will:
 The rest of this document will cover how you can tweak the default behavior
 of django-user-accounts.
 
+Limiting access to views
+========================
+
+To limit view access to logged in users, normally you would use the Django decorator ``django.contrib.auth.decorators.login_required``.  Instead you should use ``account.decorators.login_required``.
+
 
 Customizing the sign up process
 ===============================
