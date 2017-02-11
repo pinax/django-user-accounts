@@ -102,6 +102,11 @@ def user_post_save(sender, **kwargs):
     We only run on user creation to avoid having to check for existence on
     each call to User.save.
     """
+
+    # Disable post_save during manage.py loaddata
+    if kwargs.get("raw", False):
+        return False
+
     user, created = kwargs["instance"], kwargs["created"]
     disabled = getattr(user, "_disable_account_creation", not settings.ACCOUNT_CREATE_ON_SAVE)
     if created and not disabled:
@@ -385,3 +390,24 @@ class AccountDeletion(models.Model):
         account_deletion.save()
         settings.ACCOUNT_DELETION_MARK_CALLBACK(account_deletion)
         return account_deletion
+
+
+class PasswordHistory(models.Model):
+    """
+    Contains single password history for user.
+    """
+    class Meta:
+        verbose_name = _("password history")
+        verbose_name_plural = _("password histories")
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="password_history")
+    password = models.CharField(max_length=255)  # encrypted password
+    timestamp = models.DateTimeField(default=timezone.now)  # password creation time
+
+
+class PasswordExpiry(models.Model):
+    """
+    Holds the password expiration period for a single user.
+    """
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="password_expiry", verbose_name=_("user"))
+    expiry = models.PositiveIntegerField(default=0)

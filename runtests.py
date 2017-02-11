@@ -19,12 +19,6 @@ DEFAULT_SETTINGS = dict(
         "account",
         "account.tests",
     ],
-    MIDDLEWARE_CLASSES=[
-        "django.contrib.sessions.middleware.SessionMiddleware",
-        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
-        "django.contrib.messages.middleware.MessageMiddleware",
-    ],
     DATABASES={
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -57,6 +51,13 @@ DEFAULT_SETTINGS = dict(
         },
     ]
 )
+
+DEFAULT_SETTINGS["MIDDLEWARE" if django.VERSION >= (1, 10) else "MIDDLEWARE_CLASSES"] = [
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+]
 
 
 def runtests(*test_args):

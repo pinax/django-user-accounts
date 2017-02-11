@@ -8,6 +8,7 @@ except ImportError:
     OrderedDict = None
 
 from django import forms
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import auth
@@ -22,6 +23,22 @@ from account.utils import get_user_lookup_kwargs
 alnum_re = re.compile(r"^\w+$")
 
 
+class PasswordField(forms.CharField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", forms.PasswordInput(render_value=False))
+        self.strip = kwargs.pop("strip", True)
+        super(PasswordField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        if value in self.empty_values:
+            return ""
+        value = force_text(value)
+        if self.strip:
+            value = value.strip()
+        return value
+
+
 class SignupForm(forms.Form):
 
     username = forms.CharField(
@@ -30,15 +47,15 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(),
         required=True
     )
-    password = forms.CharField(
+    password = PasswordField(
         label=_("Password"),
         min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
-        widget=forms.PasswordInput(render_value=False)
+        strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
-    password_confirm = forms.CharField(
+    password_confirm = PasswordField(
         label=_("Password (again)"),
         min_length=settings.ACCOUNT_MINIMUM_PASSWORD_LENGTH,
-        widget=forms.PasswordInput(render_value=False)
+        strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
     email = forms.EmailField(
         label=_("Email"),
@@ -78,9 +95,9 @@ class SignupForm(forms.Form):
 
 class LoginForm(forms.Form):
 
-    password = forms.CharField(
+    password = PasswordField(
         label=_("Password"),
-        widget=forms.PasswordInput(render_value=False)
+        strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
     remember = forms.BooleanField(
         label=_("Remember Me"),

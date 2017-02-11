@@ -32,12 +32,16 @@ class AccountAppConf(AppConf):
 
     OPEN_SIGNUP = True
     LOGIN_URL = "account_login"
+    LOGOUT_URL = "account_logout"
     SIGNUP_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL = "/"
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
     MINIMUM_PASSWORD_LENGTH = 8
+    PASSWORD_EXPIRY = 0
+    PASSWORD_USE_HISTORY = False
+    PASSWORD_STRIP = True
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username  # flake8: noqa
     CREATE_ON_SAVE = True
@@ -45,24 +49,16 @@ class AccountAppConf(AppConf):
     EMAIL_CONFIRMATION_REQUIRED = False
     EMAIL_CONFIRMATION_EMAIL = True
     EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+    EMAIL_CONFIRMATION_AUTO_LOGIN = False
     EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "account_login"
     EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
     EMAIL_CONFIRMATION_URL = "account_confirm_email"
     SETTINGS_REDIRECT_URL = "account_settings"
     NOTIFY_ON_PASSWORD_CHANGE = True
-    DELETION_MARK_CALLBACK = "account.callbacks.account_delete_mark"
-    DELETION_EXPUNGE_CALLBACK = "account.callbacks.account_delete_expunge"
     DELETION_EXPUNGE_HOURS = 48
     HOOKSET = "account.hooks.AccountDefaultHookSet"
     TIMEZONES = TIMEZONES
     LANGUAGES = LANGUAGES
-    USE_AUTH_AUTHENTICATE = False
-
-    def configure_deletion_mark_callback(self, value):
-        return load_path_attr(value)
-
-    def configure_deletion_expunge_callback(self, value):
-        return load_path_attr(value)
 
     def configure_hookset(self, value):
         return load_path_attr(value)()
