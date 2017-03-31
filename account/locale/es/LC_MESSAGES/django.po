@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-user-accounts\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-03 21:40-0600\n"
-"PO-Revision-Date: 2014-07-31 20:44+0000\n"
-"Last-Translator: Brian Rosner <brosner@gmail.com>\n"
+"POT-Creation-Date: 2017-03-30 18:22-0600\n"
+"PO-Revision-Date: 2017-03-30 18:22-0600\n"
+"Last-Translator: Pelana <pelana@hushmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/django-user-"
 "accounts/language/es/)\n"
 "Language: es\n"
@@ -20,211 +20,213 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.9\n"
 
-#: forms.py:45 forms.py:125
+#: account/forms.py:45 account/forms.py:125
 msgid "Username"
-msgstr "Nombre de usuario"
+msgstr "Usuario"
 
-#: forms.py:51 forms.py:97
+#: account/forms.py:51 account/forms.py:97
 msgid "Password"
 msgstr "Contraseña"
 
-#: forms.py:55
+#: account/forms.py:55
 msgid "Password (again)"
 msgstr "Contraseña (repetir)"
 
-#: forms.py:59 forms.py:140 forms.py:186 forms.py:215
+#: account/forms.py:59 account/forms.py:140 account/forms.py:186
+#: account/forms.py:215
 msgid "Email"
 msgstr "Correo electrónico"
 
-#: forms.py:70
+#: account/forms.py:70
 msgid "Usernames can only contain letters, numbers and underscores."
 msgstr ""
 "Los nombres de usuario solo pueden contener letras, números y subguiones"
 
-#: forms.py:78
+#: account/forms.py:78
 msgid "This username is already taken. Please choose another."
 msgstr "Este nombre de usuario ya está en uso. Por favor elija otro."
 
-#: forms.py:85 forms.py:235
+#: account/forms.py:85 account/forms.py:235
 msgid "A user is registered with this email address."
 msgstr "Un usuario se ha registrado con esta dirección de correo electrónico."
 
-#: forms.py:90 forms.py:180 forms.py:209
+#: account/forms.py:90 account/forms.py:180 account/forms.py:209
 msgid "You must type the same password each time."
 msgstr "Debe escribir la misma contraseña cada vez."
 
-#: forms.py:101
+#: account/forms.py:101
 msgid "Remember Me"
 msgstr "Recordarme"
 
-#: forms.py:114
+#: account/forms.py:114
 msgid "This account is inactive."
 msgstr "Esta cuenta está inactiva."
 
-#: forms.py:126
+#: account/forms.py:126
 msgid "The username and/or password you specified are not correct."
 msgstr ""
 "El nombre de usuario y/o la contraseña que ha especificado no son correctas."
 
-#: forms.py:141
+#: account/forms.py:141
 msgid "The email address and/or password you specified are not correct."
 msgstr ""
 "La dirección de correo electrónico y/o la contraseña que ha especificado no "
 "son correctas."
 
-#: forms.py:156
+#: account/forms.py:156
 msgid "Current Password"
 msgstr "Contraseña actual"
 
-#: forms.py:160 forms.py:198
+#: account/forms.py:160 account/forms.py:198
 msgid "New Password"
 msgstr "Contraseña nueva"
 
-#: forms.py:164 forms.py:202
+#: account/forms.py:164 account/forms.py:202
 msgid "New Password (again)"
 msgstr "Contraseña nueva (repetir)"
 
-#: forms.py:174
+#: account/forms.py:174
 msgid "Please type your current password."
 msgstr "Por favor escriba su contraseña actual."
 
-#: forms.py:191
+#: account/forms.py:191
 msgid "Email address can not be found."
 msgstr "El email no pudo ser encontrado."
 
-#: forms.py:217
+#: account/forms.py:217
 msgid "Timezone"
 msgstr "Zona horaria"
 
-#: forms.py:223
+#: account/forms.py:223
 msgid "Language"
 msgstr "Idioma"
 
-#: middleware.py:92
+#: account/middleware.py:92
 msgid "Your password has expired. Please save a new password."
 msgstr "Tu contraseña expiró. Guarda tu Contraseña."
 
-#: models.py:36 models.py:412
+#: account/models.py:36 account/models.py:412
 msgid "user"
 msgstr "usuario"
 
-#: models.py:37
+#: account/models.py:37
 msgid "timezone"
 msgstr "zona horaria"
 
-#: models.py:39
+#: account/models.py:39
 msgid "language"
 msgstr "idioma"
 
-#: models.py:140
+#: account/models.py:140
 msgid "code"
 msgstr "código"
 
-#: models.py:141
+#: account/models.py:141
 msgid "max uses"
 msgstr "usos maximos"
 
-#: models.py:142
+#: account/models.py:142
 msgid "expiry"
 msgstr "expiró"
 
-#: models.py:145
+#: account/models.py:145
 msgid "notes"
 msgstr "notas"
 
-#: models.py:146
+#: account/models.py:146
 msgid "sent"
 msgstr "enviado"
 
-#: models.py:147
+#: account/models.py:147
 msgid "created"
 msgstr "creado"
 
-#: models.py:148
+#: account/models.py:148
 msgid "use count"
 msgstr "usos"
 
-#: models.py:151
+#: account/models.py:151
 msgid "signup code"
 msgstr "código "
 
-#: models.py:152
+#: account/models.py:152
 msgid "signup codes"
 msgstr "códigos de registro"
 
-#: models.py:259
+#: account/models.py:259
 msgid "verified"
 msgstr "verificado"
 
-#: models.py:260
+#: account/models.py:260
 msgid "primary"
 msgstr "primario"
 
-#: models.py:265
+#: account/models.py:265
 msgid "email address"
 msgstr "correo electrónico"
 
-#: models.py:266
+#: account/models.py:266
 msgid "email addresses"
 msgstr "correos electrónicos"
 
-#: models.py:316
+#: account/models.py:316
 msgid "email confirmation"
 msgstr "confirmación de correo electrónico"
 
-#: models.py:317
+#: account/models.py:317
 msgid "email confirmations"
 msgstr "confirmaciones de correos electrónicos"
 
-#: models.py:366
+#: account/models.py:366
 msgid "date requested"
-msgstr ""
+msgstr "fecha solicitada"
 
-#: models.py:367
+#: account/models.py:367
 msgid "date expunged"
-msgstr ""
+msgstr "fecha de expiración"
 
-#: models.py:370
+#: account/models.py:370
 msgid "account deletion"
-msgstr ""
+msgstr "cuenta borrada"
 
-#: models.py:371
+#: account/models.py:371
 msgid "account deletions"
-msgstr ""
+msgstr "cuentas borradas"
 
-#: models.py:400
+#: account/models.py:400
 msgid "password history"
-msgstr ""
+msgstr "historial de contraseña"
 
-#: models.py:401
+#: account/models.py:401
 msgid "password histories"
-msgstr ""
+msgstr "historico de contraseñas"
 
-#: views.py:50 views.py:524
+#: account/views.py:50 account/views.py:524
 msgid "Password successfully changed."
 msgstr "La contraseña se ha cambiado con éxito."
 
-#: views.py:125
+#: account/views.py:125
 #, python-brace-format
 msgid "Confirmation email sent to {email}."
 msgstr "Email de confirmación enviado a {email}."
 
-#: views.py:129
+#: account/views.py:129
 #, python-brace-format
 msgid "The code {code} is invalid."
 msgstr "El código {code} es inválido."
 
-#: views.py:442
+#: account/views.py:442
 #, python-brace-format
 msgid "You have confirmed {email}."
 msgstr "Has confirmado {email}."
 
-#: views.py:672
+#: account/views.py:672
 msgid "Account settings updated."
 msgstr "Los ajustes de la cuenta actualizados."
 
-#: views.py:756
+#: account/views.py:756
 #, python-brace-format
 msgid ""
 "Your account is now inactive and your data will be expunged in the next "
