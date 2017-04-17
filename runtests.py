@@ -52,12 +52,19 @@ DEFAULT_SETTINGS = dict(
     ]
 )
 
-DEFAULT_SETTINGS["MIDDLEWARE" if django.VERSION >= (1, 10) else "MIDDLEWARE_CLASSES"] = [
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-]
+if django.VERSION >= (1, 10):
+    DEFAULT_SETTINGS["MIDDLEWARE"] = [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+    ]
+else:
+    DEFAULT_SETTINGS["MIDDLEWARE_CLASSES"] = [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+    ]
 
 
 def runtests(*test_args):
