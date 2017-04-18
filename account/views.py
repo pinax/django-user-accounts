@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.http import base36_to_int, int_to_base36
@@ -15,6 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 
 from account import signals
+from account.compat import reverse, is_authenticated
 from account.conf import settings
 from account.forms import SignupForm, LoginUsernameForm
 from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
@@ -156,14 +156,14 @@ class SignupView(PasswordMixin, FormView):
             self.signup_code_present = False
 
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
         if not self.is_open():
             return self.closed()
         return super(SignupView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             raise Http404()
         if not self.is_open():
             return self.closed()
@@ -343,7 +343,7 @@ class LoginView(FormView):
     redirect_field_name = "next"
 
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
 
@@ -404,13 +404,13 @@ class LogoutView(TemplateResponseMixin, View):
     redirect_field_name = "next"
 
     def get(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
+        if not is_authenticated(self.request.user):
             return redirect(self.get_redirect_url())
         ctx = self.get_context_data()
         return self.render_to_response(ctx)
 
     def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             auth.logout(self.request)
         return redirect(self.get_redirect_url())
 
@@ -495,7 +495,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         return ctx
 
     def get_redirect_url(self):
-        if self.user.is_authenticated():
+        if is_authenticated(self.user):
             if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
                 return settings.ACCOUNT_LOGIN_REDIRECT_URL
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
@@ -528,12 +528,12 @@ class ChangePasswordView(PasswordMixin, FormView):
     fallback_url_setting = "ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL"
 
     def get(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
+        if not is_authenticated(self.request.user):
             return redirect("account_password_reset")
         return super(ChangePasswordView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
+        if not is_authenticated(self.request.user):
             return HttpResponseForbidden()
         return super(ChangePasswordView, self).post(*args, **kwargs)
 

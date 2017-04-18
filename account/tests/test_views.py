@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
 from django.contrib.auth.models import User
 
+from account.compat import reverse
 from account.models import SignupCode, EmailConfirmation
 
 

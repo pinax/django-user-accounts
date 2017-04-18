@@ -8,7 +8,6 @@ try:
 except ImportError:  # python 2
     from urllib import urlencode
 
-from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
@@ -23,6 +22,7 @@ from django.contrib.sites.models import Site
 import pytz
 
 from account import signals
+from account.compat import reverse, is_authenticated
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
@@ -33,7 +33,7 @@ from account.signals import signup_code_sent, signup_code_used
 @python_2_unicode_compatible
 class Account(models.Model):
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"), on_delete=models.CASCADE)
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(
         _("language"),
@@ -45,7 +45,7 @@ class Account(models.Model):
     @classmethod
     def for_request(cls, request):
         user = getattr(request, "user", None)
-        if user and user.is_authenticated():
+        if user and is_authenticated(user):
             try:
                 return Account._default_manager.get(user=user)
             except Account.DoesNotExist:
@@ -140,7 +140,7 @@ class SignupCode(models.Model):
     code = models.CharField(_("code"), max_length=64, unique=True)
     max_uses = models.PositiveIntegerField(_("max uses"), default=0)
     expiry = models.DateTimeField(_("expiry"), null=True, blank=True)
-    inviter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    inviter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     email = models.EmailField(max_length=254, blank=True)
     notes = models.TextField(_("notes"), blank=True)
     sent = models.DateTimeField(_("sent"), null=True, blank=True)
@@ -242,8 +242,8 @@ class SignupCode(models.Model):
 
 class SignupCodeResult(models.Model):
 
-    signup_code = models.ForeignKey(SignupCode)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    signup_code = models.ForeignKey(SignupCode, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
 
     def save(self, **kwargs):
@@ -254,7 +254,7 @@ class SignupCodeResult(models.Model):
 @python_2_unicode_compatible
 class EmailAddress(models.Model):
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     email = models.EmailField(max_length=254, unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(_("verified"), default=False)
     primary = models.BooleanField(_("primary"), default=False)
@@ -305,7 +305,7 @@ class EmailAddress(models.Model):
 @python_2_unicode_compatible
 class EmailConfirmation(models.Model):
 
-    email_address = models.ForeignKey(EmailAddress)
+    email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
     created = models.DateTimeField(default=timezone.now)
     sent = models.DateTimeField(null=True)
     key = models.CharField(max_length=64, unique=True)
@@ -400,7 +400,7 @@ class PasswordHistory(models.Model):
         verbose_name = _("password history")
         verbose_name_plural = _("password histories")
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="password_history")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="password_history", on_delete=models.CASCADE)
     password = models.CharField(max_length=255)  # encrypted password
     timestamp = models.DateTimeField(default=timezone.now)  # password creation time
 
@@ -409,5 +409,5 @@ class PasswordExpiry(models.Model):
     """
     Holds the password expiration period for a single user.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="password_expiry", verbose_name=_("user"))
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="password_expiry", verbose_name=_("user"), on_delete=models.CASCADE)
     expiry = models.PositiveIntegerField(default=0)
