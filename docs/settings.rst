@@ -147,4 +147,4 @@ Default: ``list(zip(pytz.all_timezones, pytz.all_timezones))``
 ``ACCOUNT_LANGUAGES``
 =====================
 
-See full list in: https://github.com/pinax/django-user-accounts/blob/master/account/language_list.py
+See full list in: https://github.com/pinax/django-user-accounts/blob/master/account/languages.py
