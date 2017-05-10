@@ -598,7 +598,7 @@ class PasswordResetView(FormView):
             password_reset_url = "{0}://{1}{2}".format(
                 protocol,
                 current_site.domain,
-                reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
+                reverse(settings.ACCOUNT_PASSWORD_RESET_TOKEN_URL, kwargs=dict(uidb36=uid, token=token))
             )
             ctx = {
                 "user": user,
