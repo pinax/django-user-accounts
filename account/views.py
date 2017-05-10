@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
+import uuid
+
 from django.http import Http404, HttpResponseForbidden
+from django.conf import settings as dsettings
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.http import base36_to_int, int_to_base36
 from django.utils.translation import ugettext_lazy as _
@@ -9,6 +12,7 @@ from django.views.generic.edit import FormView
 
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -16,7 +20,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from account import signals
 from account.compat import reverse, is_authenticated
 from account.conf import settings
-from account.forms import SignupForm, LoginUsernameForm
+from account.forms import SignupForm, SignupCodeForm, LoginUsernameForm
 from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
 from account.forms import SettingsForm
 from account.hooks import hookset
@@ -242,8 +246,17 @@ class SignupView(PasswordMixin, FormView):
             User = get_user_model()
         user = User(**kwargs)
         username = form.cleaned_data.get("username")
-        if username is None:
-            username = self.generate_username(form)
+        code = form.cleaned_data['code']
+
+        try:
+            signup_code = SignupCode.objects.get(code=code)
+            if not username:
+                username = signup_code.username
+        except SignupCode.DoesNotExist:
+            username = form.cleaned_data.get("username", '').strip()
+            if not username:
+                username = self.generate_username(form)
+
         user.username = username
         user.email = form.cleaned_data["email"].strip()
         password = form.cleaned_data.get("password")
@@ -774,3 +787,37 @@ class DeleteView(LogoutView):
         ctx.update(kwargs)
         ctx["ACCOUNT_DELETION_EXPUNGE_HOURS"] = settings.ACCOUNT_DELETION_EXPUNGE_HOURS
         return ctx
+
+
+class InviteUserView(LoginRequiredMixin, FormView):
+    """ Invite a user."""
+    template_name = "account/invite_user.html"
+    form_class = SignupCodeForm
+
+    redirect_field_name = "next"
+    messages = {
+        "user_invited": {
+            "level": messages.SUCCESS,
+            "text": _("User successfully invited.")}
+    }
+
+    def dispatch(self, *args, **kwargs):
+        d = super(InviteUserView, self).dispatch
+        # when switch is on, invitation will be available for staff only
+        if getattr(dsettings, 'ACCOUNT_INVITE_USER_STAFF_ONLY', False):
+            d = staff_member_required(d)
+        return d(*args, **kwargs)
+
+    def form_valid(self, form):
+        code = str(uuid.uuid4())
+        signup_code = form.save(commit=False)
+        signup_code.code = code
+        signup_code.save()
+        signup_code.send()
+        messages.success(self.request, _("Invitation sent to user '%s'") % signup_code.email)
+        return super(InviteUserView, self).form_valid(form)
+
+    def get_success_url(self, fallback_url=None, **kwargs):
+        if fallback_url is None:
+            fallback_url = settings.ACCOUNT_INVITE_USER_URL
+        return default_redirect(self.request, fallback_url, **kwargs)

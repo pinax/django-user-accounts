@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 
 from account.compat import reverse
+from account.conf import AccountAppConf
 from account.models import SignupCode, EmailConfirmation
 
 
@@ -348,3 +349,62 @@ class ChangePasswordViewTestCase(TestCase):
             fetch_redirect_response=False
         )
         self.assertEqual(len(mail.outbox), 0)
+
+
+class InviteUserViewTestCase(TestCase):
+
+    PASSWORD = 'test'
+
+    def test_invitation_get_anonymous(self):
+        url = reverse(AccountAppConf.INVITE_USER_URL)
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, '{}?next={}'.format(reverse('account_login'), url))
+
+    def test_invitation_get_regular(self):
+        url = reverse(AccountAppConf.INVITE_USER_URL)
+        u = User.objects.create(username="foo", is_active=True)
+        u.set_password(self.PASSWORD)
+        u.save()
+        self.client.login(username=u.username, password=self.PASSWORD)
+
+        with self.settings(ACCOUNT_INVITE_USER_STAFF_ONLY=True):
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 302)
+            self.assertRedirects(resp, '{}?next={}'.format(reverse('admin:login'), url))
+
+        with self.settings(ACCOUNT_INVITE_USER_STAFF_ONLY=False):
+            self.client.login(username=u.username, password=self.PASSWORD)
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.template_name, ['account/invite_user.html'])
+
+    def test_invitation_get_staff(self):
+        url = reverse(AccountAppConf.INVITE_USER_URL)
+        u = User.objects.create(username="foo", is_active=True, is_staff=True)
+        u.set_password(self.PASSWORD)
+        u.save()
+        self.client.login(username=u.username, password=self.PASSWORD)
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.template_name, ['account/invite_user.html'])
+
+    def test_invitation_post(self):
+        url = reverse(AccountAppConf.INVITE_USER_URL)
+        u = User.objects.create(username="foo", is_active=True, is_staff=True)
+        u.set_password(self.PASSWORD)
+        u.save()
+        self.client.login(username=u.username, password=self.PASSWORD)
+        data = {'email': 'test1@email.com'}
+        resp = self.client.post(url, data)
+        self.assertRedirects(resp, url)
+        q = SignupCode.objects.filter(email=data['email'])
+        self.assertEqual(q.count(), 1)
+        code = q.get().code
+        registration_url = '{}?code={}'.format(reverse("account_signup"), code)
+
+        self.client.logout()
+
+        reg = self.client.get(registration_url)
+        self.assertEqual(reg.status_code, 200)
+        self.assertEqual(reg.template_name, ['account/signup.html'])

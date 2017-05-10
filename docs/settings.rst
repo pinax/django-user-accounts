@@ -148,3 +148,11 @@ Default: ``list(zip(pytz.all_timezones, pytz.all_timezones))``
 =====================
 
 See full list in: https://github.com/pinax/django-user-accounts/blob/master/account/language_list.py
+
+``ACCOUNT_INVITE_USER_STAFF_ONLY``
+==================================
+
+Default: ``False``
+
+This setting restricts invitation functionality to staff members only. 
+By default, any user can invite other users.
