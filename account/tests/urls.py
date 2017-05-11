@@ -8,7 +8,7 @@ admin.autodiscover()
 if django.VERSION[0] < 2:
     admin_urls = url(r"admin/", include(admin.site.urls))
 else:
-    admin_urls = url(r"admin/", include(admin.site.urls))
+    admin_urls = url(r"admin/", admin.site.urls)
 
 
 urlpatterns = [
