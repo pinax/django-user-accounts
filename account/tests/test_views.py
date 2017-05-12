@@ -125,7 +125,6 @@ class SignupViewTestCase(TestCase):
         response = self.client.post(reverse("account_signup"), data)
         self.assertRedirects(response, next_url, fetch_redirect_response=False)
 
-
     def test_register_with_moderation(self):
         signup_code = SignupCode.create()
         signup_code.save()
@@ -142,6 +141,7 @@ class SignupViewTestCase(TestCase):
             self.assertFalse(self.client.session.get('_auth_user_id'))
             u = User.objects.get(username=data['username'])
             self.assertFalse(u.is_active)
+
 
 class LoginViewTestCase(TestCase):
 

@@ -62,6 +62,3 @@ class AccountAppConf(AppConf):
 
     def configure_hookset(self, value):
         return load_path_attr(value)()
-
-
-

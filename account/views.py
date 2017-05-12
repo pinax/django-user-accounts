@@ -239,7 +239,6 @@ class SignupView(PasswordMixin, FormView):
         # API. this should only be relied on by d-u-a and it is not a stable
         # API for site developers.
         self.form = form
-            
         self.login_user()
         return redirect(self.get_success_url())
 
@@ -355,6 +354,7 @@ class SignupView(PasswordMixin, FormView):
             }
         }
         return self.response_class(**response_kwargs)
+
 
 class LoginView(FormView):
 
