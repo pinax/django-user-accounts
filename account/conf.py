@@ -40,6 +40,7 @@ class AccountAppConf(AppConf):
     PASSWORD_RESET_REDIRECT_URL = "account_login"
     PASSWORD_EXPIRY = 0
     PASSWORD_USE_HISTORY = False
+    ACCOUNT_APPROVAL_REQUIRED = False
     PASSWORD_STRIP = True
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username  # flake8: noqa
@@ -61,3 +62,6 @@ class AccountAppConf(AppConf):
 
     def configure_hookset(self, value):
         return load_path_attr(value)()
+
+
+

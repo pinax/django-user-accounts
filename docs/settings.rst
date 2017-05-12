@@ -148,3 +148,13 @@ Default: ``list(zip(pytz.all_timezones, pytz.all_timezones))``
 =====================
 
 See full list in: https://github.com/pinax/django-user-accounts/blob/master/account/language_list.py
+
+
+``ACCOUNT_APPROVAL_REQUIRED``
+==================================
+
+Default: ``False``
+
+This setting will make new registrations inactive, until staff will set ``is_active``
+ flag in admin panel. Additional integration (like sending notifications to staff) 
+is possible with ``account.signals.user_signed_up`` signal.
