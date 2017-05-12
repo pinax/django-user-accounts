@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import uuid
 
 from django.http import Http404, HttpResponseForbidden
-from django.conf import settings as dsettings
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.http import base36_to_int, int_to_base36
 from django.utils.translation import ugettext_lazy as _
@@ -804,7 +803,7 @@ class InviteUserView(LoginRequiredMixin, FormView):
     def dispatch(self, *args, **kwargs):
         d = super(InviteUserView, self).dispatch
         # when switch is on, invitation will be available for staff only
-        if getattr(dsettings, 'ACCOUNT_INVITE_USER_STAFF_ONLY', False):
+        if settings.ACCOUNT_INVITE_USER_STAFF_ONLY:
             d = staff_member_required(d)
         return d(*args, **kwargs)
 
