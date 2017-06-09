@@ -611,6 +611,10 @@ class PasswordResetView(FormView):
         return self.token_generator.make_token(user)
 
 
+INTERNAL_RESET_URL_TOKEN = "set-password"
+INTERNAL_RESET_SESSION_TOKEN = "_password_reset_token"
+
+
 class PasswordResetTokenView(PasswordMixin, FormView):
 
     template_name = "account/password_reset_token.html"
@@ -620,21 +624,30 @@ class PasswordResetTokenView(PasswordMixin, FormView):
     form_password_field = "password"
     fallback_url_setting = "ACCOUNT_PASSWORD_RESET_REDIRECT_URL"
 
+    def dispatch(self, *args, **kwargs):
+        user = self.get_user()
+        if user is not None:
+            token = kwargs["token"]
+            if token == INTERNAL_RESET_URL_TOKEN:
+                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
+                if self.check_token(user, session_token):
+                    return super(PasswordResetTokenView, self).dispatch(*args, **kwargs)
+            else:
+                if self.check_token(user, token):
+                    # Store the token in the session and redirect to the
+                    # password reset form at a URL without the token. That
+                    # avoids the possibility of leaking the token in the
+                    # HTTP Referer header.
+                    self.request.session[INTERNAL_RESET_SESSION_TOKEN] = token
+                    redirect_url = self.request.path.replace(token, INTERNAL_RESET_URL_TOKEN)
+                    return redirect(redirect_url)
+        return self.token_fail()
+
     def get(self, request, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         ctx = self.get_context_data(form=form)
-        if not self.check_token(self.get_user(), self.kwargs["token"]):
-            return self.token_fail()
         return self.render_to_response(ctx)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PasswordResetTokenView, self).get_context_data(**kwargs)
-        ctx.update({
-            "uidb36": self.kwargs["uidb36"],
-            "token": self.kwargs["token"],
-        })
-        return ctx
 
     def form_valid(self, form):
         self.change_password(form)

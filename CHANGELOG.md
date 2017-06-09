@@ -3,6 +3,14 @@
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.
 
+## 2.0.2
+
+ * fixed potentional security issue with leaking password reset tokens through HTTP Referer header
+
+## 2.0.1
+
+@@@ todo
+
 ## 2.0.0
 
  * BI: moved account deletion callbacks to hooksets
