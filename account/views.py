@@ -672,6 +672,14 @@ class PasswordResetTokenView(PasswordMixin, FormView):
         ctx = self.get_context_data(form=form)
         return self.render_to_response(ctx)
 
+    def get_context_data(self, **kwargs):
+        ctx = super(PasswordResetTokenView, self).get_context_data(**kwargs)
+        ctx.update({
+            "uidb36": self.kwargs["uidb36"],
+            "token": self.kwargs["token"],
+        })
+        return ctx
+
     def form_valid(self, form):
         self.change_password(form)
         self.create_password_history(form, self.request.user)
