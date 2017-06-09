@@ -2,8 +2,12 @@ from __future__ import unicode_literals
 
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import redirect, get_object_or_404
+from django.utils.decorators import method_decorator
 from django.utils.http import base36_to_int, int_to_base36
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
@@ -136,6 +140,9 @@ class SignupView(PasswordMixin, FormView):
         kwargs["signup_code"] = None
         super(SignupView, self).__init__(*args, **kwargs)
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         self.request = request
         self.args = args
@@ -342,6 +349,12 @@ class LoginView(FormView):
     form_kwargs = {}
     redirect_field_name = "next"
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginView, self).dispatch(*args, **kwargs)
+
     def get(self, *args, **kwargs):
         if is_authenticated(self.request.user):
             return redirect(self.get_success_url())
@@ -402,6 +415,10 @@ class LogoutView(TemplateResponseMixin, View):
 
     template_name = "account/logout.html"
     redirect_field_name = "next"
+
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        return super(LogoutView, self).dispatch(*args, **kwargs)
 
     def get(self, *args, **kwargs):
         if not is_authenticated(self.request.user):
@@ -572,6 +589,10 @@ class PasswordResetView(FormView):
     form_class = PasswordResetForm
     token_generator = default_token_generator
 
+    @method_decorator(csrf_protect)
+    def dispatch(self, *args, **kwargs):
+        return super(PasswordResetView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(PasswordResetView, self).get_context_data(**kwargs)
         if self.request.method == "POST" and "resend" in self.request.POST:
@@ -624,6 +645,8 @@ class PasswordResetTokenView(PasswordMixin, FormView):
     form_password_field = "password"
     fallback_url_setting = "ACCOUNT_PASSWORD_RESET_REDIRECT_URL"
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         user = self.get_user()
         if user is not None:

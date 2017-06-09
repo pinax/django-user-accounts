@@ -6,6 +6,7 @@ version with these. Your code will need to be updated to continue working.
 ## 2.0.2
 
  * fixed potentional security issue with leaking password reset tokens through HTTP Referer header
+ * added `never_cache`, `csrf_protect` and `sensitive_post_parameters` to appropriate views
 
 ## 2.0.1
 
