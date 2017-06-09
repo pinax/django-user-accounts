@@ -6,6 +6,7 @@ version with these. Your code will need to be updated to continue working.
 ## 2.0.3
 
  * fixed breaking change in 2.0.2 where context did not have uidb36 and token
+ * improved documentation
 
 ## 2.0.2
 
