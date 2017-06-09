@@ -179,6 +179,7 @@ If you want to get rid of username you'll need to do some extra work:
        class SignupView(account.views.SignupView):
 
            form_class = myproject.forms.SignupForm
+           identifier_field = 'email'
 
            def generate_username(self, form):
                # do something to generate a unique username (required by the
