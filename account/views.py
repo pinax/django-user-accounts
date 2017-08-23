@@ -457,6 +457,10 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         "email_confirmed": {
             "level": messages.SUCCESS,
             "text": _("You have confirmed {email}.")
+        },
+        "email_confirmation_expired": {
+            "level": messages.ERROR,
+            "text": _("Email confirmation for {email} has expired.")
         }
     }
 
@@ -473,21 +477,30 @@ class ConfirmEmailView(TemplateResponseMixin, View):
 
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
-        confirmation.confirm()
-        self.after_confirmation(confirmation)
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN:
-            self.user = self.login_user(confirmation.email_address.user)
+        self.user = self.request.user
+        confirmed = confirmation.confirm() is not None
+        if confirmed:
+            self.after_confirmation(confirmation)
+            if settings.ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN:
+                self.user = self.login_user(confirmation.email_address.user)
+            redirect_url = self.get_redirect_url()
+            if not redirect_url:
+                ctx = self.get_context_data()
+                return self.render_to_response(ctx)
+            if self.messages.get("email_confirmed"):
+                messages.add_message(
+                    self.request,
+                    self.messages["email_confirmed"]["level"],
+                    self.messages["email_confirmed"]["text"].format(**{
+                        "email": confirmation.email_address.email
+                    })
+                )
         else:
-            self.user = self.request.user
-        redirect_url = self.get_redirect_url()
-        if not redirect_url:
-            ctx = self.get_context_data()
-            return self.render_to_response(ctx)
-        if self.messages.get("email_confirmed"):
+            redirect_url = self.get_redirect_url()
             messages.add_message(
                 self.request,
-                self.messages["email_confirmed"]["level"],
-                self.messages["email_confirmed"]["text"].format(**{
+                self.messages["email_confirmation_expired"]["level"],
+                self.messages["email_confirmation_expired"]["text"].format(**{
                     "email": confirmation.email_address.email
                 })
             )
