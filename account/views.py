@@ -804,7 +804,7 @@ class SettingsView(LoginRequiredMixin, FormView):
         return default_redirect(self.request, fallback_url, **kwargs)
 
 
-class DeleteView(LogoutView):
+class DeleteView(LoginRequiredMixin, LogoutView):
 
     template_name = "account/delete.html"
     messages = {
