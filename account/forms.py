@@ -47,6 +47,10 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(),
         required=True
     )
+    email = forms.EmailField(
+        label=_("Email"),
+        widget=forms.TextInput(), required=True
+    )
     password = PasswordField(
         label=_("Password"),
         strip=settings.ACCOUNT_PASSWORD_STRIP,
@@ -55,10 +59,6 @@ class SignupForm(forms.Form):
         label=_("Password (again)"),
         strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
-    email = forms.EmailField(
-        label=_("Email"),
-        widget=forms.TextInput(), required=True)
-
     code = forms.CharField(
         max_length=64,
         required=False,
