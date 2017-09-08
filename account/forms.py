@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import re
 
+from .compat import validate_password
+
 try:
     from collections import OrderedDict
 except ImportError:
@@ -88,6 +90,10 @@ class SignupForm(forms.Form):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
             if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
                 raise forms.ValidationError(_("You must type the same password each time."))
+            dummy_user = get_user_model()
+            dummy_user.username = self.cleaned_data.get("username")
+            dummy_user.email = self.cleaned_data.get("email")
+            validate_password(self.cleaned_data["password"], dummy_user)
         return self.cleaned_data
 
 
