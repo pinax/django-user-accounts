@@ -28,6 +28,7 @@ from account.fields import TimeZoneField
 from account.hooks import hookset
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
+from account.languages import DEFAULT_LANGUAGE
 
 
 @python_2_unicode_compatible
@@ -39,7 +40,7 @@ class Account(models.Model):
         _("language"),
         max_length=10,
         choices=settings.ACCOUNT_LANGUAGES,
-        default=settings.LANGUAGE_CODE
+        default=DEFAULT_LANGUAGE,
     )
 
     @classmethod
@@ -59,7 +60,7 @@ class Account(models.Model):
         account = cls(**kwargs)
         if "language" not in kwargs:
             if request is None:
-                account.language = settings.LANGUAGE_CODE
+                account.language = DEFAULT_LANGUAGE
             else:
                 account.language = translation.get_language_from_request(request, check_path=True)
         account.save()
@@ -120,7 +121,7 @@ class AnonymousAccount(object):
         self.user = AnonymousUser()
         self.timezone = settings.TIME_ZONE
         if request is None:
-            self.language = settings.LANGUAGE_CODE
+            self.language = DEFAULT_LANGUAGE
         else:
             self.language = translation.get_language_from_request(request, check_path=True)
 
