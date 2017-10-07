@@ -20,11 +20,11 @@ Django User Accounts
     :target:  https://pypi.python.org/pypi/django-user-accounts/
 
 .. image:: https://img.shields.io/github/contributors/pinax/django-user-accounts.svg
-
+    :target:  https://github.com/pinax/django-user-accounts/issues/
 .. image:: https://img.shields.io/github/issues-pr/pinax/django-user-accounts.svg
-
+    :target:  https://github.com/pinax/django-user-accounts/issues/
 .. image:: https://img.shields.io/github/issues-pr-closed/pinax/django-user-accounts.svg
-
+    :target:  https://github.com/pinax/django-user-accounts/issues/
 
 Pinax
 -------
