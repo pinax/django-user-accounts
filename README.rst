@@ -1,3 +1,5 @@
+.. image:: http://pinaxproject.com/pinax-design/patches/django-user-accounts.svg
+
 ====================
 Django User Accounts
 ====================
@@ -11,15 +13,18 @@ Django User Accounts
 .. image:: https://img.shields.io/coveralls/pinax/django-user-accounts.svg
     :target: https://coveralls.io/r/pinax/django-user-accounts
 
-.. image:: https://img.shields.io/pypi/dm/django-user-accounts.svg
-    :target:  https://pypi.python.org/pypi/django-user-accounts/
-
 .. image:: https://img.shields.io/pypi/v/django-user-accounts.svg
     :target:  https://pypi.python.org/pypi/django-user-accounts/
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :target:  https://pypi.python.org/pypi/django-user-accounts/
 
+.. image:: https://img.shields.io/github/contributors/pinax/django-user-accounts.svg
+    :target:  https://github.com/pinax/django-user-accounts/issues/
+.. image:: https://img.shields.io/github/issues-pr/pinax/django-user-accounts.svg
+    :target:  https://github.com/pinax/django-user-accounts/issues/
+.. image:: https://img.shields.io/github/issues-pr-closed/pinax/django-user-accounts.svg
+    :target:  https://github.com/pinax/django-user-accounts/issues/
 
 Pinax
 -------
