@@ -24,6 +24,9 @@ setup(
             "locale/*/LC_MESSAGES/*",
         ],
     },
+    tests_requires=[
+        "pinax_theme_bootstrap",
+    ],
     test_suite="runtests.runtests",
     classifiers=[
         "Development Status :: 5 - Production/Stable",

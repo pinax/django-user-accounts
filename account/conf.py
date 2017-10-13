@@ -38,6 +38,8 @@ class AccountAppConf(AppConf):
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
+    INVITE_USER_URL = "account_invite_user"
+    ACCOUNT_INVITE_USER_STAFF_ONLY = False
     PASSWORD_EXPIRY = 0
     PASSWORD_USE_HISTORY = False
     PASSWORD_STRIP = True

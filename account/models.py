@@ -146,6 +146,7 @@ class SignupCode(models.Model):
     sent = models.DateTimeField(_("sent"), null=True, blank=True)
     created = models.DateTimeField(_("created"), default=timezone.now, editable=False)
     use_count = models.PositiveIntegerField(_("use count"), editable=False, default=0)
+    username = models.CharField(max_length=30, null=True, default=None, blank=True)
 
     class Meta:
         verbose_name = _("signup code")
@@ -185,6 +186,9 @@ class SignupCode(models.Model):
         }
         if email:
             params["email"] = email
+
+        params['username'] = kwargs.get("username")
+
         return cls(**params)
 
     @classmethod
