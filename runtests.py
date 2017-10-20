@@ -4,73 +4,9 @@ import sys
 
 import django
 
-from django.conf import settings
-
-
-DEFAULT_SETTINGS = dict(
-    DEBUG=True,
-    USE_TZ=True,
-    INSTALLED_APPS=[
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sessions",
-        "django.contrib.sites",
-        "django.contrib.messages",
-        "account",
-        "account.tests",
-    ],
-    DATABASES={
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
-        }
-    },
-    SITE_ID=1,
-    ROOT_URLCONF="account.tests.urls",
-    SECRET_KEY="notasecret",
-    TEMPLATES=[
-        {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [
-                # insert your TEMPLATE_DIRS here
-            ],
-            'APP_DIRS': True,
-            'OPTIONS': {
-                'context_processors': [
-                    # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                    # list if you haven't customized them:
-                    'django.contrib.auth.context_processors.auth',
-                    'django.template.context_processors.debug',
-                    'django.template.context_processors.i18n',
-                    'django.template.context_processors.media',
-                    'django.template.context_processors.static',
-                    'django.template.context_processors.tz',
-                    'django.contrib.messages.context_processors.messages',
-                ],
-            },
-        },
-    ]
-)
-
-if django.VERSION >= (1, 10):
-    DEFAULT_SETTINGS["MIDDLEWARE"] = [
-        "django.contrib.sessions.middleware.SessionMiddleware",
-        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "django.contrib.messages.middleware.MessageMiddleware",
-    ]
-else:
-    DEFAULT_SETTINGS["MIDDLEWARE_CLASSES"] = [
-        "django.contrib.sessions.middleware.SessionMiddleware",
-        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
-        "django.contrib.messages.middleware.MessageMiddleware",
-    ]
-
 
 def runtests(*test_args):
-    if not settings.configured:
-        settings.configure(**DEFAULT_SETTINGS)
-
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "account.tests.settings")
     django.setup()
 
     parent = os.path.dirname(os.path.abspath(__file__))
@@ -79,7 +15,8 @@ def runtests(*test_args):
     try:
         from django.test.runner import DiscoverRunner
         runner_class = DiscoverRunner
-        test_args = ["account.tests"]
+        if not test_args:
+            test_args = ["account.tests"]
     except ImportError:
         from django.test.simple import DjangoTestSuiteRunner
         runner_class = DjangoTestSuiteRunner
