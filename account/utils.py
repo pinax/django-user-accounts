@@ -7,10 +7,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
 
+import pytz
 from account.compat import NoReverseMatch, reverse
 from account.conf import settings
-
-import pytz
 
 from .models import PasswordHistory
 

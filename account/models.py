@@ -13,6 +13,7 @@ from django.utils import six, timezone, translation
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+import pytz
 from account import signals
 from account.compat import is_authenticated, reverse
 from account.conf import settings
@@ -20,8 +21,6 @@ from account.fields import TimeZoneField
 from account.hooks import hookset
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
-
-import pytz
 
 try:
     from urllib.parse import urlencode

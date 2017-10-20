@@ -3,9 +3,8 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from account.models import PasswordHistory
-
 import pytz
+from account.models import PasswordHistory
 
 
 class Command(BaseCommand):
