@@ -20,9 +20,6 @@ except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
 
 
-
-
-
 def get_user_lookup_kwargs(kwargs):
     result = {}
     username_field = getattr(get_user_model(), "USERNAME_FIELD", "username")

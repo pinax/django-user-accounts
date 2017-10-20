@@ -19,9 +19,6 @@ except ImportError:
     OrderedDict = None
 
 
-
-
-
 alnum_re = re.compile(r"^\w+$")
 
 

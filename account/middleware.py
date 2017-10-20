@@ -20,9 +20,6 @@ except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
 
 
-
-
-
 if django.VERSION >= (1, 10):
     from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
 else:

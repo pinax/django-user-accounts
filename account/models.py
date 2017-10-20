@@ -29,10 +29,6 @@ except ImportError:  # python 2
     from urllib import urlencode
 
 
-
-
-
-
 @python_2_unicode_compatible
 class Account(models.Model):
 
