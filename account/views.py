@@ -1,7 +1,12 @@
 from __future__ import unicode_literals
 
+from django.contrib import auth, messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import Http404, HttpResponseForbidden
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.utils.http import base36_to_int, int_to_base36
 from django.utils.translation import ugettext_lazy as _
@@ -11,21 +16,27 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
-from django.contrib import auth, messages
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.shortcuts import get_current_site
-
 from account import signals
-from account.compat import reverse, is_authenticated
+from account.compat import is_authenticated, reverse
 from account.conf import settings
-from account.forms import SignupForm, LoginUsernameForm
-from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
-from account.forms import SettingsForm
+from account.forms import (
+    ChangePasswordForm,
+    LoginUsernameForm,
+    PasswordResetForm,
+    PasswordResetTokenForm,
+    SettingsForm,
+    SignupForm,
+)
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
-from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion, PasswordHistory
+from account.models import (
+    Account,
+    AccountDeletion,
+    EmailAddress,
+    EmailConfirmation,
+    PasswordHistory,
+    SignupCode,
+)
 from account.utils import default_redirect, get_form_data
 
 

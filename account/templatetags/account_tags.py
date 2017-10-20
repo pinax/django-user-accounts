@@ -8,7 +8,6 @@ from django.utils.http import urlencode
 
 from account.utils import user_display
 
-
 register = template.Library()
 
 

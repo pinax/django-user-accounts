@@ -1,24 +1,26 @@
 from __future__ import unicode_literals
 
+import django
+from django.contrib import messages
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.http import HttpResponseRedirect, QueryDict
+from django.utils import timezone, translation
+from django.utils.cache import patch_vary_headers
+from django.utils.translation import ugettext_lazy as _
+
+from account import signals
+from account.compat import is_authenticated, resolve, reverse
+from account.conf import settings
+from account.models import Account
+from account.utils import check_password_expired
+
 try:
     from urllib.parse import urlparse, urlunparse
 except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
 
-import django
 
-from django.contrib import messages
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.http import HttpResponseRedirect, QueryDict
-from django.utils import translation, timezone
-from django.utils.cache import patch_vary_headers
-from django.utils.translation import ugettext_lazy as _
 
-from account import signals
-from account.compat import resolve, reverse, is_authenticated
-from account.conf import settings
-from account.models import Account
-from account.utils import check_password_expired
 
 
 if django.VERSION >= (1, 10):

@@ -1,10 +1,11 @@
 import datetime
-import pytz
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from account.models import PasswordHistory
+
+import pytz
 
 
 class Command(BaseCommand):

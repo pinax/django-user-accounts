@@ -1,16 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import (
-    override_settings,
-    TestCase,
-)
+from django.test import TestCase, override_settings
 from django.utils.six import StringIO
 
 from ..conf import settings
-from ..models import (
-    PasswordExpiry,
-    PasswordHistory,
-)
+from ..models import PasswordExpiry, PasswordHistory
 
 
 @override_settings(
