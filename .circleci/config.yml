@@ -1,0 +1,136 @@
+version: 2.0
+
+common: &common
+  working_directory: ~/repo
+  steps:
+    - checkout
+    - restore_cache:
+        keys:
+          - v2-deps-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
+          - v2-deps-
+    - run:
+        name: install dependencies
+        command: pip install --user tox
+    - run:
+        name: run tox
+        command: ~/.local/bin/tox
+    - run:
+        name: upload coverage report
+        command: |
+          if [[ "$TOXENV" != checkqa ]]; then
+              PATH=$HOME/.local/bin:$PATH
+              pip install --user codecov
+              ~/.local/bin/codecov --required --flags $CIRCLE_JOB
+          fi
+    - save_cache:
+        paths:
+          - .tox
+          - ~/.cache/pip
+          - ~/.local
+          - ./eggs
+        key: v2-deps-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
+
+jobs:
+  lint:
+    <<: *common
+    docker:
+      - image: circleci/python:3.6.1
+        environment:
+          TOXENV=checkqa
+  py27dj18:
+    <<: *common
+    docker:
+      - image: circleci/python:2.7
+        environment:
+          TOXENV=py27-dj18
+  py27dj110:
+    <<: *common
+    docker:
+      - image: circleci/python:2.7
+        environment:
+          TOXENV=py27-dj110
+  py27dj111:
+    <<: *common
+    docker:
+      - image: circleci/python:2.7
+        environment:
+          TOXENV=py27-dj111
+  py34dj18:
+    <<: *common
+    docker:
+      - image: circleci/python:3.4
+        environment:
+          TOXENV=py34-dj18
+  py34dj110:
+    <<: *common
+    docker:
+      - image: circleci/python:3.4
+        environment:
+          TOXENV=py34-dj110
+  py34dj111:
+    <<: *common
+    docker:
+      - image: circleci/python:3.4
+        environment:
+          TOXENV=py34-dj111
+  py34dj20:
+    <<: *common
+    docker:
+      - image: circleci/python:3.4
+        environment:
+          TOXENV=py34-dj20
+  py35dj18:
+    <<: *common
+    docker:
+      - image: circleci/python:3.5
+        environment:
+          TOXENV=py35-dj18
+  py35dj110:
+    <<: *common
+    docker:
+      - image: circleci/python:3.5
+        environment:
+          TOXENV=py35-dj110
+  py35dj111:
+    <<: *common
+    docker:
+      - image: circleci/python:3.5
+        environment:
+          TOXENV=py35-dj111
+  py35dj20:
+    <<: *common
+    docker:
+      - image: circleci/python:3.5
+        environment:
+          TOXENV=py35-dj20
+  py36dj111:
+    <<: *common
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          TOXENV=py36-dj111
+  py36dj20:
+    <<: *common
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          TOXENV=py36-dj20
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - lint
+      - py27dj18
+      - py27dj110
+      - py27dj111
+      - py34dj18
+      - py34dj110
+      - py34dj111
+      - py34dj20
+      - py35dj18
+      - py35dj110
+      - py35dj111
+      - py35dj20
+      - py36dj111
+      - py36dj20
