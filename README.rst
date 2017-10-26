@@ -7,11 +7,11 @@ Django User Accounts
 .. image:: http://slack.pinaxproject.com/badge.svg
    :target: http://slack.pinaxproject.com/
 
-.. image:: https://img.shields.io/travis/pinax/django-user-accounts.svg
-    :target: https://travis-ci.org/pinax/django-user-accounts
+.. image:: https://circleci.com/gh/pinax/django-user-accounts.svg?style=svg
+    :target: https://circleci.com/gh/pinax/django-user-accounts
 
-.. image:: https://img.shields.io/coveralls/pinax/django-user-accounts.svg
-    :target: https://coveralls.io/r/pinax/django-user-accounts
+.. image:: https://img.shields.io/codecov/c/github/pinax/django-user-accounts.svg
+    :target: https://codecov.io/gh/pinax/django-user-accounts
 
 .. image:: https://img.shields.io/pypi/v/django-user-accounts.svg
     :target:  https://pypi.python.org/pypi/django-user-accounts/
