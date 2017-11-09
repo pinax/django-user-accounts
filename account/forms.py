@@ -2,22 +2,21 @@ from __future__ import unicode_literals
 
 import re
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    OrderedDict = None
-
 from django import forms
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-
 from django.contrib import auth
 from django.contrib.auth import get_user_model
+from django.utils.encoding import force_text
+from django.utils.translation import ugettext_lazy as _
 
 from account.conf import settings
 from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = None
 
 
 alnum_re = re.compile(r"^\w+$")
@@ -47,6 +46,10 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(),
         required=True
     )
+    email = forms.EmailField(
+        label=_("Email"),
+        widget=forms.TextInput(), required=True
+    )
     password = PasswordField(
         label=_("Password"),
         strip=settings.ACCOUNT_PASSWORD_STRIP,
@@ -55,10 +58,6 @@ class SignupForm(forms.Form):
         label=_("Password (again)"),
         strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
-    email = forms.EmailField(
-        label=_("Email"),
-        widget=forms.TextInput(), required=True)
-
     code = forms.CharField(
         max_length=64,
         required=False,

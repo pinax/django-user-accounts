@@ -1,1 +1,4 @@
-__version__ = "2.0.1"
+import pkg_resources
+
+
+__version__ = pkg_resources.get_distribution("django-user-accounts").version

@@ -7,11 +7,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import get_language_info
 
 import pytz
-
-from appconf import AppConf
-
-from account.timezones import TIMEZONES
 from account.languages import LANGUAGES
+from account.timezones import TIMEZONES
+from appconf import AppConf
 
 
 def load_path_attr(path):

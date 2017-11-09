@@ -1,11 +1,9 @@
 from setuptools import setup, find_packages
 
-import account
-
 
 setup(
     name="django-user-accounts",
-    version=account.__version__,
+    version="2.0.3",
     author="Brian Rosner",
     author_email="brosner@gmail.com",
     description="a Django user account app",
@@ -23,6 +21,9 @@ setup(
         "account": [
             "locale/*/LC_MESSAGES/*",
         ],
+    },
+    extras_require={
+        "pytest": ["pytest", "pytest-django"]
     },
     test_suite="runtests.runtests",
     classifiers=[

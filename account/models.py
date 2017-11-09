@@ -3,31 +3,29 @@ from __future__ import unicode_literals
 import datetime
 import operator
 
-try:
-    from urllib.parse import urlencode
-except ImportError:  # python 2
-    from urllib import urlencode
-
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sites.models import Site
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone, translation, six
+from django.utils import six, timezone, translation
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.sites.models import Site
-
 import pytz
-
 from account import signals
-from account.compat import reverse, is_authenticated
+from account.compat import is_authenticated, reverse
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
+
+try:
+    from urllib.parse import urlencode
+except ImportError:  # python 2
+    from urllib import urlencode
 
 
 @python_2_unicode_compatible
