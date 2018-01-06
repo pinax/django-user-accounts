@@ -46,7 +46,7 @@ defined in your project::
             super(SignupView, self).after_signup(form)
 
         def update_profile(self, form):
-            profile = self.created_user.profile  # replace with your reverse one-to-one profile attribute
+            profile = self.created_user.profile  # replace with your reverse one-to-one profile attribute only if you've defined a `related_name`.
             profile.some_attr = "some value"
             profile.save()
 
