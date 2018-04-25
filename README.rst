@@ -63,8 +63,8 @@ Features
 Requirements
 --------------
 
-* Django 1.8, 1.9, 1.10, or 1.11
-* Python 2.7, 3.3, 3.4, 3.5, or 3.6
+* Django 1.8, 1.10, 1.11, or 2.0
+* Python 2.7, 3.4, 3.5, or 3.6
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
