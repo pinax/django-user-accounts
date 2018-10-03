@@ -2,20 +2,21 @@ from __future__ import unicode_literals
 
 import datetime
 import functools
+
+from django.contrib.auth import get_user_model
+from django.core.exceptions import SuspiciousOperation
+from django.http import HttpResponseRedirect, QueryDict
+
 import pytz
+from account.compat import NoReverseMatch, reverse
+from account.conf import settings
+
+from .models import PasswordHistory
+
 try:
     from urllib.parse import urlparse, urlunparse
 except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
-
-from django.core import urlresolvers
-from django.core.exceptions import SuspiciousOperation
-from django.http import HttpResponseRedirect, QueryDict
-
-from django.contrib.auth import get_user_model
-
-from account.conf import settings
-from .models import PasswordHistory
 
 
 def get_user_lookup_kwargs(kwargs):
@@ -45,8 +46,8 @@ def default_redirect(request, fallback_url, **kwargs):
         return next_url
     else:
         try:
-            fallback_url = urlresolvers.reverse(fallback_url)
-        except urlresolvers.NoReverseMatch:
+            fallback_url = reverse(fallback_url)
+        except NoReverseMatch:
             if callable(fallback_url):
                 raise
             if "/" not in fallback_url and "." not in fallback_url:
@@ -89,8 +90,8 @@ def handle_redirect_to_login(request, **kwargs):
     if next_url is None:
         next_url = request.get_full_path()
     try:
-        login_url = urlresolvers.reverse(login_url)
-    except urlresolvers.NoReverseMatch:
+        login_url = reverse(login_url)
+    except NoReverseMatch:
         if callable(login_url):
             raise
         if "/" not in login_url and "." not in login_url:

@@ -1,27 +1,42 @@
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseForbidden
-from django.shortcuts import redirect, get_object_or_404
-from django.utils.http import base36_to_int, int_to_base36
-from django.utils.translation import ugettext_lazy as _
-from django.views.generic.base import TemplateResponseMixin, View
-from django.views.generic.edit import FormView
-
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import Http404, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
+from django.utils.decorators import method_decorator
+from django.utils.http import base36_to_int, int_to_base36
+from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.edit import FormView
 
 from account import signals
+from account.compat import is_authenticated, reverse
 from account.conf import settings
-from account.forms import SignupForm, LoginUsernameForm
-from account.forms import ChangePasswordForm, PasswordResetForm, PasswordResetTokenForm
-from account.forms import SettingsForm
+from account.forms import (
+    ChangePasswordForm,
+    LoginUsernameForm,
+    PasswordResetForm,
+    PasswordResetTokenForm,
+    SettingsForm,
+    SignupForm,
+)
 from account.hooks import hookset
 from account.mixins import LoginRequiredMixin
-from account.models import SignupCode, EmailAddress, EmailConfirmation, Account, AccountDeletion, PasswordHistory
+from account.models import (
+    Account,
+    AccountDeletion,
+    EmailAddress,
+    EmailConfirmation,
+    PasswordHistory,
+    SignupCode,
+)
 from account.utils import default_redirect, get_form_data
 
 
@@ -136,6 +151,9 @@ class SignupView(PasswordMixin, FormView):
         kwargs["signup_code"] = None
         super(SignupView, self).__init__(*args, **kwargs)
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         self.request = request
         self.args = args
@@ -156,14 +174,14 @@ class SignupView(PasswordMixin, FormView):
             self.signup_code_present = False
 
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
         if not self.is_open():
             return self.closed()
         return super(SignupView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             raise Http404()
         if not self.is_open():
             return self.closed()
@@ -342,8 +360,14 @@ class LoginView(FormView):
     form_kwargs = {}
     redirect_field_name = "next"
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginView, self).dispatch(*args, **kwargs)
+
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
 
@@ -403,14 +427,18 @@ class LogoutView(TemplateResponseMixin, View):
     template_name = "account/logout.html"
     redirect_field_name = "next"
 
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        return super(LogoutView, self).dispatch(*args, **kwargs)
+
     def get(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
+        if not is_authenticated(self.request.user):
             return redirect(self.get_redirect_url())
         ctx = self.get_context_data()
         return self.render_to_response(ctx)
 
     def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if is_authenticated(self.request.user):
             auth.logout(self.request)
         return redirect(self.get_redirect_url())
 
@@ -440,6 +468,10 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         "email_confirmed": {
             "level": messages.SUCCESS,
             "text": _("You have confirmed {email}.")
+        },
+        "email_confirmation_expired": {
+            "level": messages.ERROR,
+            "text": _("Email confirmation for {email} has expired.")
         }
     }
 
@@ -456,21 +488,30 @@ class ConfirmEmailView(TemplateResponseMixin, View):
 
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
-        confirmation.confirm()
-        self.after_confirmation(confirmation)
-        if settings.ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN:
-            self.user = self.login_user(confirmation.email_address.user)
+        self.user = self.request.user
+        confirmed = confirmation.confirm() is not None
+        if confirmed:
+            self.after_confirmation(confirmation)
+            if settings.ACCOUNT_EMAIL_CONFIRMATION_AUTO_LOGIN:
+                self.user = self.login_user(confirmation.email_address.user)
+            redirect_url = self.get_redirect_url()
+            if not redirect_url:
+                ctx = self.get_context_data()
+                return self.render_to_response(ctx)
+            if self.messages.get("email_confirmed"):
+                messages.add_message(
+                    self.request,
+                    self.messages["email_confirmed"]["level"],
+                    self.messages["email_confirmed"]["text"].format(**{
+                        "email": confirmation.email_address.email
+                    })
+                )
         else:
-            self.user = self.request.user
-        redirect_url = self.get_redirect_url()
-        if not redirect_url:
-            ctx = self.get_context_data()
-            return self.render_to_response(ctx)
-        if self.messages.get("email_confirmed"):
+            redirect_url = self.get_redirect_url()
             messages.add_message(
                 self.request,
-                self.messages["email_confirmed"]["level"],
-                self.messages["email_confirmed"]["text"].format(**{
+                self.messages["email_confirmation_expired"]["level"],
+                self.messages["email_confirmation_expired"]["text"].format(**{
                     "email": confirmation.email_address.email
                 })
             )
@@ -495,7 +536,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         return ctx
 
     def get_redirect_url(self):
-        if self.user.is_authenticated():
+        if is_authenticated(self.user):
             if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
                 return settings.ACCOUNT_LOGIN_REDIRECT_URL
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
@@ -528,12 +569,12 @@ class ChangePasswordView(PasswordMixin, FormView):
     fallback_url_setting = "ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL"
 
     def get(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
+        if not is_authenticated(self.request.user):
             return redirect("account_password_reset")
         return super(ChangePasswordView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
+        if not is_authenticated(self.request.user):
             return HttpResponseForbidden()
         return super(ChangePasswordView, self).post(*args, **kwargs)
 
@@ -571,6 +612,10 @@ class PasswordResetView(FormView):
     template_name_sent = "account/password_reset_sent.html"
     form_class = PasswordResetForm
     token_generator = default_token_generator
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, *args, **kwargs):
+        return super(PasswordResetView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(PasswordResetView, self).get_context_data(**kwargs)
@@ -611,6 +656,10 @@ class PasswordResetView(FormView):
         return self.token_generator.make_token(user)
 
 
+INTERNAL_RESET_URL_TOKEN = "set-password"
+INTERNAL_RESET_SESSION_TOKEN = "_password_reset_token"
+
+
 class PasswordResetTokenView(PasswordMixin, FormView):
 
     template_name = "account/password_reset_token.html"
@@ -620,12 +669,31 @@ class PasswordResetTokenView(PasswordMixin, FormView):
     form_password_field = "password"
     fallback_url_setting = "ACCOUNT_PASSWORD_RESET_REDIRECT_URL"
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        user = self.get_user()
+        if user is not None:
+            token = kwargs["token"]
+            if token == INTERNAL_RESET_URL_TOKEN:
+                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
+                if self.check_token(user, session_token):
+                    return super(PasswordResetTokenView, self).dispatch(*args, **kwargs)
+            else:
+                if self.check_token(user, token):
+                    # Store the token in the session and redirect to the
+                    # password reset form at a URL without the token. That
+                    # avoids the possibility of leaking the token in the
+                    # HTTP Referer header.
+                    self.request.session[INTERNAL_RESET_SESSION_TOKEN] = token
+                    redirect_url = self.request.path.replace(token, INTERNAL_RESET_URL_TOKEN)
+                    return redirect(redirect_url)
+        return self.token_fail()
+
     def get(self, request, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         ctx = self.get_context_data(form=form)
-        if not self.check_token(self.get_user(), self.kwargs["token"]):
-            return self.token_fail()
         return self.render_to_response(ctx)
 
     def get_context_data(self, **kwargs):
