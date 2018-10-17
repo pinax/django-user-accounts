@@ -14,7 +14,7 @@ class EmailAddressManager(models.Manager):
 
     def get_primary(self, user):
         try:
-            return self.get(user=user, primary=True)
+            return self.get(user=user, is_primary=True)
         except self.model.DoesNotExist:
             return None
 

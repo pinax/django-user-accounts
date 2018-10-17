@@ -62,7 +62,7 @@ class Account(models.Model):
                 account.language = translation.get_language_from_request(request, check_path=True)
         account.save()
         if create_email and account.user.email:
-            kwargs = {"primary": True}
+            kwargs = {"is_primary": True}
             if confirm_email is not None:
                 kwargs["confirm"] = confirm_email
             EmailAddress.objects.add_email(account.user, account.user.email, **kwargs)
@@ -255,7 +255,7 @@ class EmailAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     email = models.EmailField(max_length=254, unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(_("verified"), default=False)
-    primary = models.BooleanField(_("primary"), default=False)
+    is_primary = models.BooleanField(_("primary"), default=False)
 
     objects = EmailAddressManager()
 
@@ -275,7 +275,7 @@ class EmailAddress(models.Model):
                 return False
             old_primary.primary = False
             old_primary.save()
-        self.primary = True
+        self.is_primary = True
         self.save()
         self.user.email = self.email
         self.user.save()
