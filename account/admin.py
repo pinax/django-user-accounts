@@ -32,7 +32,7 @@ class AccountDeletionAdmin(AccountAdmin):
 
 class EmailAddressAdmin(AccountAdmin):
 
-    list_display = ["user", "email", "verified", "primary"]
+    list_display = ["user", "email", "verified", "is_primary"]
     search_fields = ["email", "user__username"]
 
 
