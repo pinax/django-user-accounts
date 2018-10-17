@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.utils import six, timezone, translation
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-
+from account.hooks import hookset
 import pytz
 from account import signals
 from account.compat import is_authenticated, reverse
@@ -375,7 +375,7 @@ class AccountDeletion(models.Model):
         before = timezone.now() - datetime.timedelta(hours=hours_ago)
         count = 0
         for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):
-            settings.ACCOUNT_DELETION_EXPUNGE_CALLBACK(account_deletion)
+            hookset.account_delete_expunge(account_deletion)
             account_deletion.date_expunged = timezone.now()
             account_deletion.save()
             count += 1
@@ -386,7 +386,7 @@ class AccountDeletion(models.Model):
         account_deletion, created = cls.objects.get_or_create(user=user)
         account_deletion.email = user.email
         account_deletion.save()
-        settings.ACCOUNT_DELETION_MARK_CALLBACK(account_deletion)
+        hookset.account_delete_mark(account_deletion)
         return account_deletion
 
 
