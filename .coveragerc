@@ -1,7 +1,0 @@
-[run]
-source = account
-omit = account/tests/*
-branch = 1
-
-[report]
-omit = account/tests/*

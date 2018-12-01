@@ -1,13 +1,12 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils.http import int_to_base36
 from django.utils.six.moves.urllib.parse import urlparse
 
-from django.contrib.auth.models import User
-
 from account.compat import reverse
-from account.models import SignupCode, EmailConfirmation
+from account.models import EmailConfirmation, SignupCode
 from account.views import INTERNAL_RESET_URL_TOKEN, PasswordResetTokenView
 
 

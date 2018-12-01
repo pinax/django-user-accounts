@@ -2,20 +2,21 @@ from __future__ import unicode_literals
 
 import datetime
 import functools
+
+from django.contrib.auth import get_user_model
+from django.core.exceptions import SuspiciousOperation
+from django.http import HttpResponseRedirect, QueryDict
+
 import pytz
+from account.compat import NoReverseMatch, reverse
+from account.conf import settings
+
+from .models import PasswordHistory
+
 try:
     from urllib.parse import urlparse, urlunparse
 except ImportError:  # python 2
     from urlparse import urlparse, urlunparse
-
-from django.core.exceptions import SuspiciousOperation
-from django.http import HttpResponseRedirect, QueryDict
-
-from django.contrib.auth import get_user_model
-
-from account.compat import reverse, NoReverseMatch
-from account.conf import settings
-from .models import PasswordHistory
 
 
 def get_user_lookup_kwargs(kwargs):

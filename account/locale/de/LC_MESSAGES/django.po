@@ -52,7 +52,7 @@ msgstr "Die eingegebnen Passwörter stimmen nicht überein."
 
 #: forms.py:83
 msgid "Remember Me"
-msgstr "Auf desem Computer merken"
+msgstr "Auf diesem Computer merken"
 
 #: forms.py:96
 msgid "This account is inactive."

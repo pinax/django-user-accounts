@@ -1,3 +1,5 @@
+.. image:: http://pinaxproject.com/pinax-design/patches/django-user-accounts.svg
+
 ====================
 Django User Accounts
 ====================
@@ -5,14 +7,11 @@ Django User Accounts
 .. image:: http://slack.pinaxproject.com/badge.svg
    :target: http://slack.pinaxproject.com/
 
-.. image:: https://img.shields.io/travis/pinax/django-user-accounts.svg
-    :target: https://travis-ci.org/pinax/django-user-accounts
+.. image:: https://circleci.com/gh/pinax/django-user-accounts.svg?style=svg
+    :target: https://circleci.com/gh/pinax/django-user-accounts
 
-.. image:: https://img.shields.io/coveralls/pinax/django-user-accounts.svg
-    :target: https://coveralls.io/r/pinax/django-user-accounts
-
-.. image:: https://img.shields.io/pypi/dm/django-user-accounts.svg
-    :target:  https://pypi.python.org/pypi/django-user-accounts/
+.. image:: https://img.shields.io/codecov/c/github/pinax/django-user-accounts.svg
+    :target: https://codecov.io/gh/pinax/django-user-accounts
 
 .. image:: https://img.shields.io/pypi/v/django-user-accounts.svg
     :target:  https://pypi.python.org/pypi/django-user-accounts/
@@ -20,6 +19,12 @@ Django User Accounts
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :target:  https://pypi.python.org/pypi/django-user-accounts/
 
+.. image:: https://img.shields.io/github/contributors/pinax/django-user-accounts.svg
+    :target:  https://github.com/pinax/django-user-accounts/issues/
+.. image:: https://img.shields.io/github/issues-pr/pinax/django-user-accounts.svg
+    :target:  https://github.com/pinax/django-user-accounts/issues/
+.. image:: https://img.shields.io/github/issues-pr-closed/pinax/django-user-accounts.svg
+    :target:  https://github.com/pinax/django-user-accounts/issues/
 
 Pinax
 -------
@@ -58,8 +63,8 @@ Features
 Requirements
 --------------
 
-* Django 1.8, 1.9, 1.10 and 1.11
-* Python 2.7, 3.3, 3.4, 3.5 and 3.6
+* Django 1.8, 1.10, 1.11, or 2.0
+* Python 2.7, 3.4, 3.5, or 3.6
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
@@ -68,7 +73,7 @@ Documentation
 ----------------
 
 See http://django-user-accounts.readthedocs.org/ for the ``django-user-accounts`` documentation.
-We recently did a Pinax Hangout on ``django-user-accounts``, you can read the recap blog post and find the video here http://blog.pinaxproject.com/2015/10/12/recap-september-pinax-hangout/.
+On September 17th, 2015, we did a Pinax Hangout on ``django-user-accounts``. You can read the recap blog post and find the video here http://blog.pinaxproject.com/2015/10/12/recap-september-pinax-hangout/.
 
 The Pinax documentation is available at http://pinaxproject.com/pinax/. If you would like to help us improve our documentation or write more documentation, please join our Slack team and let us know!
 

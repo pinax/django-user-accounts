@@ -1,9 +1,10 @@
 # How to Contribute
 
 There are many ways you can help contribute to django-user-accounts.
-Contributing code, writing documentation, translations, reporting bugs, as well
-as reading and providing feedback on issues and pull requests, all are valid and
-necessary ways to help.
+
+Contributing code, writing documentation, reporting bugs, as well as
+reading and providing feedback on issues and pull requests, all are
+valid and necessary ways to help.
 
 ## Committing Code
 
@@ -70,7 +71,6 @@ Django's coding style:
 * Use double quotes not single quotes. Single quotes are allowed in cases
   where a double quote is needed in the string. This makes the code read
   cleaner in those cases.
-* Blank lines should contain no whitespace.
 * Docstrings always use three double quotes on a line of their own, so, for
   example, a single line docstring should take up three lines not one.
 * Imports are grouped specifically and ordered alphabetically. This is shown
@@ -86,14 +86,12 @@ Here is an example of these rules applied:
     # non-from imports go first then from style import in their own group
     import csv
 
-    # second set of imports are Django imports with contrib in their own
-    # group.
-    from django.core.urlresolvers import reverse
+    # second set of imports are Django imports
+    from django.contrib.auth.models import User
     from django.db import models
+    from django.urls import reverse
     from django.utils import timezone
     from django.utils.translation import ugettext_lazy as _
-
-    from django.contrib.auth.models import User
 
     # third set of imports are external apps (if applicable)
     from tagging.fields import TagField

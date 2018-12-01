@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 
-from django.db.models import Q
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from django.db.models import Q
 
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
@@ -11,7 +10,7 @@ from account.utils import get_user_lookup_kwargs
 
 class UsernameAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
+    def authenticate(self, *args, **credentials):
         User = get_user_model()
         try:
             lookup_kwargs = get_user_lookup_kwargs({
@@ -30,7 +29,7 @@ class UsernameAuthenticationBackend(ModelBackend):
 
 class EmailAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
+    def authenticate(self, *args, **credentials):
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
         try:
             email_address = qs.get(email__iexact=credentials["username"])
