@@ -19,9 +19,9 @@ from account.compat import is_authenticated, reverse
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
+from account.languages import DEFAULT_LANGUAGE
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
-from account.languages import DEFAULT_LANGUAGE
 
 try:
     from urllib.parse import urlencode
