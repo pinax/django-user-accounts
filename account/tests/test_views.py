@@ -7,6 +7,7 @@ from django.utils.six.moves.urllib.parse import urlparse
 
 from account.compat import reverse
 from account.models import EmailConfirmation, SignupCode
+from account.views import INTERNAL_RESET_URL_TOKEN, PasswordResetTokenView
 
 
 class SignupViewTestCase(TestCase):
@@ -385,6 +386,20 @@ class PasswordResetTokenViewTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_get_abuse_reset_token(self):
+        user = self.signup()
+        url = reverse(
+            "account_password_reset_token",
+            kwargs={
+                "uidb36": int_to_base36(user.id),
+                "token": INTERNAL_RESET_URL_TOKEN,
+            }
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                PasswordResetTokenView.template_name_fail)
+
     def test_get_reset(self):
         user, url = self.request_password_reset()
         response = self.client.get(url)
@@ -394,7 +409,7 @@ class PasswordResetTokenViewTestCase(TestCase):
                 "account_password_reset_token",
                 kwargs={
                     "uidb36": int_to_base36(user.id),
-                    "token": "set-password",
+                    "token": INTERNAL_RESET_URL_TOKEN,
                 }
             ),
             fetch_redirect_response=False

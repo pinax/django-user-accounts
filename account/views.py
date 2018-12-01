@@ -676,7 +676,7 @@ class PasswordResetTokenView(PasswordMixin, FormView):
         if user is not None:
             token = kwargs["token"]
             if token == INTERNAL_RESET_URL_TOKEN:
-                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
+                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN, '')
                 if self.check_token(user, session_token):
                     return super(PasswordResetTokenView, self).dispatch(*args, **kwargs)
             else:
