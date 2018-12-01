@@ -12,7 +12,7 @@ setup(
     url="http://github.com/pinax/django-user-accounts",
     packages=find_packages(),
     install_requires=[
-        "Django>=1.8",
+        "Django>=1.11",
         "django-appconf>=1.0.1",
         "pytz>=2015.6"
     ],
