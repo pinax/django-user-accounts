@@ -10,7 +10,7 @@ from account.utils import get_user_lookup_kwargs
 
 class UsernameAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
+    def authenticate(self, *args, **credentials):
         User = get_user_model()
         try:
             lookup_kwargs = get_user_lookup_kwargs({
@@ -29,7 +29,7 @@ class UsernameAuthenticationBackend(ModelBackend):
 
 class EmailAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
+    def authenticate(self, *args, **credentials):
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
         try:
             email_address = qs.get(email__iexact=credentials["username"])
