@@ -29,7 +29,7 @@ msgstr "Пароль"
 
 #: forms.py:37
 msgid "Password (again)"
-msgstr "Пароль(еще раз)"
+msgstr "Пароль (еще раз)"
 
 #: forms.py:41 forms.py:122 forms.py:168 forms.py:197
 msgid "Email"
@@ -37,7 +37,7 @@ msgstr "Email"
 
 #: forms.py:52
 msgid "Usernames can only contain letters, numbers and underscores."
-msgstr "Имена пользователей могут состоять только из букв, цифер и подчеркиваний."
+msgstr "Имена пользователей могут состоять только из букв, цифр и подчеркиваний."
 
 #: forms.py:60
 msgid "This username is already taken. Please choose another."
@@ -49,7 +49,7 @@ msgstr "Пользователь зарегистрирован с этим emai
 
 #: forms.py:72 forms.py:162 forms.py:191
 msgid "You must type the same password each time."
-msgstr "Вы должны писать одинаковый пароль каждый раз."
+msgstr "Вы должны вводить одинаковый пароль каждый раз."
 
 #: forms.py:83
 msgid "Remember Me"
@@ -61,11 +61,11 @@ msgstr "Этот аккаунт неактивен."
 
 #: forms.py:108
 msgid "The username and/or password you specified are not correct."
-msgstr "Имя пользователя и/или пароль введено некорректно."
+msgstr "Имя пользователя или пароль некорректны."
 
 #: forms.py:123
 msgid "The email address and/or password you specified are not correct."
-msgstr "Email-адрес и/или пароль введен некорректно."
+msgstr "Email-адрес или пароль некорректны."
 
 #: forms.py:138
 msgid "Current Password"
@@ -77,7 +77,7 @@ msgstr "Новый Пароль"
 
 #: forms.py:146 forms.py:184
 msgid "New Password (again)"
-msgstr "Новый Пароль(еще раз)"
+msgstr "Новый Пароль (еще раз)"
 
 #: forms.py:156
 msgid "Please type your current password."
@@ -85,7 +85,7 @@ msgstr "Пожалуйста, введите ваш действующий па�
 
 #: forms.py:173
 msgid "Email address can not be found."
-msgstr ""
+msgstr "Email-адрес не найден"
 
 #: forms.py:199
 msgid "Timezone"
@@ -126,17 +126,17 @@ msgstr "подтверждения email"
 #: views.py:42
 #, python-brace-format
 msgid "Confirmation email sent to {email}."
-msgstr ""
+msgstr "Письмо с подтверждением email было отправлено по адресу {email}"
 
 #: views.py:46
 #, python-brace-format
 msgid "The code {code} is invalid."
-msgstr ""
+msgstr "Код {code} неверный"
 
 #: views.py:379
 #, python-brace-format
 msgid "You have confirmed {email}."
-msgstr ""
+msgstr "Вы подтвердили email с адресом {email}"
 
 #: views.py:452 views.py:585
 msgid "Password successfully changed."
@@ -152,3 +152,5 @@ msgid ""
 "Your account is now inactive and your data will be expunged in the next "
 "{expunge_hours} hours."
 msgstr ""
+"Ваш аккаунт теперь не активен и ваши данные будут удалены в следующие "
+"{expunge_hours} часов."
