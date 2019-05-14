@@ -706,7 +706,7 @@ class PasswordResetTokenView(PasswordMixin, FormView):
 
     def form_valid(self, form):
         self.change_password(form)
-        self.create_password_history(form, self.request.user)
+        self.create_password_history(form, self.get_user())
         self.after_change_password()
         return redirect(self.get_success_url())
 
