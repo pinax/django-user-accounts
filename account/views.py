@@ -25,6 +25,7 @@ from account.forms import (
     PasswordResetForm,
     PasswordResetTokenForm,
     SettingsForm,
+    SignupEmailForm,
     SignupForm,
 )
 from account.hooks import hookset
@@ -129,7 +130,6 @@ class SignupView(PasswordMixin, FormView):
     template_name_email_confirmation_sent_ajax = "account/ajax/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
     template_name_signup_closed_ajax = "account/ajax/signup_closed.html"
-    form_class = SignupForm
     form_kwargs = {}
     form_password_field = "password"
     redirect_field_name = "next"
@@ -150,6 +150,11 @@ class SignupView(PasswordMixin, FormView):
         self.created_user = None
         kwargs["signup_code"] = None
         super(SignupView, self).__init__(*args, **kwargs)
+
+    def get_form_class(self):
+        if getattr(settings, "ACCOUNT_USE_USERNAME", True):
+            return SignupForm
+        return SignupEmailForm
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
@@ -208,7 +213,7 @@ class SignupView(PasswordMixin, FormView):
 
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
-            sender=SignupForm,
+            sender=self.get_form_class(),
             username=get_form_data(form, self.identifier_field),
             email=get_form_data(form, "email"),
             result=form.is_valid()
@@ -297,7 +302,7 @@ class SignupView(PasswordMixin, FormView):
         email_address.send_confirmation(site=get_current_site(self.request))
 
     def after_signup(self, form):
-        signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
+        signals.user_signed_up.send(sender=self.get_form_class(), user=self.created_user, form=form)
 
     def login_user(self):
         user = auth.authenticate(**self.user_credentials())

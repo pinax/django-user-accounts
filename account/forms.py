@@ -90,6 +90,18 @@ class SignupForm(forms.Form):
         return self.cleaned_data
 
 
+class SignupEmailForm(SignupForm):
+
+    def __init__(self, *args, **kwargs):
+        super(SignupEmailForm, self).__init__(*args, **kwargs)
+        self.fields.pop("username")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data["username"] = cleaned_data.get("email")
+        return cleaned_data
+
+
 class LoginForm(forms.Form):
 
     password = PasswordField(
