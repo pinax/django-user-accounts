@@ -1,4 +1,5 @@
 import datetime
+import functools
 import operator
 
 from django.contrib.auth.models import AnonymousUser
@@ -8,7 +9,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.utils import six, timezone, translation
+from django.utils import timezone, translation
 from django.utils.translation import ugettext_lazy as _
 
 import pytz
@@ -159,7 +160,7 @@ class SignupCode(models.Model):
             checks.append(Q(email=code))
         if not checks:
             return False
-        return cls._default_manager.filter(six.moves.reduce(operator.or_, checks)).exists()
+        return cls._default_manager.filter(functools.reduce(operator.or_, checks)).exists()
 
     @classmethod
     def create(cls, **kwargs):
