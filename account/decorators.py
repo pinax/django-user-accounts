@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import functools
 
 from django.contrib.auth import REDIRECT_FIELD_NAME

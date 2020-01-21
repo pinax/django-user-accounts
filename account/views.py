@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password

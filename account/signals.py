@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import django.dispatch
 
 user_signed_up = django.dispatch.Signal(providing_args=["user", "form"])

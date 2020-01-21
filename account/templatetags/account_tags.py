@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import template
 from django.template.base import kwarg_re
 from django.template.defaulttags import URLNode
