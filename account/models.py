@@ -1,6 +1,7 @@
 import datetime
 import functools
 import operator
+from urllib.parse import urlencode
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
@@ -20,11 +21,6 @@ from account.hooks import hookset
 from account.languages import DEFAULT_LANGUAGE
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
-
-try:
-    from urllib.parse import urlencode
-except ImportError:  # python 2
-    from urllib import urlencode
 
 
 class Account(models.Model):

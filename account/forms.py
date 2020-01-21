@@ -1,4 +1,5 @@
 import re
+from collections import OrderedDict
 
 from django import forms
 from django.contrib import auth
@@ -10,12 +11,6 @@ from account.conf import settings
 from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    OrderedDict = None
-
 
 alnum_re = re.compile(r"^\w+$")
 
@@ -126,7 +121,7 @@ class LoginUsernameForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginUsernameForm, self).__init__(*args, **kwargs)
         field_order = ["username", "password", "remember"]
-        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+        if hasattr(self.fields, "keyOrder"):
             self.fields.keyOrder = field_order
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
@@ -141,7 +136,7 @@ class LoginEmailForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginEmailForm, self).__init__(*args, **kwargs)
         field_order = ["email", "password", "remember"]
-        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+        if hasattr(self.fields, "keyOrder"):
             self.fields.keyOrder = field_order
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)

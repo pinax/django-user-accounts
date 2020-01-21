@@ -1,3 +1,5 @@
+from urllib.parse import urlparse, urlunparse
+
 import django
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -11,12 +13,6 @@ from account import signals
 from account.conf import settings
 from account.models import Account
 from account.utils import check_password_expired
-
-try:
-    from urllib.parse import urlparse, urlunparse
-except ImportError:  # python 2
-    from urlparse import urlparse, urlunparse
-
 
 if django.VERSION >= (1, 10):
     from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
