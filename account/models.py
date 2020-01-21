@@ -7,13 +7,13 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
 from django.utils import six, timezone, translation
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 import pytz
 from account import signals
-from account.compat import is_authenticated, reverse
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
@@ -42,7 +42,7 @@ class Account(models.Model):
     @classmethod
     def for_request(cls, request):
         user = getattr(request, "user", None)
-        if user and is_authenticated(user):
+        if user and user.is_authenticated:
             try:
                 return Account._default_manager.get(user=user)
             except Account.DoesNotExist:

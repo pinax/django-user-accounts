@@ -1,6 +1,5 @@
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
-from account.compat import is_authenticated
 from account.conf import settings
 from account.utils import handle_redirect_to_login
 
@@ -14,7 +13,7 @@ class LoginRequiredMixin(object):
         self.request = request
         self.args = args
         self.kwargs = kwargs
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
         return self.redirect_to_login()
 

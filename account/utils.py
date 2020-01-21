@@ -4,9 +4,9 @@ import functools
 from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
+from django.urls import NoReverseMatch, reverse
 
 import pytz
-from account.compat import NoReverseMatch, reverse
 from account.conf import settings
 
 from .models import PasswordHistory
