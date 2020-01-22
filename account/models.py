@@ -70,18 +70,18 @@ class Account(models.Model):
         Returns a timezone aware datetime localized to the account's timezone.
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone("UTC"))
-        timezone = settings.TIME_ZONE if not self.timezone else self.timezone
-        return now.astimezone(pytz.timezone(timezone))
+        tz = settings.TIME_ZONE if not self.timezone else self.timezone
+        return now.astimezone(pytz.timezone(tz))
 
     def localtime(self, value):
         """
         Given a datetime object as value convert it to the timezone of
         the account.
         """
-        timezone = settings.TIME_ZONE if not self.timezone else self.timezone
+        tz = settings.TIME_ZONE if not self.timezone else self.timezone
         if value.tzinfo is None:
             value = pytz.timezone(settings.TIME_ZONE).localize(value)
-        return value.astimezone(pytz.timezone(timezone))
+        return value.astimezone(pytz.timezone(tz))
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -105,7 +105,7 @@ def user_post_save(sender, **kwargs):
         Account.create(user=user)
 
 
-class AnonymousAccount(object):
+class AnonymousAccount:
 
     def __init__(self, request=None):
         self.user = AnonymousUser()

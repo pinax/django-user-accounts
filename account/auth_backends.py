@@ -8,35 +8,36 @@ from account.utils import get_user_lookup_kwargs
 
 class UsernameAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, *args, **credentials):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        if username is None or password is None:
+            return None
+
         User = get_user_model()
         try:
             lookup_kwargs = get_user_lookup_kwargs({
-                "{username}__iexact": credentials["username"]
+                "{username}__iexact": username
             })
             user = User.objects.get(**lookup_kwargs)
-        except (User.DoesNotExist, KeyError):
+        except User.DoesNotExist:
             return None
-        else:
-            try:
-                if user.check_password(credentials["password"]):
-                    return user
-            except KeyError:
-                return None
+
+        if user.check_password(password):
+            return user
 
 
 class EmailAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, *args, **credentials):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
-        try:
-            email_address = qs.get(email__iexact=credentials["username"])
-        except (EmailAddress.DoesNotExist, KeyError):
+
+        if username is None or password is None:
             return None
-        else:
-            user = email_address.user
-            try:
-                if user.check_password(credentials["password"]):
-                    return user
-            except KeyError:
-                return None
+
+        try:
+            email_address = qs.get(email__iexact=username)
+        except EmailAddress.DoesNotExist:
+            return None
+
+        user = email_address.user
+        if user.check_password(password):
+            return user
