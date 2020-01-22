@@ -1,23 +1,18 @@
 from urllib.parse import urlparse, urlunparse
 
-import django
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import HttpResponseRedirect, QueryDict
 from django.urls import resolve, reverse
 from django.utils import timezone, translation
 from django.utils.cache import patch_vary_headers
+from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
 from django.utils.translation import ugettext_lazy as _
 
 from account import signals
 from account.conf import settings
 from account.models import Account
 from account.utils import check_password_expired
-
-if django.VERSION >= (1, 10):
-    from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
-else:
-    BaseMiddleware = object
 
 
 class LocaleMiddleware(BaseMiddleware):
