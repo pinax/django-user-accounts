@@ -22,7 +22,7 @@
   * [Supported Django and Python versions](#supported-django-and-python-versions)
 * [Requirements](#requirements)
 * [Documentation](#documentation)
-  * [Templates](#templates)
+* [Templates](#templates)
 * [Change Log](#change-log)
 * [Contribute](#contribute)
 * [Code of Conduct](#code-of-conduct)
