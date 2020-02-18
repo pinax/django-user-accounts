@@ -1,6 +1,5 @@
 include .coveragerc
 include CHANGELOG.md
-include CONTRIBUTING.md
 include LICENSE
 include tox.ini
 include README.rst
