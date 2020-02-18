@@ -7,7 +7,7 @@ setup(
     author="Brian Rosner",
     author_email="brosner@gmail.com",
     description="a Django user account app",
-    long_description=open("README.rst").read(),
+    long_description=open("README.md").read(),
     license="MIT",
     url="http://github.com/pinax/django-user-accounts",
     packages=find_packages(),
