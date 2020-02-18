@@ -23,7 +23,6 @@
 * [Requirements](#requirements)
 * [Documentation](#documentation)
 * [Templates](#templates)
-* [Change Log](#change-log)
 * [Contribute](#contribute)
 * [Code of Conduct](#code-of-conduct)
 * [Connect with Pinax](#connect-with-pinax)
@@ -91,9 +90,6 @@ Reference pinax-templates
 View live `pinax-templates` examples and source at [Pinax Templates](https://templates.pinaxproject.com/)!
 
 See the `django-user-accounts` [templates](https://django-user-accounts.readthedocs.io/en/latest/templates.html) documentation for more information.
-
-
-## Change Log
 
 
 ## Contribute
