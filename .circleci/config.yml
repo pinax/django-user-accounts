@@ -1,4 +1,4 @@
-version: 2.0
+version: 2.1
 
 common: &common
   working_directory: ~/repo
@@ -92,11 +92,9 @@ workflows:
     jobs:
       - lint
       - py36dj111
-      - py36dj21
       - py36dj22
       - py36dj30
       - py37dj111
-      - py37dj21
       - py37dj22
       - py37dj30
       - py38dj22
