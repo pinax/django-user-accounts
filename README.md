@@ -1,4 +1,4 @@
-![](http://pinaxproject.com/pinax-design/patches/django-user-accounts.svg)
+![](https://pinaxproject.com/pinax-design/social-banners/DUA.png)
 
 # Django User Accounts
 
