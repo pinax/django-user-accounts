@@ -1,10 +1,8 @@
 import importlib
 
-from django.conf import settings
+from django.conf import settings  # noqa
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import get_language_info
 
-import pytz
 from account.languages import LANGUAGES
 from account.timezones import TIMEZONES
 from appconf import AppConf
@@ -38,7 +36,7 @@ class AccountAppConf(AppConf):
     PASSWORD_USE_HISTORY = False
     PASSWORD_STRIP = True
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
-    USER_DISPLAY = lambda user: user.username  # flake8: noqa
+    USER_DISPLAY = lambda user: user.username  # noqa
     CREATE_ON_SAVE = True
     EMAIL_UNIQUE = True
     EMAIL_CONFIRMATION_REQUIRED = False

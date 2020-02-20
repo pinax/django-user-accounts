@@ -34,7 +34,7 @@ class UserPasswordExpiryTests(TestCase):
         user = self.UserModel.objects.get(username="patrick")
         user_expiry = user.password_expiry
         self.assertEqual(user_expiry.expiry, expiration_period)
-        self.assertIn("User \"{}\" password expiration set to {} seconds".format(self.user.username, expiration_period), out.getvalue())
+        self.assertIn('User "{}" password expiration set to {} seconds'.format(self.user.username, expiration_period), out.getvalue())
 
     def test_set_default_password_expiry(self):
         """
@@ -52,7 +52,7 @@ class UserPasswordExpiryTests(TestCase):
         user_expiry = user.password_expiry
         default_expiration = settings.ACCOUNT_PASSWORD_EXPIRY
         self.assertEqual(user_expiry.expiry, default_expiration)
-        self.assertIn("User \"{}\" password expiration set to {} seconds".format(self.user.username, default_expiration), out.getvalue())
+        self.assertIn('User "{}" password expiration set to {} seconds'.format(self.user.username, default_expiration), out.getvalue())
 
     def test_reset_existing_password_expiry(self):
         """
@@ -85,7 +85,7 @@ class UserPasswordExpiryTests(TestCase):
             bad_username,
             stdout=out
         )
-        self.assertIn("User \"{}\" not found".format(bad_username), out.getvalue())
+        self.assertIn('User "{}" not found'.format(bad_username), out.getvalue())
 
 
 class UserPasswordHistoryTests(TestCase):
