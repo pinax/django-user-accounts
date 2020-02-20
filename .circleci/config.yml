@@ -10,10 +10,7 @@ common: &common
           - v2-deps-
     - run:
         name: install dependencies
-        command:
-            - pip install --user tox
-            - pip install --user codecov
-            - pip install --user coverage<5
+        command: pip install --user tox codecov "coverage<5"
     - run:
         name: run tox
         command: ~/.local/bin/tox
