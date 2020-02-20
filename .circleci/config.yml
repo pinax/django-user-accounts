@@ -19,7 +19,6 @@ common: &common
         command: |
           if [[ "$TOXENV" != checkqa ]]; then
               PATH=$HOME/.local/bin:$PATH
-              pip install --user codecov
               ~/.local/bin/codecov --required --flags $CIRCLE_JOB
           fi
     - save_cache:
