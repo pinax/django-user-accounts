@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import template
 from django.template.base import kwarg_re
 from django.template.defaulttags import URLNode
@@ -98,7 +96,7 @@ def urlnext(parser, token):
         asvar = bits[-1]
         bits = bits[:-2]
 
-    if len(bits):
+    if len(bits) > 0:
         for bit in bits:
             match = kwarg_re.match(bit)
             if not match:
