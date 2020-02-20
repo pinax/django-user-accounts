@@ -25,7 +25,7 @@ class Command(LabelCommand):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return "User \"{}\" not found".format(username)
+            return 'User "{}" not found'.format(username)
 
         expire = options["expire"]
 
@@ -36,4 +36,4 @@ class Command(LabelCommand):
             user.password_expiry.expiry = expire
             user.password_expiry.save()
 
-        return "User \"{}\" password expiration set to {} seconds".format(username, expire)
+        return 'User "{}" password expiration set to {} seconds'.format(username, expire)

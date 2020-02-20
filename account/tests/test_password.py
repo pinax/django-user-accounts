@@ -4,10 +4,10 @@ import django
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 from django.test import TestCase, modify_settings, override_settings
+from django.urls import reverse
 
 import pytz
 
-from ..compat import reverse
 from ..models import PasswordExpiry, PasswordHistory
 from ..utils import check_password_expired
 

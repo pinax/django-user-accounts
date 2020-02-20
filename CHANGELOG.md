@@ -1,4 +1,4 @@
-# ChangeLog
+# Change Log
 
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.

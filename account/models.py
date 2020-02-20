@@ -1,7 +1,7 @@
-from __future__ import unicode_literals
-
 import datetime
+import functools
 import operator
+from urllib.parse import urlencode
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
@@ -9,13 +9,12 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import six, timezone, translation
-from django.utils.encoding import python_2_unicode_compatible
+from django.urls import reverse
+from django.utils import timezone, translation
 from django.utils.translation import ugettext_lazy as _
 
 import pytz
 from account import signals
-from account.compat import is_authenticated, reverse
 from account.conf import settings
 from account.fields import TimeZoneField
 from account.hooks import hookset
@@ -23,13 +22,7 @@ from account.languages import DEFAULT_LANGUAGE
 from account.managers import EmailAddressManager, EmailConfirmationManager
 from account.signals import signup_code_sent, signup_code_used
 
-try:
-    from urllib.parse import urlencode
-except ImportError:  # python 2
-    from urllib import urlencode
 
-
-@python_2_unicode_compatible
 class Account(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"), on_delete=models.CASCADE)
@@ -44,7 +37,7 @@ class Account(models.Model):
     @classmethod
     def for_request(cls, request):
         user = getattr(request, "user", None)
-        if user and is_authenticated(user):
+        if user and user.is_authenticated:
             try:
                 return Account._default_manager.get(user=user)
             except Account.DoesNotExist:
@@ -77,18 +70,18 @@ class Account(models.Model):
         Returns a timezone aware datetime localized to the account's timezone.
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone("UTC"))
-        timezone = settings.TIME_ZONE if not self.timezone else self.timezone
-        return now.astimezone(pytz.timezone(timezone))
+        tz = settings.TIME_ZONE if not self.timezone else self.timezone
+        return now.astimezone(pytz.timezone(tz))
 
     def localtime(self, value):
         """
         Given a datetime object as value convert it to the timezone of
         the account.
         """
-        timezone = settings.TIME_ZONE if not self.timezone else self.timezone
+        tz = settings.TIME_ZONE if not self.timezone else self.timezone
         if value.tzinfo is None:
             value = pytz.timezone(settings.TIME_ZONE).localize(value)
-        return value.astimezone(pytz.timezone(timezone))
+        return value.astimezone(pytz.timezone(tz))
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -112,8 +105,7 @@ def user_post_save(sender, **kwargs):
         Account.create(user=user)
 
 
-@python_2_unicode_compatible
-class AnonymousAccount(object):
+class AnonymousAccount:
 
     def __init__(self, request=None):
         self.user = AnonymousUser()
@@ -127,7 +119,6 @@ class AnonymousAccount(object):
         return "AnonymousAccount"
 
 
-@python_2_unicode_compatible
 class SignupCode(models.Model):
 
     class AlreadyExists(Exception):
@@ -165,7 +156,7 @@ class SignupCode(models.Model):
             checks.append(Q(email=code))
         if not checks:
             return False
-        return cls._default_manager.filter(six.moves.reduce(operator.or_, checks)).exists()
+        return cls._default_manager.filter(functools.reduce(operator.or_, checks)).exists()
 
     @classmethod
     def create(cls, **kwargs):
@@ -250,7 +241,6 @@ class SignupCodeResult(models.Model):
         self.signup_code.calculate_use_count()
 
 
-@python_2_unicode_compatible
 class EmailAddress(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -301,7 +291,6 @@ class EmailAddress(models.Model):
                 self.send_confirmation()
 
 
-@python_2_unicode_compatible
 class EmailConfirmation(models.Model):
 
     email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
