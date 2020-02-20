@@ -1,7 +1,5 @@
 ![](https://pinaxproject.com/pinax-design/social-banners/DUA.png)
 
-# Django User Accounts
-
 [![](https://img.shields.io/pypi/v/django-user-accounts.svg)](https://pypi.python.org/pypi/django-user-accounts/)
 
 [![CircleCi](https://img.shields.io/circleci/project/github/pinax/django-user-accounts.svg)](https://circleci.com/gh/pinax/django-user-accounts)
@@ -14,7 +12,7 @@
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
-## Table of Contents
+# Table of Contents
 
 * [About Pinax](#about-pinax)
 * [Overview](#overview)
