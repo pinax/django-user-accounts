@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django import forms
 from django.contrib import auth
 from django.contrib.auth import get_user_model
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from account.conf import settings
@@ -25,7 +25,7 @@ class PasswordField(forms.CharField):
     def to_python(self, value):
         if value in self.empty_values:
             return ""
-        value = force_text(value)
+        value = force_str(value)
         if self.strip:
             value = value.strip()
         return value
