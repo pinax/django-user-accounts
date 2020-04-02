@@ -648,7 +648,7 @@ class PasswordResetView(FormView):
                 "current_site": current_site,
                 "password_reset_url": password_reset_url,
             }
-            hookset.send_password_reset_email([user.email], ctx)
+            hookset.send_password_reset_email([email], ctx)
 
     def make_token(self, user):
         return self.token_generator.make_token(user)
