@@ -7,7 +7,7 @@ from django.urls import resolve, reverse
 from django.utils import timezone, translation
 from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from account import signals
 from account.conf import settings
