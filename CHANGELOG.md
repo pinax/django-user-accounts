@@ -3,6 +3,16 @@
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.
 
+## 3.0.3
+
+* Drop deprecated `force_text()`
+
+## 3.0.2
+
+* Drop Django 2.0 and Python 2,7, 3.4, and 3.5 support
+* Add Django 2.1, 2.2 and 3.0, and Python 3.7 and 3.8 support
+* Update packaging configs
+
 ## 2.0.3
 
  * fixed breaking change in 2.0.2 where context did not have uidb36 and token
