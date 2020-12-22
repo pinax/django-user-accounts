@@ -54,17 +54,17 @@ Pinax is an open-source platform built on the Django Web Framework. It is an eco
 
 #### Supported Django and Python versions
 
-Django / Python | 3.6 | 3.7 | 3.8
---------------- | --- | --- | ---
-1.11 |  *  |  *  |
-2.2  |  *  |  *  |  *
-3.0  |  *  |  *  |  *
+Django / Python | 3.6 | 3.7 | 3.8 | 3.9
+--------------- | --- | --- | --- | ---
+2.2  |  *  |  *  |  *  |  * 
+3.0  |  *  |  *  |  *  |  * 
+3.1  |  *  |  *  |  *  |  *
 
 
 ## Requirements
 
-* Django 1.11, 2.2, or 3.0
-* Python 3.6, 3.7, or 3.8
+* Django 2.2, 3.0, or 3.1
+* Python 3.6, 3.7, 3.8, or 3.9
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
