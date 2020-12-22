@@ -1,0 +1,66 @@
+name: Lints and Tests
+on: [push]
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      
+      - name: isort
+        uses: jamescurtin/isort-action@master
+
+      - name: Lints
+        uses: py-actions/flake8@v1
+        with:
+          ignore: "E265,E501"
+          max-line-length: "100"
+          exclude: "account/migrations,docs"
+          path: account
+
+
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
+        django: [2.2.*, 3.0.*, 3.1.*]
+        include:
+          - python: 3.5
+            django: 2.2.*
+  
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Django and Testing Tools
+        run: pip install Django==${{ matrix.django }} coverage
+
+      - name: Running Python Tests
+        env:
+          DJANGO_SETTINGS_MODULE: account.tests.settings
+        run: |
+          pip freeze
+          coverage run setup.py test
+
+      - name: Generating Coverage Report Artifact
+        run: |
+          coverage html
+          zip coverage-html.zip htmlcov/*
+
+      - name: Store Coverage Report Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverage-report
+          path: coverage-html.zip
