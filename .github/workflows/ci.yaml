@@ -21,9 +21,7 @@ jobs:
         with:
           ignore: "E265,E501"
           max-line-length: "100"
-          max-complexity: "10"
           exclude: "account/migrations,docs"
-          inline-quotes: "double"
           path: account
 
 
