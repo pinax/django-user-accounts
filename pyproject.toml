@@ -1,0 +1,9 @@
+[tool.isort]
+profile = "hug"
+src_paths = ["account"]
+multi_line_output = 3
+known_django = "django"
+known_third_party = "account,six,mock,appconf,jsonfield,pytz"
+sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+skip_glob = "account/migrations/*,docs"
+include_trailing_comma = "True"
