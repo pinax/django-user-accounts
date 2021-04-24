@@ -5,6 +5,11 @@ version with these. Your code will need to be updated to continue working.
 
 ## 3.0.3
 
+* Fix deprecated urls
+* Update template context processors docs
+* Fix deprecrated argument in signals
+* Update decorators for Django 3
+* Fix issue with lazy string
 * Drop deprecated `force_text()`
 
 ## 3.0.2
