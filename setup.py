@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-user-accounts",
-    version="3.0.2",
+    version="3.0.3",
     author="Brian Rosner",
     author_email="brosner@gmail.com",
     description="a Django user account app",
