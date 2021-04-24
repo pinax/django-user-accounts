@@ -19,7 +19,7 @@ urlpatterns = [
     path("confirm_email/<str:key>/", ConfirmEmailView.as_view(), name="account_confirm_email"),
     path("password/", ChangePasswordView.as_view(), name="account_password"),
     path("password/reset/", PasswordResetView.as_view(), name="account_password_reset"),
-    path("password/reset/<str:uidb36>/<str:token>/$", PasswordResetTokenView.as_view(), name="account_password_reset_token"),
+    path("password/reset/<str:uidb36>/<str:token>/", PasswordResetTokenView.as_view(), name="account_password_reset_token"),
     path("settings/", SettingsView.as_view(), name="account_settings"),
     path("delete/", DeleteView.as_view(), name="account_delete"),
 ]
