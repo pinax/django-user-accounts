@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/pypi/v/django-user-accounts.svg)](https://pypi.python.org/pypi/django-user-accounts/)
 
-[![CircleCi](https://img.shields.io/circleci/project/github/pinax/django-user-accounts.svg)](https://circleci.com/gh/pinax/django-user-accounts)
+[![Build](https://img.shields.io/circleci/project/github/pinax/django-user-accounts.svg)](https://circleci.com/gh/pinax/django-user-accounts)
 [![Codecov](https://img.shields.io/codecov/c/github/pinax/django-user-accounts.svg)](https://codecov.io/gh/pinax/django-user-accounts)
 [![](https://img.shields.io/github/contributors/pinax/django-user-accounts.svg)](https://github.com/pinax/django-user-accounts/graphs/contributors)
 [![](https://img.shields.io/github/issues-pr/pinax/django-user-accounts.svg)](https://github.com/pinax/django-user-accounts/pulls)
