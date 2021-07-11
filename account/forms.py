@@ -7,12 +7,14 @@ from django.contrib.auth import get_user_model
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from account.conf import settings
+from account.conf import settings, get_email_model
 from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
 
-alnum_re = re.compile(r"^\w+$")
+alnum_re = re.compile(r"^[\w+.@]+$")
+
+EmailModel = get_email_model()
 
 
 class PasswordField(forms.CharField):
@@ -32,6 +34,7 @@ class PasswordField(forms.CharField):
 
 
 class SignupForm(forms.Form):
+    # TODO make it possible to strip out the username field
 
     username = forms.CharField(
         label=_("Username"),
@@ -179,7 +182,7 @@ class PasswordResetForm(forms.Form):
 
     def clean_email(self):
         value = self.cleaned_data["email"]
-        if not EmailAddress.objects.filter(email__iexact=value).exists():
+        if not EmailModel.objects.filter(email__iexact=value).exists():
             raise forms.ValidationError(_("Email address can not be found."))
         return value
 
@@ -221,7 +224,7 @@ class SettingsForm(forms.Form):
         value = self.cleaned_data["email"]
         if self.initial.get("email") == value:
             return value
-        qs = EmailAddress.objects.filter(email__iexact=value)
+        qs = EmailModel.objects.filter(email__iexact=value)
         if not qs.exists() or not settings.ACCOUNT_EMAIL_UNIQUE:
             return value
         raise forms.ValidationError(_("A user is registered with this email address."))

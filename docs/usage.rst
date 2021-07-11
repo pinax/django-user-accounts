@@ -293,3 +293,12 @@ are saved forever, allowing password history checking for new passwords.
 For an authenticated user, ``ExpiredPasswordMiddleware`` prevents retrieving or posting
 to any page except the password change page and log out page when the user password is expired.
 However, if the user is "staff" (can access the Django admin site), the password check is skipped.
+
+
+Using email from User model
+============================
+
+TODO
+
+The user model needs a field `verified`, it should also have a property `email`, which is used
+as an alias for the username which is the email.

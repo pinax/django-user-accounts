@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 import pytz
 from account import signals
-from account.conf import settings
+from account.conf import settings, user_as_email
 from account.fields import TimeZoneField
 from account.hooks import hookset
 from account.languages import DEFAULT_LANGUAGE
@@ -272,11 +272,6 @@ class EmailAddress(models.Model):
         self.user.save()
         return True
 
-    def send_confirmation(self, **kwargs):
-        confirmation = EmailConfirmation.create(self)
-        confirmation.send(**kwargs)
-        return confirmation
-
     def change(self, new_email, confirm=True):
         """
         Given a new email address, change self and re-confirm.
@@ -288,12 +283,12 @@ class EmailAddress(models.Model):
             self.verified = False
             self.save()
             if confirm:
-                self.send_confirmation()
+                EmailAddress.objects.send_confirmation(email=self)
 
 
 class EmailConfirmation(models.Model):
 
-    email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
+    email_address = models.ForeignKey(settings.ACCOUNT_EMAIL_MODEL, on_delete=models.CASCADE)
     created = models.DateTimeField(default=timezone.now)
     sent = models.DateTimeField(null=True)
     key = models.CharField(max_length=64, unique=True)
@@ -321,7 +316,8 @@ class EmailConfirmation(models.Model):
         if not self.key_expired() and not self.email_address.verified:
             email_address = self.email_address
             email_address.verified = True
-            email_address.set_as_primary(conditional=True)
+            if not user_as_email():
+                email_address.set_as_primary(conditional=True)
             email_address.save()
             signals.email_confirmed.send(sender=self.__class__, email_address=email_address)
             return email_address
@@ -334,9 +330,11 @@ class EmailConfirmation(models.Model):
             current_site.domain,
             reverse(settings.ACCOUNT_EMAIL_CONFIRMATION_URL, args=[self.key])
         )
+
+        user = self.email_address.user if not user_as_email() else self
         ctx = {
             "email_address": self.email_address,
-            "user": self.email_address.user,
+            "user": user,
             "activate_url": activate_url,
             "current_site": current_site,
             "key": self.key,
