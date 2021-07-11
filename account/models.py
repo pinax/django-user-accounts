@@ -207,7 +207,7 @@ class SignupCode(models.Model):
         signup_code_used.send(sender=result.__class__, signup_code_result=result)
 
     def send(self, **kwargs):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         if "signup_url" not in kwargs:
             signup_url = "{0}://{1}{2}?{3}".format(
@@ -328,7 +328,7 @@ class EmailConfirmation(models.Model):
 
     def send(self, **kwargs):
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         activate_url = "{0}://{1}{2}".format(
             protocol,
             current_site.domain,

@@ -125,6 +125,12 @@ Default: ``"account.callbacks.account_delete_expunge"``
 
 Default: ``48``
 
+
+``ACCOUNT_DEFAULT_HTTP_PROTOCOL``
+=================================
+
+Default: ``https``
+
 ``ACCOUNT_HOOKSET``
 ===================
 
