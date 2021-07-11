@@ -38,10 +38,9 @@ class Account(models.Model):
     def for_request(cls, request):
         user = getattr(request, "user", None)
         if user and user.is_authenticated:
-            try:
-                return Account._default_manager.get(user=user)
-            except Account.DoesNotExist:
-                pass
+            account = user.account
+            if account:
+                return account
         return AnonymousAccount(request)
 
     @classmethod
