@@ -16,10 +16,11 @@ from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from account import signals
-from account.conf import settings
+from account.conf import settings, user_as_email, get_email_model
 from account.forms import (
     ChangePasswordForm,
     LoginUsernameForm,
+    LoginEmailForm,
     PasswordResetForm,
     PasswordResetTokenForm,
     SettingsForm,
@@ -36,6 +37,13 @@ from account.models import (
     SignupCode,
 )
 from account.utils import default_redirect, get_form_data
+
+EmailModel = get_email_model()
+
+if user_as_email():
+    LoginForm = LoginEmailForm
+else:
+    LoginForm = LoginUsernameForm
 
 
 class PasswordMixin(object):
@@ -120,7 +128,7 @@ class PasswordMixin(object):
 
 
 class SignupView(PasswordMixin, FormView):
-
+    # TODO need to closely go through this.
     template_name = "account/signup.html"
     template_name_ajax = "account/ajax/signup.html"
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
@@ -284,7 +292,12 @@ class SignupView(PasswordMixin, FormView):
         kwargs.setdefault("primary", True)
         kwargs.setdefault("verified", False)
         if self.signup_code:
-            kwargs["verified"] = self.created_user.email == self.signup_code.email if self.signup_code.email else False
+            verified = self.created_user.email == self.signup_code.email if self.signup_code.email else False
+            kwargs["verified"] = verified
+
+        if user_as_email():
+            self.created_user = kwargs['verified']
+            return self.created_user
         return EmailAddress.objects.add_email(self.created_user, self.created_user.email, **kwargs)
 
     def use_signup_code(self, user):
@@ -292,7 +305,7 @@ class SignupView(PasswordMixin, FormView):
             self.signup_code.use(user)
 
     def send_email_confirmation(self, email_address):
-        email_address.send_confirmation(site=get_current_site(self.request))
+        EmailModel.objects.send_confirmation(email=email_address, site=get_current_site(self.request))
 
     def after_signup(self, form):
         signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
@@ -354,7 +367,7 @@ class LoginView(FormView):
 
     template_name = "account/login.html"
     template_name_ajax = "account/ajax/login.html"
-    form_class = LoginUsernameForm
+    form_class = LoginForm
     form_kwargs = {}
     redirect_field_name = "next"
 
@@ -774,6 +787,10 @@ class SettingsView(LoginRequiredMixin, FormView):
             confirm = settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL
         # @@@ handle multiple emails per user
         email = form.cleaned_data["email"].strip()
+        if user_as_email():
+            # When using the user as email we don't need to care about primary emails
+            return
+
         if not self.primary_email_address:
             user.email = email
             EmailAddress.objects.add_email(self.request.user, email, primary=True, confirm=confirm)

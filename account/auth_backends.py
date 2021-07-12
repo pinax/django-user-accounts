@@ -7,6 +7,10 @@ from account.utils import get_user_lookup_kwargs
 
 
 class UsernameAuthenticationBackend(ModelBackend):
+    """
+    When the email model is the User, this authentication works just fine
+    for authenticating the user through email
+    """
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None or password is None:
@@ -28,6 +32,8 @@ class UsernameAuthenticationBackend(ModelBackend):
 class EmailAuthenticationBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
+        # TODO, remove primary true, username shouldn't be necessary either?
+        # should use email model. This probably doesn't need to be modified
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
 
         if username is None or password is None:

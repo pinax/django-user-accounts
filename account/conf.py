@@ -1,5 +1,6 @@
 import importlib
 
+from django.apps import apps as django_apps
 from django.conf import settings  # noqa
 from django.core.exceptions import ImproperlyConfigured
 
@@ -22,8 +23,29 @@ def load_path_attr(path):
     return attr
 
 
-class AccountAppConf(AppConf):
+def get_email_model():
+    """
+    Return the Email model that is active in this project.
+    This should either be the user model, or the email model provided
+    in the project
+    """
+    try:
+        return django_apps.get_model(settings.ACCOUNT_EMAIL_MODEL, require_ready=False)
+    except ValueError:
+        raise ImproperlyConfigured("ACCOUNT_EMAIL_MODEL must be of the form 'app_label.model_name'")
+    except LookupError:
+        raise ImproperlyConfigured(
+            "ACCOUNT_EMAIL_MODEL refers to model '%s' that has not been installed" % settings.ACCOUNT_EMAIL_MODEL
+        )
 
+
+def user_as_email():
+    return settings.ACCOUNT_EMAIL_MODEL == settings.AUTH_USER_MODEL
+
+
+class AccountAppConf(AppConf):
+    # TODO can we make a check that it's easier the user model or this model?
+    EMAIL_MODEL = "account.EmailAddress"
     OPEN_SIGNUP = True
     LOGIN_URL = "account_login"
     LOGOUT_URL = "account_logout"

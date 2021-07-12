@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('sent', models.DateTimeField(null=True)),
                 ('key', models.CharField(unique=True, max_length=64)),
-                ('email_address', models.ForeignKey(to='account.EmailAddress', on_delete=models.CASCADE)),
+                ('email_address', models.ForeignKey(to=settings.ACCOUNT_EMAIL_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'email confirmation',
