@@ -65,7 +65,8 @@ class ExpiredPasswordMiddleware(BaseMiddleware):
 
     def process_request(self, request):
         if request.user.is_authenticated and not request.user.is_staff:
-            next_url = resolve(request.path).url_name
+            # If user have Namespaces
+            resolve(request.path).namespaces[0]+":"+resolve(request.path).url_name if resolve(request.path).namespaces else resolve(request.path).url_name
             # Authenticated users must be allowed to access
             # "change password" page and "log out" page.
             # even if password is expired.
