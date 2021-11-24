@@ -8,9 +8,11 @@ Install the development version::
 
     pip install django-user-accounts
 
-Add ``account`` to your ``INSTALLED_APPS`` setting::
+Make sure that ``django.contrib.sites`` is in ``INSTALLED_APPS`` and add
+ ``account`` to this setting::::
 
     INSTALLED_APPS = (
+        "django.contrib.sites",
         # ...
         "account",
         # ...
