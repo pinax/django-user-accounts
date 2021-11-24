@@ -40,13 +40,18 @@ Default: ``"account_password"``
 
 Default: ``"account_login"``
 
+``ACCOUNT_PASSWORD_RESET_TOKEN_URL``
+====================================
+
+Default: ``"account_password_reset_token"``
+
 ``ACCOUNT_PASSWORD_EXPIRY``
-=======================================
+===========================
 
 Default: ``0``
 
 ``ACCOUNT_PASSWORD_USE_HISTORY``
-=======================================
+================================
 
 Default: ``False``
 
