@@ -3,6 +3,7 @@ import functools
 import operator
 from urllib.parse import urlencode
 
+from django import forms
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
 from django.db import models, transaction
@@ -289,6 +290,16 @@ class EmailAddress(models.Model):
             self.save()
             if confirm:
                 self.send_confirmation()
+
+    def validate_unique(self, exclude=None):
+        super(EmailAddress, self).validate_unique(exclude=exclude)
+
+        qs = EmailAddress.objects.filter(email__iexact=self.email)
+
+        if qs.exists() and settings.ACCOUNT_EMAIL_UNIQUE:
+            raise forms.ValidationError({
+                'email': _("A user is registered with this email address."),
+            })
 
 
 class EmailConfirmation(models.Model):
