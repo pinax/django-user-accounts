@@ -17,7 +17,7 @@ class AccountModelBackend(ModelBackend):
 
     def get_user(self, user_id):
         """Get the user and select account at the same time"""
-        user = User._default_manager.filter(pk=user_id).select_related('account').first()
+        user = User._default_manager.filter(pk=user_id).select_related("account").first()
         if not user:
             return None
         return user if self.user_can_authenticate(user) else None

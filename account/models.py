@@ -297,7 +297,7 @@ class EmailAddress(models.Model):
 
         if qs.exists() and settings.ACCOUNT_EMAIL_UNIQUE:
             raise forms.ValidationError({
-                'email': _("A user is registered with this email address."),
+                "email": _("A user is registered with this email address."),
             })
 
 
