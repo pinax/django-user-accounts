@@ -67,6 +67,13 @@ Optionally include ``account.middleware.ExpiredPasswordMiddleware`` in
         ...
     ]
 
+Set the authentication backends to the following::
+
+    AUTHENTICATION_BACKENDS = [
+        'account.auth_backends.AccountModelBackend',
+        'django.contrib.auth.backends.ModelBackend'
+    ]
+
 Once everything is in place make sure you run ``migrate`` to modify the
 database with the ``account`` app models.
 
