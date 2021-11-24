@@ -1,7 +1,36 @@
-# ChangeLog
+# Change Log
 
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.
+
+## 3.0.3
+
+* Fix deprecated urls
+* Update template context processors docs
+* Fix deprecrated argument in signals
+* Update decorators for Django 3
+* Fix issue with lazy string
+* Drop deprecated `force_text()`
+
+## 3.0.2
+
+* Drop Django 2.0 and Python 2,7, 3.4, and 3.5 support
+* Add Django 2.1, 2.2 and 3.0, and Python 3.7 and 3.8 support
+* Update packaging configs
+
+## 2.0.3
+
+ * fixed breaking change in 2.0.2 where context did not have uidb36 and token
+ * improved documentation
+
+## 2.0.2
+
+ * fixed potentional security issue with leaking password reset tokens through HTTP Referer header
+ * added `never_cache`, `csrf_protect` and `sensitive_post_parameters` to appropriate views
+
+## 2.0.1
+
+@@@ todo
 
 ## 2.0.0
 

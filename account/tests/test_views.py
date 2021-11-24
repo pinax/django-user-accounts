@@ -1,11 +1,14 @@
+from urllib.parse import urlparse
+
 from django.conf import settings
-from django.core import mail
-from django.core.urlresolvers import reverse
-from django.test import TestCase, override_settings
-
 from django.contrib.auth.models import User
+from django.core import mail
+from django.test import TestCase, override_settings
+from django.urls import reverse
+from django.utils.http import int_to_base36
 
-from account.models import SignupCode, EmailConfirmation
+from account.models import EmailConfirmation, SignupCode
+from account.views import INTERNAL_RESET_URL_TOKEN, PasswordResetTokenView
 
 
 class SignupViewTestCase(TestCase):
@@ -348,3 +351,82 @@ class ChangePasswordViewTestCase(TestCase):
             fetch_redirect_response=False
         )
         self.assertEqual(len(mail.outbox), 0)
+
+
+class PasswordResetTokenViewTestCase(TestCase):
+
+    def signup(self):
+        data = {
+            "username": "foo",
+            "password": "bar",
+            "password_confirm": "bar",
+            "email": "foobar@example.com",
+            "code": "abc123",
+        }
+        self.client.post(reverse("account_signup"), data)
+        mail.outbox = []
+        return User.objects.get(username="foo")
+
+    def request_password_reset(self):
+        user = self.signup()
+        data = {
+            "email": user.email,
+        }
+        self.client.post(reverse("account_password_reset"), data)
+        parsed = urlparse(mail.outbox[0].body.strip())
+        return user, parsed.path
+
+    def test_get_bad_user(self):
+        url = reverse(
+            "account_password_reset_token",
+            kwargs={
+                "uidb36": int_to_base36(100),
+                "token": "notoken",
+            }
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_abuse_reset_token(self):
+        user = self.signup()
+        url = reverse(
+            "account_password_reset_token",
+            kwargs={
+                "uidb36": int_to_base36(user.id),
+                "token": INTERNAL_RESET_URL_TOKEN,
+            }
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                PasswordResetTokenView.template_name_fail)
+
+    def test_get_reset(self):
+        user, url = self.request_password_reset()
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse(
+                "account_password_reset_token",
+                kwargs={
+                    "uidb36": int_to_base36(user.id),
+                    "token": INTERNAL_RESET_URL_TOKEN,
+                }
+            ),
+            fetch_redirect_response=False
+        )
+
+    def test_post_reset(self):
+        user, url = self.request_password_reset()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        data = {
+            "password": "new-password",
+            "password_confirm": "new-password",
+        }
+        response = self.client.post(response["Location"], data)
+        self.assertRedirects(
+            response,
+            reverse(settings.ACCOUNT_PASSWORD_RESET_REDIRECT_URL),
+            fetch_redirect_response=False
+        )

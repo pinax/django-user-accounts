@@ -1,24 +1,16 @@
-from __future__ import unicode_literals
-
 import re
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    OrderedDict = None
+from collections import OrderedDict
 
 from django import forms
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-
 from django.contrib import auth
 from django.contrib.auth import get_user_model
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from account.conf import settings
 from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
-
 
 alnum_re = re.compile(r"^\w+$")
 
@@ -33,7 +25,7 @@ class PasswordField(forms.CharField):
     def to_python(self, value):
         if value in self.empty_values:
             return ""
-        value = force_text(value)
+        value = force_str(value)
         if self.strip:
             value = value.strip()
         return value
@@ -47,6 +39,10 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(),
         required=True
     )
+    email = forms.EmailField(
+        label=_("Email"),
+        widget=forms.TextInput(), required=True
+    )
     password = PasswordField(
         label=_("Password"),
         strip=settings.ACCOUNT_PASSWORD_STRIP,
@@ -55,10 +51,6 @@ class SignupForm(forms.Form):
         label=_("Password (again)"),
         strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
-    email = forms.EmailField(
-        label=_("Email"),
-        widget=forms.TextInput(), required=True)
-
     code = forms.CharField(
         max_length=64,
         required=False,
@@ -129,7 +121,7 @@ class LoginUsernameForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginUsernameForm, self).__init__(*args, **kwargs)
         field_order = ["username", "password", "remember"]
-        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+        if hasattr(self.fields, "keyOrder"):
             self.fields.keyOrder = field_order
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
@@ -144,7 +136,7 @@ class LoginEmailForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginEmailForm, self).__init__(*args, **kwargs)
         field_order = ["email", "password", "remember"]
-        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+        if hasattr(self.fields, "keyOrder"):
             self.fields.keyOrder = field_order
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
