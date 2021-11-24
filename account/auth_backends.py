@@ -5,7 +5,6 @@ from django.db.models import Q
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
 
-
 User = get_user_model()
 
 

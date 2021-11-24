@@ -1,7 +1,8 @@
-from account.models import EmailAddress
 from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.test import TestCase, override_settings
+
+from account.models import EmailAddress
 
 
 @override_settings(ACCOUNT_EMAIL_UNIQUE=True)
