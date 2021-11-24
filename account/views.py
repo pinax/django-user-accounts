@@ -102,7 +102,7 @@ class PasswordMixin(object):
         return default_redirect(self.request, fallback_url, **kwargs)
 
     def send_password_email(self, user):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = get_current_site(self.request)
         ctx = {
             "user": user,
@@ -635,7 +635,7 @@ class PasswordResetView(FormView):
 
     def send_email(self, email):
         User = get_user_model()
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = get_current_site(self.request)
         email_qs = EmailAddress.objects.filter(email__iexact=email)
         for user in User.objects.filter(pk__in=email_qs.values("user")):
