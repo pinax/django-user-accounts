@@ -30,8 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6, 3.7, 3.8, 3.9]
-        django: [2.2.*, 3.1.*, 3.2.*]
+        python: [3.6, 3.7, 3.8, 3.9, "3.10"]
+        django: [2.2.*, 3.2.*]
 
     steps:
       - uses: actions/checkout@v2
@@ -42,22 +42,16 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install Django and Testing Tools
-        run: pip install Django==${{ matrix.django }} coverage
+        run: |
+          pip install Django==${{ matrix.django }} coverage pytest
+          pip install .
 
       - name: Running Python Tests
-        env:
-          DJANGO_SETTINGS_MODULE: account.tests.settings
-        run: |
-          pip freeze
-          coverage run setup.py test
+        run: coverage run runtests.py
 
-      - name: Generating Coverage Report Artifact
+      - name: Upload Coverage Report
+        if: matrix.django == '3.2.*' && matrix.python == '3.10'
         run: |
-          coverage html
-          zip coverage-html.zip htmlcov/*
-
-      - name: Store Coverage Report Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: coverage-report
-          path: coverage-html.zip
+          pip install codecov
+          coverage xml
+          codecov --required -X search gcov pycov -f coverage.xml
