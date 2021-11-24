@@ -6,24 +6,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.9
-
-      - name: isort
-        uses: jamescurtin/isort-action@master
-
-      - name: Lints
-        uses: py-actions/flake8@v1
-        with:
-          ignore: "E265,E501"
-          max-line-length: "100"
-          exclude: "account/migrations,docs"
-          path: account
-
+      - uses: pinax/linting@v2
 
   test:
     name: Testing
@@ -34,24 +17,7 @@ jobs:
         django: [2.2.*, 3.2.*]
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v1
+      - uses: pinax/testing@v1
         with:
-          python-version: ${{ matrix.python }}
-
-      - name: Install Django and Testing Tools
-        run: |
-          pip install Django==${{ matrix.django }} coverage pytest
-          pip install .
-
-      - name: Running Python Tests
-        run: coverage run runtests.py
-
-      - name: Upload Coverage Report
-        if: matrix.django == '3.2.*' && matrix.python == '3.10'
-        run: |
-          pip install codecov
-          coverage xml
-          codecov --required -X search gcov pycov -f coverage.xml
+          python: ${{ matrix.python }}
+          django: ${{ matrix.django }}
