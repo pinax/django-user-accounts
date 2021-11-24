@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/pypi/v/django-user-accounts.svg)](https://pypi.python.org/pypi/django-user-accounts/)
 
-[![CircleCi](https://img.shields.io/circleci/project/github/pinax/django-user-accounts.svg)](https://circleci.com/gh/pinax/django-user-accounts)
+[![Build](https://github.com/pinax/django-user-accounts/actions/workflows/ci.yaml/badge.svg)](https://github.com/pinax/django-user-accounts/actions)
 [![Codecov](https://img.shields.io/codecov/c/github/pinax/django-user-accounts.svg)](https://codecov.io/gh/pinax/django-user-accounts)
 [![](https://img.shields.io/github/contributors/pinax/django-user-accounts.svg)](https://github.com/pinax/django-user-accounts/graphs/contributors)
 [![](https://img.shields.io/github/issues-pr/pinax/django-user-accounts.svg)](https://github.com/pinax/django-user-accounts/pulls)
@@ -54,17 +54,16 @@ Pinax is an open-source platform built on the Django Web Framework. It is an eco
 
 #### Supported Django and Python versions
 
-Django / Python | 3.6 | 3.7 | 3.8 | 3.9
---------------- | --- | --- | --- | ---
-2.2  |  *  |  *  |  *  |  * 
-3.0  |  *  |  *  |  *  |  * 
-3.1  |  *  |  *  |  *  |  *
+Django / Python | 3.6 | 3.7 | 3.8 | 3.9 | 3.10
+--------------- | --- | --- | --- | --- | ----
+2.2  |  *  |  *  |  *  |  *  |  *
+3.2  |  *  |  *  |  *  |  *  |  *
 
 
 ## Requirements
 
-* Django 2.2, 3.0, or 3.1
-* Python 3.6, 3.7, 3.8, or 3.9
+* Django 2.2 or 3.2
+* Python 3.6, 3.7, 3.8, 3.9, 3.10
 * django-appconf (included in ``install_requires``)
 * pytz (included in ``install_requires``)
 
