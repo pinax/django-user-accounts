@@ -1,7 +1,10 @@
 import functools
-from account.utils import handle_redirect_to_login
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
+
+from account.utils import handle_redirect_to_login
+
+
 def login_required(func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
     """
     Decorator for views that checks that the user is logged in, redirecting
