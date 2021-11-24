@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -299,6 +300,8 @@ class SignupView(PasswordMixin, FormView):
 
     def login_user(self):
         user = auth.authenticate(**self.user_credentials())
+        if not user:
+            raise ImproperlyConfigured("Configured auth backends failed to authenticate on signup")
         auth.login(self.request, user)
         self.request.session.set_expiry(0)
 
