@@ -3,7 +3,7 @@
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.
 
-## Next
+## 3.1.0
 
 * #205 - Bug fix on checking email against email not signup code
 * #225 - Fix case sensitivity mismatch on email addresses
