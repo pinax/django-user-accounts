@@ -34,7 +34,7 @@ class Account(models.Model):
     user = models.OneToOneField(AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(_("language"),
-        =25=10,
+        max_length=10,
         choices=settings.ACCOUNT_LANGUAGES,
         default=settings.LANGUAGE_CODE
     )
