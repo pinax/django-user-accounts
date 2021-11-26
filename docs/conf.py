@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import os
 import sys
 
@@ -10,7 +8,7 @@ source_suffix = ".rst"
 master_doc = "index"
 project = "django-user-accounts"
 copyright_holder = "James Tauber and contributors"
-copyright = "2013, {0}",format(copyright_holder)
+copyright = "2014, {0}".format(copyright_holder)
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
 html_theme = "default"

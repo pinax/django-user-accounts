@@ -1,24 +1,34 @@
-from __future__ import unicode_literals
-
 import re
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    OrderedDict = None
+from collections import OrderedDict
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
-
 from django.contrib import auth
+from django.contrib.auth import get_user_model
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
-from account.compat import get_user_model, get_user_lookup_kwargs
 from account.conf import settings
 from account.hooks import hookset
 from account.models import EmailAddress
-
+from account.utils import get_user_lookup_kwargs
 
 alnum_re = re.compile(r"^[\w\-\.\+]+$")
+
+
+class PasswordField(forms.CharField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", forms.PasswordInput(render_value=False))
+        self.strip = kwargs.pop("strip", True)
+        super(PasswordField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        if value in self.empty_values:
+            return ""
+        value = force_str(value)
+        if self.strip:
+            value = value.strip()
+        return value
 
 
 class SignupForm(forms.Form):
@@ -29,18 +39,18 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(),
         required=True
     )
-    password = forms.CharField(
-        label=_("Password"),
-        widget=forms.PasswordInput(render_value=False)
-    )
-    password_confirm = forms.CharField(
-        label=_("Password (again)"),
-        widget=forms.PasswordInput(render_value=False)
-    )
     email = forms.EmailField(
         label=_("Email"),
-        widget=forms.TextInput(), required=True)
-
+        widget=forms.TextInput(), required=True
+    )
+    password = PasswordField(
+        label=_("Password"),
+        strip=settings.ACCOUNT_PASSWORD_STRIP,
+    )
+    password_confirm = PasswordField(
+        label=_("Password (again)"),
+        strip=settings.ACCOUNT_PASSWORD_STRIP,
+    )
     code = forms.CharField(
         max_length=64,
         required=False,
@@ -75,9 +85,9 @@ class SignupForm(forms.Form):
 
 class LoginForm(forms.Form):
 
-    password = forms.CharField(
+    password = PasswordField(
         label=_("Password"),
-        widget=forms.PasswordInput(render_value=False)
+        strip=settings.ACCOUNT_PASSWORD_STRIP,
     )
     remember = forms.BooleanField(
         label=_("Remember Me"),
@@ -111,7 +121,7 @@ class LoginUsernameForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginUsernameForm, self).__init__(*args, **kwargs)
         field_order = ["username", "password", "remember"]
-        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+        if hasattr(self.fields, "keyOrder"):
             self.fields.keyOrder = field_order
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
@@ -126,7 +136,7 @@ class LoginEmailForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginEmailForm, self).__init__(*args, **kwargs)
         field_order = ["email", "password", "remember"]
-        if not OrderedDict or hasattr(self.fields, "keyOrder"):
+        if hasattr(self.fields, "keyOrder"):
             self.fields.keyOrder = field_order
         else:
             self.fields = OrderedDict((k, self.fields[k]) for k in field_order)
@@ -158,8 +168,9 @@ class ChangePasswordForm(forms.Form):
 
     def clean_password_new_confirm(self):
         if "password_new" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
-            if self.cleaned_data["password_new"] != self.cleaned_data["password_new_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
+            password_new = self.cleaned_data["password_new"]
+            password_new_confirm = self.cleaned_data["password_new_confirm"]
+            return hookset.clean_password(password_new, password_new_confirm)
         return self.cleaned_data["password_new_confirm"]
 
 
@@ -187,8 +198,9 @@ class PasswordResetTokenForm(forms.Form):
 
     def clean_password_confirm(self):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
-            if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
+            password = self.cleaned_data["password"]
+            password_confirm = self.cleaned_data["password_confirm"]
+            return hookset.clean_password(password, password_confirm)
         return self.cleaned_data["password_confirm"]
 
 

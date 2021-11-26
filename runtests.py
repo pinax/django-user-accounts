@@ -1,38 +1,25 @@
+#!/usr/bin/env python
 import os
 import sys
 
-from django.conf import settings
+import django
 
 
-settings.configure(
-    DEBUG=True,
-    USE_TZ=True,
-    DATABASES={
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-        }
-    },
-    ROOT_URLCONF="account.urls",
-    INSTALLED_APPS=[
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sites",
-        "django.contrib.messages",
-        "account",
-    ],
-    MIDDLEWARE_CLASSES=[
-        "django.contrib.messages.middleware.MessageMiddleware",
-    ],
-    SITE_ID=1,
-    TEMPLATE_DIRS=[
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "account", "tests", "templates")),
-    ]
-)
+def runtests(*test_args):
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "account.tests.settings")
+    django.setup()
 
-from django_nose import NoseTestSuiteRunner
+    parent = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, parent)
 
-test_runner = NoseTestSuiteRunner(verbosity=1)
-failures = test_runner.run_tests(["account"])
+    from django.test.runner import DiscoverRunner
+    runner_class = DiscoverRunner
+    if not test_args:
+        test_args = ["account.tests"]
 
-if failures:
+    failures = runner_class(verbosity=1, interactive=True, failfast=False).run_tests(test_args)
     sys.exit(failures)
+
+
+if __name__ == "__main__":
+    runtests(*sys.argv[1:])

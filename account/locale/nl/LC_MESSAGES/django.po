@@ -1,0 +1,152 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: django-user-accounts\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-30 15:12-0600\n"
+"PO-Revision-Date: 2014-07-31 20:44+0000\n"
+"Last-Translator: Brian Rosner <brosner@gmail.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/projects/p/django-user-accounts/language/nl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:27 forms.py:107
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+#: forms.py:33 forms.py:79
+msgid "Password"
+msgstr "Wachtwoord"
+
+#: forms.py:37
+msgid "Password (again)"
+msgstr "Wachtwoord (nogmaals)"
+
+#: forms.py:41 forms.py:122 forms.py:168 forms.py:197
+msgid "Email"
+msgstr "Email"
+
+#: forms.py:52
+msgid "Usernames can only contain letters, numbers and underscores."
+msgstr "Gebruikersnamen kunnen alleen letters, nummers en liggende streepjes bevatten."
+
+#: forms.py:60
+msgid "This username is already taken. Please choose another."
+msgstr "De gebruikersnaam bestaat al. Kies een andere."
+
+#: forms.py:67 forms.py:217
+msgid "A user is registered with this email address."
+msgstr "Een gebruiker is geregistreerd met dit emailadres."
+
+#: forms.py:72 forms.py:162 forms.py:191
+msgid "You must type the same password each time."
+msgstr "Je moet iedere keer hetzelfde wachtwoord intypen."
+
+#: forms.py:83
+msgid "Remember Me"
+msgstr "Bewaar Mij"
+
+#: forms.py:96
+msgid "This account is inactive."
+msgstr "Dit account is niet actief."
+
+#: forms.py:108
+msgid "The username and/or password you specified are not correct."
+msgstr "De gebruikersnaam en/of wachtwoord die je hebt opgegeven zijn incorrect."
+
+#: forms.py:123
+msgid "The email address and/or password you specified are not correct."
+msgstr "Het emailadres en/of wachtwoord die je hebt opgegeven zijn incorrect."
+
+#: forms.py:138
+msgid "Current Password"
+msgstr "Huidige Wachtwoord"
+
+#: forms.py:142 forms.py:180
+msgid "New Password"
+msgstr "Nieuwe Wachtwoord"
+
+#: forms.py:146 forms.py:184
+msgid "New Password (again)"
+msgstr "Nieuwe Wachtwoord (nogmaals)"
+
+#: forms.py:156
+msgid "Please type your current password."
+msgstr "Type je huidige wachtwoord."
+
+#: forms.py:173
+msgid "Email address can not be found."
+msgstr "Email adres kan niet worden gevonden."
+
+#: forms.py:199
+msgid "Timezone"
+msgstr "Tijdzone"
+
+#: forms.py:205
+msgid "Language"
+msgstr "Taal"
+
+#: models.py:34
+msgid "user"
+msgstr "gebruiker"
+
+#: models.py:35
+msgid "timezone"
+msgstr "tijdzone"
+
+#: models.py:37
+msgid "language"
+msgstr "taal"
+
+#: models.py:250
+msgid "email address"
+msgstr "email adres"
+
+#: models.py:251
+msgid "email addresses"
+msgstr "email adressen"
+
+#: models.py:300
+msgid "email confirmation"
+msgstr "email bevestiging"
+
+#: models.py:301
+msgid "email confirmations"
+msgstr "email bevestigingen"
+
+#: views.py:42
+#, python-brace-format
+msgid "Confirmation email sent to {email}."
+msgstr "Bevestiging email verstuurd naar {email}."
+
+#: views.py:46
+#, python-brace-format
+msgid "The code {code} is invalid."
+msgstr "De code {code} is ongeldig."
+
+#: views.py:379
+#, python-brace-format
+msgid "You have confirmed {email}."
+msgstr "Je hebt {email} bevestigd."
+
+#: views.py:452 views.py:585
+msgid "Password successfully changed."
+msgstr "Wachtwoord met success gewijzigd."
+
+#: views.py:664
+msgid "Account settings updated."
+msgstr "Account instellingen aangepast."
+
+#: views.py:748
+#, python-brace-format
+msgid ""
+"Your account is now inactive and your data will be expunged in the next "
+"{expunge_hours} hours."
+msgstr "Je account is nu inactief and je data zal worden geschrapt in de komende {expunge_hours} uren."

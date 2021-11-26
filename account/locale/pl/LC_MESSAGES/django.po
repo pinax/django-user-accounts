@@ -3,150 +3,151 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Janusz Harkot <jh@blueice.pl>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: django-user-accounts\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-14 12:08-0700\n"
-"PO-Revision-Date: 2014-01-14 19:22+0000\n"
-"Last-Translator: Brian Rosner <brosner@gmail.com>\n"
-"Language-Team: Polish (http://www.transifex.com/projects/p/pinax/language/pl/)\n"
+"POT-Creation-Date: 2014-07-30 15:12-0600\n"
+"PO-Revision-Date: 2014-07-31 20:58+0000\n"
+"Last-Translator: Janusz Harkot <jh@blueice.pl>\n"
+"Language-Team: Polish (http://www.transifex.com/projects/p/django-user-accounts/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: forms.py:26 forms.py:109
+#: forms.py:27 forms.py:107
 msgid "Username"
-msgstr ""
+msgstr "Nazwa użytkownika"
 
-#: forms.py:32 forms.py:78
+#: forms.py:33 forms.py:79
 msgid "Password"
-msgstr ""
+msgstr "Hasło"
 
-#: forms.py:36
+#: forms.py:37
 msgid "Password (again)"
-msgstr ""
+msgstr "Hasło (ponownie)"
 
-#: forms.py:40 forms.py:124 forms.py:170 forms.py:199
+#: forms.py:41 forms.py:122 forms.py:168 forms.py:197
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
-#: forms.py:51
+#: forms.py:52
 msgid "Usernames can only contain letters, numbers and underscores."
-msgstr ""
+msgstr "Nazwa użytkownika może zawierać jedynie litery, cyfry i znak podkreślenia."
 
-#: forms.py:59
+#: forms.py:60
 msgid "This username is already taken. Please choose another."
-msgstr ""
+msgstr "Podana nazwa użytkownika jest w użyciu. Wybierz inną."
 
-#: forms.py:66 forms.py:219
+#: forms.py:67 forms.py:217
 msgid "A user is registered with this email address."
-msgstr ""
+msgstr "W systemie jest już zarejestrowany użytkownik z tym adresem e-mail."
 
-#: forms.py:71 forms.py:164 forms.py:193
+#: forms.py:72 forms.py:162 forms.py:191
 msgid "You must type the same password each time."
-msgstr ""
+msgstr "Oba hasła muszą być identyczne."
 
-#: forms.py:82
+#: forms.py:83
 msgid "Remember Me"
-msgstr ""
+msgstr "Zapamiętaj mnie"
 
-#: forms.py:95
+#: forms.py:96
 msgid "This account is inactive."
-msgstr ""
+msgstr "Konto jest nieaktywne."
 
-#: forms.py:110
+#: forms.py:108
 msgid "The username and/or password you specified are not correct."
-msgstr ""
+msgstr "Podana nazwa użytkownika i/lub hasło są nieprawidłowe."
 
-#: forms.py:125
+#: forms.py:123
 msgid "The email address and/or password you specified are not correct."
-msgstr ""
+msgstr "Podany e-mail i/lub hasło są nieprawidłowe."
 
-#: forms.py:140
+#: forms.py:138
 msgid "Current Password"
-msgstr ""
+msgstr "Aktualne hasło"
 
-#: forms.py:144 forms.py:182
+#: forms.py:142 forms.py:180
 msgid "New Password"
-msgstr ""
+msgstr "Nowe hasło"
 
-#: forms.py:148 forms.py:186
+#: forms.py:146 forms.py:184
 msgid "New Password (again)"
-msgstr ""
+msgstr "Nowe hasło (ponownie)"
 
-#: forms.py:158
+#: forms.py:156
 msgid "Please type your current password."
-msgstr ""
+msgstr "Wprowadź swoje aktualne hasło."
 
-#: forms.py:175
+#: forms.py:173
 msgid "Email address can not be found."
-msgstr ""
+msgstr "Podany adres e-mail nie został znaleziony."
 
-#: forms.py:201
+#: forms.py:199
 msgid "Timezone"
-msgstr ""
+msgstr "Strefa czasowa"
 
-#: forms.py:207
+#: forms.py:205
 msgid "Language"
-msgstr ""
+msgstr "Język"
 
-#: models.py:31
+#: models.py:34
 msgid "user"
-msgstr ""
+msgstr "użytkownik"
 
-#: models.py:32
+#: models.py:35
 msgid "timezone"
-msgstr ""
+msgstr "strefa czasowa"
 
-#: models.py:33
+#: models.py:37
 msgid "language"
-msgstr ""
+msgstr "język"
 
-#: models.py:247
+#: models.py:250
 msgid "email address"
-msgstr ""
+msgstr "adres e-mail"
 
-#: models.py:248
+#: models.py:251
 msgid "email addresses"
-msgstr ""
+msgstr "adresy e-mail"
 
-#: models.py:297
+#: models.py:300
 msgid "email confirmation"
-msgstr ""
+msgstr "potwierdzenie e-mail"
 
-#: models.py:298
+#: models.py:301
 msgid "email confirmations"
-msgstr ""
+msgstr "potwierdzenia e-mail"
 
-#: views.py:41
+#: views.py:42
 #, python-brace-format
 msgid "Confirmation email sent to {email}."
-msgstr ""
+msgstr "E-mail z potwierdzeniem został wysłany na adres {email}."
 
-#: views.py:45
+#: views.py:46
 #, python-brace-format
 msgid "The code {code} is invalid."
-msgstr ""
+msgstr "Kod {code} jest niepoprawny."
 
-#: views.py:340
+#: views.py:379
 #, python-brace-format
 msgid "You have confirmed {email}."
-msgstr ""
+msgstr "Potwierdzono adres {email}."
 
-#: views.py:413 views.py:546
+#: views.py:452 views.py:585
 msgid "Password successfully changed."
-msgstr ""
+msgstr "Hasło zostało zmienione."
 
-#: views.py:625
+#: views.py:664
 msgid "Account settings updated."
-msgstr ""
+msgstr "Ustawienia konta zostały zaktualizowane."
 
-#: views.py:709
+#: views.py:748
 #, python-brace-format
 msgid ""
 "Your account is now inactive and your data will be expunged in the next "
 "{expunge_hours} hours."
-msgstr ""
+msgstr "Twoje konto jest teraz nieaktywne, dane zostaną usunięte w ciągu następnych {expunge_hours} godzin."

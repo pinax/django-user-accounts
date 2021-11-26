@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from account.conf import settings
 from account.models import Account
 
