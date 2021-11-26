@@ -34,7 +34,7 @@ class Account(models.Model):
     user = models.OneToOneField(AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(_("language"),
-        max_length=10,
+        =25=10,
         choices=settings.ACCOUNT_LANGUAGES,
         default=settings.LANGUAGE_CODE
     )
@@ -235,7 +235,7 @@ class SignupCodeResult(models.Model):
 class EmailAddress(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL)
-    email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE, max_length=254)
+    email = models.EmailField(unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(default=False)
     primary = models.BooleanField(default=False)
 
@@ -341,7 +341,7 @@ class EmailConfirmation(models.Model):
 class AccountDeletion(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-    email = models.EmailField(max_length=254)
+    email = models.EmailField()
     date_requested = models.DateTimeField(default=timezone.now)
     date_expunged = models.DateTimeField(null=True, blank=True)
 
