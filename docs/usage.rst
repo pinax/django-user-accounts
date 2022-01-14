@@ -298,7 +298,7 @@ checker from `cracklib`_.::
 
     from django import forms from django.conf import settings from
     django.template.defaultfilters import mark_safe from
-    django.utils.translation import ugettext_lazy as _
+    django.utils.translation import gettext_lazy as _
 
     from account.hooks import AccountDefaultHookSet
 

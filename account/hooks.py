@@ -4,7 +4,7 @@ import random
 from django import forms
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from account.conf import settings
 
