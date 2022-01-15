@@ -107,6 +107,14 @@ def get_form_data(form, field_name, default=None):
     return form.data.get(key, default)
 
 
+# https://stackoverflow.com/a/70419609/6461688
+def is_ajax(request):
+    """
+    Return True if the request was sent with XMLHttpRequest, False otherwise.
+    """
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 def check_password_expired(user):
     """
     Return True if password is expired and system is using
