@@ -6,6 +6,7 @@ version with these. Your code will need to be updated to continue working.
 ## 3.2.0
 
 * #363 - Django 4.0 compat: `ugettext_lazy` -> `gettext_lazy`
+* #364 - Performance fix to admin classes
 
 ## 3.1.0
 
