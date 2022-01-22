@@ -195,7 +195,7 @@ class SignupView(PasswordMixin, FormView):
         return initial
 
     def get_template_names(self):
-        if is_ajax(request):
+        if is_ajax(self.request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
