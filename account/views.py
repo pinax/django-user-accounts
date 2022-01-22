@@ -36,7 +36,7 @@ from account.models import (
     PasswordHistory,
     SignupCode,
 )
-from account.utils import default_redirect, get_form_data
+from account.utils import default_redirect, get_form_data, is_ajax
 
 
 class PasswordMixin(object):
@@ -195,7 +195,7 @@ class SignupView(PasswordMixin, FormView):
         return initial
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax(request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
@@ -327,7 +327,7 @@ class SignupView(PasswordMixin, FormView):
         return settings.ACCOUNT_OPEN_SIGNUP
 
     def email_confirmation_required_response(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_email_confirmation_sent_ajax
         else:
             template_name = self.template_name_email_confirmation_sent
@@ -342,7 +342,7 @@ class SignupView(PasswordMixin, FormView):
         return self.response_class(**response_kwargs)
 
     def closed(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_signup_closed_ajax
         else:
             template_name = self.template_name_signup_closed
@@ -373,7 +373,7 @@ class LoginView(FormView):
         return super(LoginView, self).get(*args, **kwargs)
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
