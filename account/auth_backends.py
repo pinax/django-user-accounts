@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
@@ -7,38 +5,58 @@ from django.db.models import Q
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
 
+User = get_user_model()
 
-class UsernameAuthenticationBackend(ModelBackend):
 
-    def authenticate(self, **credentials):
-        User = get_user_model()
+class AccountModelBackend(ModelBackend):
+    """
+    This authentication backend ensures that the account is always selected
+    on any query with the user, so we don't issue extra unnecessary queries
+    """
+
+    def get_user(self, user_id):
+        """Get the user and select account at the same time"""
+        user = User._default_manager.filter(pk=user_id).select_related("account").first()
+        if not user:
+            return None
+        return user if self.user_can_authenticate(user) else None
+
+
+class UsernameAuthenticationBackend(AccountModelBackend):
+    """Username authentication"""
+
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        """Authenticate the user based on user"""
+        if username is None or password is None:
+            return None
+
         try:
             lookup_kwargs = get_user_lookup_kwargs({
-                "{username}__iexact": credentials["username"]
+                "{username}__iexact": username
             })
             user = User.objects.get(**lookup_kwargs)
-        except (User.DoesNotExist, KeyError):
+        except User.DoesNotExist:
             return None
-        else:
-            try:
-                if user.check_password(credentials["password"]):
-                    return user
-            except KeyError:
-                return None
+
+        if user.check_password(password):
+            return user
 
 
-class EmailAuthenticationBackend(ModelBackend):
+class EmailAuthenticationBackend(AccountModelBackend):
+    """Email authentication"""
 
-    def authenticate(self, **credentials):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        """Authenticate the user based email"""
         qs = EmailAddress.objects.filter(Q(primary=True) | Q(verified=True))
-        try:
-            email_address = qs.get(email__iexact=credentials["username"])
-        except (EmailAddress.DoesNotExist, KeyError):
+
+        if username is None or password is None:
             return None
-        else:
-            user = email_address.user
-            try:
-                if user.check_password(credentials["password"]):
-                    return user
-            except KeyError:
-                return None
+
+        try:
+            email_address = qs.get(email__iexact=username)
+        except EmailAddress.DoesNotExist:
+            return None
+
+        user = email_address.user
+        if user.check_password(password):
+            return user

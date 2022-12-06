@@ -1,22 +1,17 @@
-from __future__ import unicode_literals
-
 import datetime
 import functools
+from urllib.parse import urlparse, urlunparse
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
+from django.urls import NoReverseMatch, reverse
+from django.utils.encoding import force_str
 
 import pytz
-from account.compat import NoReverseMatch, reverse
 from account.conf import settings
 
 from .models import PasswordHistory
-
-try:
-    from urllib.parse import urlparse, urlunparse
-except ImportError:  # python 2
-    from urlparse import urlparse, urlunparse
 
 
 def get_user_lookup_kwargs(kwargs):
@@ -96,7 +91,7 @@ def handle_redirect_to_login(request, **kwargs):
             raise
         if "/" not in login_url and "." not in login_url:
             raise
-    url_bits = list(urlparse(login_url))
+    url_bits = list(urlparse(force_str(login_url)))
     if redirect_field_name:
         querystring = QueryDict(url_bits[4], mutable=True)
         querystring[redirect_field_name] = next_url
@@ -110,6 +105,14 @@ def get_form_data(form, field_name, default=None):
     else:
         key = field_name
     return form.data.get(key, default)
+
+
+# https://stackoverflow.com/a/70419609/6461688
+def is_ajax(request):
+    """
+    Return True if the request was sent with XMLHttpRequest, False otherwise.
+    """
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 
 def check_password_expired(user):

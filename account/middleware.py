@@ -1,29 +1,18 @@
-from __future__ import unicode_literals
+from urllib.parse import urlparse, urlunparse
 
-import django
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import HttpResponseRedirect, QueryDict
+from django.urls import resolve, reverse
 from django.utils import timezone, translation
 from django.utils.cache import patch_vary_headers
-from django.utils.translation import ugettext_lazy as _
+from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
+from django.utils.translation import gettext_lazy as _
 
 from account import signals
-from account.compat import is_authenticated, resolve, reverse
 from account.conf import settings
 from account.models import Account
 from account.utils import check_password_expired
-
-try:
-    from urllib.parse import urlparse, urlunparse
-except ImportError:  # python 2
-    from urlparse import urlparse, urlunparse
-
-
-if django.VERSION >= (1, 10):
-    from django.utils.deprecation import MiddlewareMixin as BaseMiddleware
-else:
-    BaseMiddleware = object
 
 
 class LocaleMiddleware(BaseMiddleware):
@@ -36,7 +25,7 @@ class LocaleMiddleware(BaseMiddleware):
     """
 
     def get_language_for_user(self, request):
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             try:
                 account = Account.objects.get(user=request.user)
                 return account.language
@@ -75,7 +64,7 @@ class TimezoneMiddleware(BaseMiddleware):
 class ExpiredPasswordMiddleware(BaseMiddleware):
 
     def process_request(self, request):
-        if is_authenticated(request.user) and not request.user.is_staff:
+        if request.user.is_authenticated and not request.user.is_staff:
             next_url = resolve(request.path).url_name
             # Authenticated users must be allowed to access
             # "change password" page and "log out" page.

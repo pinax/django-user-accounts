@@ -1,0 +1,23 @@
+name: Lints and Tests
+on: [push]
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: pinax/linting@v2
+
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9, "3.10"]
+        django: [2.2.*, 3.2.*]
+
+    steps:
+      - uses: pinax/testing@v2
+        with:
+          python: ${{ matrix.python }}
+          django: ${{ matrix.django }}

@@ -1,15 +1,15 @@
-from __future__ import unicode_literals
-
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.http import base36_to_int, int_to_base36
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -17,7 +17,6 @@ from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormView
 
 from account import signals
-from account.compat import is_authenticated, reverse
 from account.conf import settings
 from account.forms import (
     ChangePasswordForm,
@@ -37,7 +36,7 @@ from account.models import (
     PasswordHistory,
     SignupCode,
 )
-from account.utils import default_redirect, get_form_data
+from account.utils import default_redirect, get_form_data, is_ajax
 
 
 class PasswordMixin(object):
@@ -103,7 +102,7 @@ class PasswordMixin(object):
         return default_redirect(self.request, fallback_url, **kwargs)
 
     def send_password_email(self, user):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = get_current_site(self.request)
         ctx = {
             "user": user,
@@ -176,14 +175,14 @@ class SignupView(PasswordMixin, FormView):
             self.signup_code_present = False
 
     def get(self, *args, **kwargs):
-        if is_authenticated(self.request.user):
+        if self.request.user.is_authenticated:
             return redirect(default_redirect(self.request, settings.ACCOUNT_LOGIN_REDIRECT_URL))
         if not self.is_open():
             return self.closed()
         return super(SignupView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if is_authenticated(self.request.user):
+        if self.request.user.is_authenticated:
             raise Http404()
         if not self.is_open():
             return self.closed()
@@ -198,7 +197,7 @@ class SignupView(PasswordMixin, FormView):
         return initial
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
@@ -307,6 +306,8 @@ class SignupView(PasswordMixin, FormView):
 
     def login_user(self):
         user = auth.authenticate(**self.user_credentials())
+        if not user:
+            raise ImproperlyConfigured("Configured auth backends failed to authenticate on signup")
         auth.login(self.request, user)
         self.request.session.set_expiry(0)
 
@@ -332,7 +333,7 @@ class SignupView(PasswordMixin, FormView):
         return settings.ACCOUNT_OPEN_SIGNUP
 
     def email_confirmation_required_response(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_email_confirmation_sent_ajax
         else:
             template_name = self.template_name_email_confirmation_sent
@@ -347,7 +348,7 @@ class SignupView(PasswordMixin, FormView):
         return self.response_class(**response_kwargs)
 
     def closed(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_signup_closed_ajax
         else:
             template_name = self.template_name_signup_closed
@@ -359,7 +360,7 @@ class SignupView(PasswordMixin, FormView):
 
     def account_approval_required_response(self):
         if self.request.is_ajax():
-            template_name = self.template_name_admin_approval_ajax
+            template_name = self.template_name_admin_approval_sent_ajax
         else:
             template_name = self.template_name_admin_approval_sent
 
@@ -389,12 +390,12 @@ class LoginView(FormView):
         return super(LoginView, self).dispatch(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        if is_authenticated(self.request.user):
+        if self.request.user.is_authenticated:
             return redirect(self.get_success_url())
         return super(LoginView, self).get(*args, **kwargs)
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
@@ -454,13 +455,13 @@ class LogoutView(TemplateResponseMixin, View):
         return super(LogoutView, self).dispatch(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        if not is_authenticated(self.request.user):
+        if not self.request.user.is_authenticated:
             return redirect(self.get_redirect_url())
         ctx = self.get_context_data()
         return self.render_to_response(ctx)
 
     def post(self, *args, **kwargs):
-        if is_authenticated(self.request.user):
+        if self.request.user.is_authenticated:
             auth.logout(self.request)
         return redirect(self.get_redirect_url())
 
@@ -558,7 +559,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         return ctx
 
     def get_redirect_url(self):
-        if is_authenticated(self.user):
+        if self.user.is_authenticated:
             if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
                 return settings.ACCOUNT_LOGIN_REDIRECT_URL
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
@@ -591,12 +592,12 @@ class ChangePasswordView(PasswordMixin, FormView):
     fallback_url_setting = "ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL"
 
     def get(self, *args, **kwargs):
-        if not is_authenticated(self.request.user):
+        if not self.request.user.is_authenticated:
             return redirect("account_password_reset")
         return super(ChangePasswordView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if not is_authenticated(self.request.user):
+        if not self.request.user.is_authenticated:
             return HttpResponseForbidden()
         return super(ChangePasswordView, self).post(*args, **kwargs)
 
@@ -656,7 +657,7 @@ class PasswordResetView(FormView):
 
     def send_email(self, email):
         User = get_user_model()
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = get_current_site(self.request)
         email_qs = EmailAddress.objects.filter(email__iexact=email)
         for user in User.objects.filter(pk__in=email_qs.values("user")):
@@ -665,14 +666,14 @@ class PasswordResetView(FormView):
             password_reset_url = "{0}://{1}{2}".format(
                 protocol,
                 current_site.domain,
-                reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
+                reverse(settings.ACCOUNT_PASSWORD_RESET_TOKEN_URL, kwargs=dict(uidb36=uid, token=token))
             )
             ctx = {
                 "user": user,
                 "current_site": current_site,
                 "password_reset_url": password_reset_url,
             }
-            hookset.send_password_reset_email([user.email], ctx)
+            hookset.send_password_reset_email([email], ctx)
 
     def make_token(self, user):
         return self.token_generator.make_token(user)
@@ -698,7 +699,7 @@ class PasswordResetTokenView(PasswordMixin, FormView):
         if user is not None:
             token = kwargs["token"]
             if token == INTERNAL_RESET_URL_TOKEN:
-                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
+                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN, "")
                 if self.check_token(user, session_token):
                     return super(PasswordResetTokenView, self).dispatch(*args, **kwargs)
             else:
@@ -728,7 +729,7 @@ class PasswordResetTokenView(PasswordMixin, FormView):
 
     def form_valid(self, form):
         self.change_password(form)
-        self.create_password_history(form, self.request.user)
+        self.create_password_history(form, self.get_user())
         self.after_change_password()
         return redirect(self.get_success_url())
 
@@ -837,7 +838,7 @@ class SettingsView(LoginRequiredMixin, FormView):
         return default_redirect(self.request, fallback_url, **kwargs)
 
 
-class DeleteView(LogoutView):
+class DeleteView(LoginRequiredMixin, LogoutView):
 
     template_name = "account/delete.html"
     messages = {
