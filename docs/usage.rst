@@ -21,11 +21,6 @@ this app will:
 The rest of this document will cover how you can tweak the default behavior
 of django-user-accounts.
 
-Limiting access to views
-========================
-
-To limit view access to logged in users, normally you would use the Django decorator ``django.contrib.auth.decorators.login_required``.  Instead you should use ``account.decorators.login_required``.
-
 
 Customizing the sign up process
 ===============================
@@ -261,35 +256,68 @@ And in your settings::
 
     TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
 
+Restricting views to authenticated users
+========================================
 
-Enabling password expiration
-============================
+``django.contrib.auth`` includes a convenient decorator and a mixin to restrict
+views to authenticated users. ``django-user-accounts`` includes a modified
+version of these decorator and mixin that should be used instead of the
+usual ones.
 
-Password expiration is disabled by default. In order to enable password expiration
-you must add entries to your settings file::
+If you want to restrict a function based view, use the decorator::
 
-    ACCOUNT_PASSWORD_EXPIRY = 60*60*24*5  # seconds until pw expires, this example shows five days
-    ACCOUNT_PASSWORD_USE_HISTORY = True
+    from account.decorators import login_required
 
-and include `ExpiredPasswordMiddleware` with your middleware settings::
+    @login_required
+    def restricted_view(request):
+        pass
 
-    MIDDLEWARE_CLASSES = {
-        ...
-        "account.middleware.ExpiredPasswordMiddleware",
-    }
+To do the same with class based views, use the mixin::
 
-``ACCOUNT_PASSWORD_EXPIRY`` indicates the duration a password will stay valid. After that period
-the password must be reset in order to view any page. If ``ACCOUNT_PASSWORD_EXPIRY`` is zero (0)
-then passwords never expire.
+    from account.mixins import LoginRequiredMixin
 
-If ``ACCOUNT_PASSWORD_USE_HISTORY`` is False, no history will be generated and password
-expiration WILL NOT be checked.
+    class RestrictedView(LoginRequiredMixin, View):
+        pass
 
-If ``ACCOUNT_PASSWORD_USE_HISTORY`` is True, a password history entry is created each time
-the user changes their password. This entry links the user with their most recent
-(encrypted) password and a timestamp. Unless deleted manually, PasswordHistory items
-are saved forever, allowing password history checking for new passwords.
 
-For an authenticated user, ``ExpiredPasswordMiddleware`` prevents retrieving or posting
-to any page except the password change page and log out page when the user password is expired.
-However, if the user is "staff" (can access the Django admin site), the password check is skipped.
+Defining a custom password checker
+==================================
+
+First add the path to the module which contains the
+`AccountDefaultHookSet` subclass to your settings::
+
+    ACCOUNT_HOOKSET = "scenemachine.hooks.AccountHookSet"
+
+Then define a custom `clean_password` method on the `AccountHookSet`
+class.
+
+Here is an example that harnesses the `VeryFacistCheck` dictionary
+checker from `cracklib`_.::
+
+    import cracklib
+
+    from django import forms from django.conf import settings from
+    django.template.defaultfilters import mark_safe from
+    django.utils.translation import gettext_lazy as _
+
+    from account.hooks import AccountDefaultHookSet
+
+
+    class AccountHookSet(AccountDefaultHookSet):
+
+        def clean_password(self, password_new, password_new_confirm):
+            password_new = super(AccountHookSet, self).clean_password(password_new, password_new_confirm)
+            try:
+                dictpath = "/usr/share/cracklib/pw_dict"
+                if dictpath:
+                    cracklib.VeryFascistCheck(password_new, dictpath=dictpath)
+                else:
+                    cracklib.VeryFascistCheck(password_new)
+                return password_new
+            except ValueError as e:
+                message = _(unicode(e))
+                raise forms.ValidationError, mark_safe(message)
+            return password_new
+
+
+.. _cracklib: https://pypi.python.org/pypi/cracklib/2.8.19

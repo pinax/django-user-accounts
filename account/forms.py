@@ -12,7 +12,7 @@ from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
 
-alnum_re = re.compile(r"^\w+$")
+alnum_re = re.compile(r"^[\w\-\.\+]+$")
 
 User = get_user_model()
 USER_FIELD_MAX_LENGTH = getattr(User, User.USERNAME_FIELD).field.max_length
@@ -62,7 +62,8 @@ class SignupForm(forms.Form):
 
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
-            raise forms.ValidationError(_("Usernames can only contain letters, numbers and underscores."))
+            raise forms.ValidationError(_("Usernames can only contain letters, numbers and the following special characters ./+/-/_"))
+        User = get_user_model()
         lookup_kwargs = get_user_lookup_kwargs({
             "{username}__iexact": self.cleaned_data["username"]
         })
@@ -170,8 +171,9 @@ class ChangePasswordForm(forms.Form):
 
     def clean_password_new_confirm(self):
         if "password_new" in self.cleaned_data and "password_new_confirm" in self.cleaned_data:
-            if self.cleaned_data["password_new"] != self.cleaned_data["password_new_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
+            password_new = self.cleaned_data["password_new"]
+            password_new_confirm = self.cleaned_data["password_new_confirm"]
+            return hookset.clean_password(password_new, password_new_confirm)
         return self.cleaned_data["password_new_confirm"]
 
 
@@ -199,8 +201,9 @@ class PasswordResetTokenForm(forms.Form):
 
     def clean_password_confirm(self):
         if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
-            if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
+            password = self.cleaned_data["password"]
+            password_confirm = self.cleaned_data["password_confirm"]
+            return hookset.clean_password(password, password_confirm)
         return self.cleaned_data["password_confirm"]
 
 

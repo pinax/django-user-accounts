@@ -8,9 +8,11 @@ Install the development version::
 
     pip install django-user-accounts
 
-Add ``account`` to your ``INSTALLED_APPS`` setting::
+Make sure that ``django.contrib.sites`` is in ``INSTALLED_APPS`` and add
+ ``account`` to this setting::::
 
     INSTALLED_APPS = (
+        "django.contrib.sites",
         # ...
         "account",
         # ...
@@ -65,6 +67,13 @@ Optionally include ``account.middleware.ExpiredPasswordMiddleware`` in
         ...
         "account.middleware.ExpiredPasswordMiddleware",
         ...
+    ]
+
+Set the authentication backends to the following::
+
+    AUTHENTICATION_BACKENDS = [
+        'account.auth_backends.AccountModelBackend',
+        'django.contrib.auth.backends.ModelBackend'
     ]
 
 Once everything is in place make sure you run ``migrate`` to modify the

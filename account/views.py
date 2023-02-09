@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -35,7 +36,7 @@ from account.models import (
     PasswordHistory,
     SignupCode,
 )
-from account.utils import default_redirect, get_form_data
+from account.utils import default_redirect, get_form_data, is_ajax
 
 
 class PasswordMixin(object):
@@ -101,7 +102,7 @@ class PasswordMixin(object):
         return default_redirect(self.request, fallback_url, **kwargs)
 
     def send_password_email(self, user):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = get_current_site(self.request)
         ctx = {
             "user": user,
@@ -194,7 +195,7 @@ class SignupView(PasswordMixin, FormView):
         return initial
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
@@ -299,6 +300,8 @@ class SignupView(PasswordMixin, FormView):
 
     def login_user(self):
         user = auth.authenticate(**self.user_credentials())
+        if not user:
+            raise ImproperlyConfigured("Configured auth backends failed to authenticate on signup")
         auth.login(self.request, user)
         self.request.session.set_expiry(0)
 
@@ -324,7 +327,7 @@ class SignupView(PasswordMixin, FormView):
         return settings.ACCOUNT_OPEN_SIGNUP
 
     def email_confirmation_required_response(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_email_confirmation_sent_ajax
         else:
             template_name = self.template_name_email_confirmation_sent
@@ -339,7 +342,7 @@ class SignupView(PasswordMixin, FormView):
         return self.response_class(**response_kwargs)
 
     def closed(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_signup_closed_ajax
         else:
             template_name = self.template_name_signup_closed
@@ -370,7 +373,7 @@ class LoginView(FormView):
         return super(LoginView, self).get(*args, **kwargs)
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return [self.template_name_ajax]
         else:
             return [self.template_name]
@@ -632,7 +635,7 @@ class PasswordResetView(FormView):
 
     def send_email(self, email):
         User = get_user_model()
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = get_current_site(self.request)
         email_qs = EmailAddress.objects.filter(email__iexact=email)
         for user in User.objects.filter(pk__in=email_qs.values("user")):
@@ -641,7 +644,7 @@ class PasswordResetView(FormView):
             password_reset_url = "{0}://{1}{2}".format(
                 protocol,
                 current_site.domain,
-                reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
+                reverse(settings.ACCOUNT_PASSWORD_RESET_TOKEN_URL, kwargs=dict(uidb36=uid, token=token))
             )
             ctx = {
                 "user": user,

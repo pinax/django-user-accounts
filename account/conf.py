@@ -32,6 +32,7 @@ class AccountAppConf(AppConf):
     LOGOUT_REDIRECT_URL = "/"
     PASSWORD_CHANGE_REDIRECT_URL = "account_password"
     PASSWORD_RESET_REDIRECT_URL = "account_login"
+    PASSWORD_RESET_TOKEN_URL = "account_password_reset_token"
     PASSWORD_EXPIRY = 0
     PASSWORD_USE_HISTORY = False
     PASSWORD_STRIP = True
@@ -49,6 +50,7 @@ class AccountAppConf(AppConf):
     SETTINGS_REDIRECT_URL = "account_settings"
     NOTIFY_ON_PASSWORD_CHANGE = True
     DELETION_EXPUNGE_HOURS = 48
+    DEFAULT_HTTP_PROTOCOL = "https"
     HOOKSET = "account.hooks.AccountDefaultHookSet"
     TIMEZONES = TIMEZONES
     LANGUAGES = LANGUAGES

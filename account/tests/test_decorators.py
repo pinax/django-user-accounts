@@ -8,7 +8,7 @@ from account.decorators import login_required
 
 @login_required
 def mock_view(request, *args, **kwargs):
-    return HttpResponse('OK', status=200)
+    return HttpResponse("OK", status=200)
 
 
 class LoginRequiredDecoratorTestCase(TestCase):

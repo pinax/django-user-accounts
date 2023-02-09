@@ -3,6 +3,7 @@ import functools
 import operator
 from urllib.parse import urlencode
 
+from django import forms
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
 from django.db import models, transaction
@@ -38,10 +39,9 @@ class Account(models.Model):
     def for_request(cls, request):
         user = getattr(request, "user", None)
         if user and user.is_authenticated:
-            try:
-                return Account._default_manager.get(user=user)
-            except Account.DoesNotExist:
-                pass
+            account = user.account
+            if account:
+                return account
         return AnonymousAccount(request)
 
     @classmethod
@@ -128,7 +128,7 @@ class SignupCode(models.Model):
         pass
 
     code = models.CharField(_("code"), max_length=64, unique=True)
-    max_uses = models.PositiveIntegerField(_("max uses"), default=0)
+    max_uses = models.PositiveIntegerField(_("max uses"), default=1)
     expiry = models.DateTimeField(_("expiry"), null=True, blank=True)
     inviter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     email = models.EmailField(max_length=254, blank=True)
@@ -153,7 +153,7 @@ class SignupCode(models.Model):
         if code:
             checks.append(Q(code=code))
         if email:
-            checks.append(Q(email=code))
+            checks.append(Q(email=email))
         if not checks:
             return False
         return cls._default_manager.filter(functools.reduce(operator.or_, checks)).exists()
@@ -207,7 +207,7 @@ class SignupCode(models.Model):
         signup_code_used.send(sender=result.__class__, signup_code_result=result)
 
     def send(self, **kwargs):
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         if "signup_url" not in kwargs:
             signup_url = "{0}://{1}{2}?{3}".format(
@@ -290,6 +290,16 @@ class EmailAddress(models.Model):
             if confirm:
                 self.send_confirmation()
 
+    def validate_unique(self, exclude=None):
+        super(EmailAddress, self).validate_unique(exclude=exclude)
+
+        qs = EmailAddress.objects.filter(email__iexact=self.email)
+
+        if qs.exists() and settings.ACCOUNT_EMAIL_UNIQUE:
+            raise forms.ValidationError({
+                "email": _("A user is registered with this email address."),
+            })
+
 
 class EmailConfirmation(models.Model):
 
@@ -328,7 +338,7 @@ class EmailConfirmation(models.Model):
 
     def send(self, **kwargs):
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
-        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        protocol = settings.ACCOUNT_DEFAULT_HTTP_PROTOCOL
         activate_url = "{0}://{1}{2}".format(
             protocol,
             current_site.domain,
@@ -365,7 +375,7 @@ class AccountDeletion(models.Model):
         before = timezone.now() - datetime.timedelta(hours=hours_ago)
         count = 0
         for account_deletion in cls.objects.filter(date_requested__lt=before, user__isnull=False):
-            settings.ACCOUNT_DELETION_EXPUNGE_CALLBACK(account_deletion)
+            hookset.account_delete_expunge(account_deletion)
             account_deletion.date_expunged = timezone.now()
             account_deletion.save()
             count += 1
@@ -376,7 +386,7 @@ class AccountDeletion(models.Model):
         account_deletion, created = cls.objects.get_or_create(user=user)
         account_deletion.email = user.email
         account_deletion.save()
-        settings.ACCOUNT_DELETION_MARK_CALLBACK(account_deletion)
+        hookset.account_delete_mark(account_deletion)
         return account_deletion
 
 
