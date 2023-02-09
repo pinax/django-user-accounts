@@ -22,6 +22,9 @@ class AccountAdmin(admin.ModelAdmin):
 
     raw_id_fields = ["user"]
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
+
 
 class AccountDeletionAdmin(AccountAdmin):
 
@@ -32,6 +35,9 @@ class EmailAddressAdmin(AccountAdmin):
 
     list_display = ["user", "email", "verified", "primary"]
     search_fields = ["email", "user__username"]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
 
 
 class PasswordExpiryAdmin(admin.ModelAdmin):
@@ -45,6 +51,9 @@ class PasswordHistoryAdmin(admin.ModelAdmin):
     list_display = ["user", "timestamp"]
     list_filter = ["user"]
     ordering = ["user__username", "-timestamp"]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
 
 
 admin.site.register(Account, AccountAdmin)
