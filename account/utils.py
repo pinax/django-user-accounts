@@ -139,7 +139,7 @@ def check_password_expired(user):
     except PasswordHistory.DoesNotExist:
         return False
 
-    now = datetime.datetime.now(tz=pytz.UTC)
+    now = datetime.datetime.now()
     expiration = latest.timestamp + datetime.timedelta(seconds=expiry)
 
     if expiration < now:
