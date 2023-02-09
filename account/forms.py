@@ -15,7 +15,7 @@ from account.utils import get_user_lookup_kwargs
 alnum_re = re.compile(r"^\w+$")
 
 User = get_user_model()
-USER_FIELD_MAX_LENGTH = User._meta.get_field(User.USERNAME_FIELD).max_length
+USER_FIELD_MAX_LENGTH = getattr(User, User.USERNAME_FIELD).field.max_length
 
 
 class PasswordField(forms.CharField):
