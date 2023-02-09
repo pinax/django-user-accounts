@@ -12,7 +12,7 @@ from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
 
-alnum_re = re.compile(r"^\w+$")
+alnum_re = re.compile(r"^[\w\-\.\+]+$")
 
 
 class PasswordField(forms.CharField):
@@ -59,7 +59,7 @@ class SignupForm(forms.Form):
 
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
-            raise forms.ValidationError(_("Usernames can only contain letters, numbers and underscores."))
+            raise forms.ValidationError(_("Usernames can only contain letters, numbers and the following special characters ./+/-/_"))
         User = get_user_model()
         lookup_kwargs = get_user_lookup_kwargs({
             "{username}__iexact": self.cleaned_data["username"]
