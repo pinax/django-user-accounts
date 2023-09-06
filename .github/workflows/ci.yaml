@@ -6,7 +6,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: pinax/linting@v2
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install lint dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Lint with ruff
+        run: |
+          ruff --format=github --target-version=py311 account tests
 
   test:
     name: Testing
@@ -19,12 +33,28 @@ jobs:
           - "3.10"
           - "3.11"
         django:
-          - "2.2.*"
           - "3.2.*"
           - "4.2.*"
+        exclude:
+          - python: "3.11"
+            django: "3.2.*"
 
     steps:
-      - uses: pinax/testing@v2
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python: ${{ matrix.python }}
-          django: ${{ matrix.django }}
+          python-version: ${{ matrix.python }}
+
+      - name: Install Django
+        shell: bash
+        run: pip install Django==${{ matrix.django }} 'django-appconf>=1.0.4' 'pytz>=2020.4'
+
+      - name: Install test utilities
+        shell: bash
+        run: pip install pytest pytest-django
+
+      - name: Running Python Tests
+        shell: bash
+        run: pytest
