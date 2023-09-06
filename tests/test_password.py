@@ -8,8 +8,8 @@ from django.urls import reverse
 
 import pytz
 
-from ..models import PasswordExpiry, PasswordHistory
-from ..utils import check_password_expired
+from account.models import PasswordExpiry, PasswordHistory
+from account.utils import check_password_expired
 
 
 def middleware_kwarg(value):
@@ -83,7 +83,7 @@ class PasswordExpirationTestCase(TestCase):
 
         # get account settings page (could be any application page)
         response = self.client.get(reverse("account_settings"))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_expired(self):
         """
@@ -125,7 +125,7 @@ class PasswordExpirationTestCase(TestCase):
             post_data
         )
         # Should see one more history entry for this user
-        self.assertEquals(self.user.password_history.count(), history_count + 1)
+        self.assertEqual(self.user.password_history.count(), history_count + 1)
 
         latest = PasswordHistory.objects.latest("timestamp")
         self.assertTrue(latest != self.history)
@@ -164,7 +164,7 @@ class ExistingUserNoHistoryTestCase(TestCase):
         ):
             # get account settings page (could be any application page)
             response = self.client.get(reverse("account_settings"))
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
     def test_password_expiration_reset(self):
         """
@@ -191,7 +191,7 @@ class ExistingUserNoHistoryTestCase(TestCase):
                 post_data
             )
             # Should see one more history entry for this user
-            self.assertEquals(self.user.password_history.count(), history_count + 1)
+            self.assertEqual(self.user.password_history.count(), history_count + 1)
 
     def test_password_reset(self):
         """
@@ -216,4 +216,4 @@ class ExistingUserNoHistoryTestCase(TestCase):
                 post_data
             )
             # history count should be zero
-            self.assertEquals(self.user.password_history.count(), 0)
+            self.assertEqual(self.user.password_history.count(), 0)

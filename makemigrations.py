@@ -11,7 +11,7 @@ DEFAULT_SETTINGS = dict(
         "django.contrib.contenttypes",
         "django.contrib.sites",
         "account",
-        "account.tests"
+        "tests"
     ],
     MIDDLEWARE_CLASSES=[],
     DATABASES={
@@ -21,7 +21,7 @@ DEFAULT_SETTINGS = dict(
         }
     },
     SITE_ID=1,
-    ROOT_URLCONF="account.tests.urls",
+    ROOT_URLCONF="tests.urls",
     SECRET_KEY="notasecret",
 )
 

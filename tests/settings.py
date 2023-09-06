@@ -7,7 +7,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.messages",
     "account",
-    "account.tests",
+    "tests",
 ]
 DATABASES = {
     "default": {
@@ -16,7 +16,7 @@ DATABASES = {
     }
 }
 SITE_ID = 1
-ROOT_URLCONF = "account.tests.urls"
+ROOT_URLCONF = "tests.urls"
 SECRET_KEY = "notasecret"
 TEMPLATES = [
     {

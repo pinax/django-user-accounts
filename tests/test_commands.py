@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from ..conf import settings
-from ..models import PasswordExpiry, PasswordHistory
+from account.conf import settings
+from account.models import PasswordExpiry, PasswordHistory
 
 
 @override_settings(
