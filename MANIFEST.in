@@ -1,9 +1,7 @@
-include .coveragerc
 include CHANGELOG.md
 include LICENSE
 include tox.ini
 include README.md
-include runtests.py
 recursive-include account *.html
 recursive-include account *.txt
 recursive-include account/locale *

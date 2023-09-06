@@ -62,7 +62,9 @@ class SignupForm(forms.Form):
 
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"]):
-            raise forms.ValidationError(_("Usernames can only contain letters, numbers and the following special characters ./+/-/_"))
+            raise forms.ValidationError(
+                _("Usernames can only contain letters, numbers and the following special characters ./+/-/_")
+            )
         lookup_kwargs = get_user_lookup_kwargs({
             "{username}__iexact": self.cleaned_data["username"]
         })

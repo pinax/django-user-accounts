@@ -26,7 +26,12 @@ from account.signals import signup_code_sent, signup_code_used
 
 class Account(models.Model):
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"), on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="account",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+    )
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(
         _("language"),
@@ -407,5 +412,10 @@ class PasswordExpiry(models.Model):
     """
     Holds the password expiration period for a single user.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="password_expiry", verbose_name=_("user"), on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="password_expiry",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+    )
     expiry = models.PositiveIntegerField(default=0)

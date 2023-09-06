@@ -6,7 +6,7 @@ import django
 
 
 def runtests(*test_args):
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "account.tests.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.settings")
     django.setup()
 
     parent = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +15,7 @@ def runtests(*test_args):
     from django.test.runner import DiscoverRunner
     runner_class = DiscoverRunner
     if not test_args:
-        test_args = ["account.tests"]
+        test_args = ["tests"]
 
     failures = runner_class(verbosity=1, interactive=True, failfast=False).run_tests(test_args)
     sys.exit(failures)
