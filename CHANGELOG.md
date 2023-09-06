@@ -3,6 +3,10 @@
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.
 
+## 3.3.0
+
+* #370 - Drop Django 2.2 and Python 3.6 and 3.7, add Django 4.2 compatability
+
 ## 3.2.1
 
 * #364 - Performance fix to admin classes
