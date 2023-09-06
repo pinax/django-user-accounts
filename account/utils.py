@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
 from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
 from django.utils.encoding import force_str
 
 import pytz
@@ -139,7 +140,7 @@ def check_password_expired(user):
     except PasswordHistory.DoesNotExist:
         return False
 
-    now = datetime.datetime.now()
+    now = timezone.now()
     expiration = latest.timestamp + datetime.timedelta(seconds=expiry)
 
     if expiration < now:
