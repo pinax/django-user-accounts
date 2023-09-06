@@ -91,7 +91,9 @@ class PasswordExpirationTestCase(TestCase):
         when retrieving account settings page if password is expired.
         """
         # set PasswordHistory timestamp in past so password is expired.
-        self.history.timestamp = datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(days=1, seconds=self.expiry.expiry)
+        self.history.timestamp = (
+            datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(days=1, seconds=self.expiry.expiry)
+        )
         self.history.save()
 
         self.client.login(username=self.username, password=self.password)

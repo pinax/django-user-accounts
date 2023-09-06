@@ -70,7 +70,10 @@ class PasswordMixin(object):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
@@ -383,7 +386,10 @@ class LoginView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
@@ -448,7 +454,10 @@ class LogoutView(TemplateResponseMixin, View):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
@@ -790,7 +799,10 @@ class SettingsView(LoginRequiredMixin, FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
