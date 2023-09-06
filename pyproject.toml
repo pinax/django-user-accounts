@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-user-accounts"
-version = "3.2.1"
 authors = [{name = "Pinax Team", email = "team@pinaxproject.com"}]
 description = "a Django user account app"
 classifiers = [
@@ -31,6 +30,7 @@ dependencies = [
     "django-appconf>=1.0.4",
     "pytz>=2020.4",
 ]
+dynamic = ["version"]
 
 [project.readme]
 file = "README.md"
@@ -54,13 +54,12 @@ testpaths = ["tests"]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 
 [tool.setuptools]
-package-dir = {"" = "."}
+packages = ["account"]
 include-package-data = true
 zip-safe = false
 
-[tool.setuptools.packages.find]
-where = ["."]
-namespaces = false
+[tool.setuptools.dynamic]
+version = {attr = "account.__version__"}
 
 [tool.setuptools.package-data]
 account = ["locale/*/LC_MESSAGES/*"]
