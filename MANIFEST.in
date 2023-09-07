@@ -1,8 +1,12 @@
 include CHANGELOG.md
 include LICENSE
-include tox.ini
 include README.md
 recursive-include account *.html
 recursive-include account *.txt
 recursive-include account/locale *
-recursive-include docs Makefile conf.py *.rst
+recursive-include docs *.rst
+exclude tox.ini
+recursive-exclude django_user_accounts.egg-info *
+recursive-exclude tests *
+exclude docs/conf.py
+exclude docs/Makefile

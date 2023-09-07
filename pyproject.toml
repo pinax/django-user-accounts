@@ -58,11 +58,6 @@ line-length = 120
 
 [tool.setuptools]
 packages = ["account"]
-include-package-data = true
-zip-safe = false
 
 [tool.setuptools.dynamic]
 version = {attr = "account.__version__"}
-
-[tool.setuptools.package-data]
-account = ["locale/*/LC_MESSAGES/*"]
