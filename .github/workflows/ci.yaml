@@ -20,7 +20,7 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          ruff --format=github --target-version=py311 account tests
+          ruff --format=github --target-version=py311 account
 
   test:
     name: Testing
