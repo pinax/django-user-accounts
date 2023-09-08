@@ -4,6 +4,7 @@ include README.md
 recursive-include account *.html
 recursive-include account *.txt
 recursive-include account/locale *
+recursive-include account/migrations *
 recursive-include docs *.rst
 exclude tox.ini
 recursive-exclude django_user_accounts.egg-info *
