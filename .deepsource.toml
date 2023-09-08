@@ -3,7 +3,8 @@ version = 1
 exclude_patterns = [
   "makemigrations.py",
   "runtests.py",
-  "tests/**",
+  "account/tests/**",
+  "account/tests/test_*.py",
 ]
 
 [[analyzers]]
