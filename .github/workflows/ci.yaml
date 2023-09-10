@@ -20,7 +20,7 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          ruff --format=github --target-version=py311 account tests
+          ruff --format=github --target-version=py311 account
 
   test:
     name: Testing
@@ -51,10 +51,6 @@ jobs:
         shell: bash
         run: pip install Django==${{ matrix.django }} 'django-appconf>=1.0.4' 'pytz>=2020.4'
 
-      - name: Install test utilities
-        shell: bash
-        run: pip install pytest pytest-django
-
       - name: Running Python Tests
         shell: bash
-        run: pytest
+        run: python3 runtests.py

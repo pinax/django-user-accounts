@@ -47,8 +47,8 @@ skip_glob = "account/migrations/*,docs"
 include_trailing_comma = "True"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-DJANGO_SETTINGS_MODULE = "tests.settings"
+testpaths = ["account/tests"]
+DJANGO_SETTINGS_MODULE = "account.tests.settings"
 
 [tool.ruff]
 line-length = 120
@@ -57,7 +57,12 @@ line-length = 120
 "account/migrations/**.py" = ["E501"]
 
 [tool.setuptools]
-packages = ["account"]
+package-dir = {"" = "."}
+include-package-data = true
+zip-safe = false
 
 [tool.setuptools.dynamic]
 version = {attr = "account.__version__"}
+
+[tool.setuptools.package-data]
+account = ["locale/*/LC_MESSAGES/*"]

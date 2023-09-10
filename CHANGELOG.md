@@ -3,6 +3,14 @@
 BI indicates a backward incompatible change. Take caution when upgrading to a
 version with these. Your code will need to be updated to continue working.
 
+## 3.3.1
+
+* #373 Re-include migrations in distribution
+
+## 3.3.0
+
+* #370 Drop Django 2.2, fix timezone-aware comparison, packaging tweaks
+
 ## 3.2.1
 
 * #364 - Performance fix to admin classes
