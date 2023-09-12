@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from account.conf import settings
 
 
-class AccountDefaultHookSet(object):
+class AccountDefaultHookSet:
 
     @staticmethod
     def send_invitation_email(to, ctx):
@@ -77,7 +77,7 @@ class AccountDefaultHookSet(object):
         deletion.user.delete()
 
 
-class HookProxy(object):
+class HookProxy:
 
     def __getattr__(self, attr):
         return getattr(settings.ACCOUNT_HOOKSET, attr)

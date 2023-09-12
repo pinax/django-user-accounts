@@ -39,7 +39,7 @@ from account.models import (
 from account.utils import default_redirect, get_form_data, is_ajax
 
 
-class PasswordMixin(object):
+class PasswordMixin:
     """
     Mixin handling common elements of password change.
 
