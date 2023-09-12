@@ -388,7 +388,7 @@ class AccountDeletion(models.Model):
 
     @classmethod
     def mark(cls, user):
-        account_deletion, created = cls.objects.get_or_create(user=user)
+        account_deletion, created = cls.objects.get_or_create(user=user)  # skipcq: PYL-W0612
         account_deletion.email = user.email
         account_deletion.save()
         hookset.account_delete_mark(account_deletion)
