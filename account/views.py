@@ -409,7 +409,8 @@ class LoginView(FormView):
         self.after_login(form)
         return redirect(self.get_success_url())
 
-    def after_login(self, form):
+    @staticmethod
+    def after_login(form):
         signals.user_logged_in.send(sender=LoginView, user=form.user, form=form)
 
     def get_success_url(self, fallback_url=None, **kwargs):
@@ -533,7 +534,8 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         except EmailConfirmation.DoesNotExist:
             raise Http404()
 
-    def get_queryset(self):
+    @staticmethod
+    def get_queryset():
         qs = EmailConfirmation.objects.all()
         qs = qs.select_related("email_address__user")
         return qs
@@ -550,7 +552,8 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
         return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
 
-    def after_confirmation(self, confirmation):
+    @staticmethod
+    def after_confirmation(confirmation):
         user = confirmation.email_address.user
         user.is_active = True
         user.save()

@@ -51,7 +51,8 @@ def do_user_display(parser, token):  # skipcq: PYL-W0613
 
 class URLNextNode(URLNode):
 
-    def add_next(self, url, context):
+    @staticmethod
+    def add_next(url, context):
         """
         With both `redirect_field_name` and `redirect_field_value` available in
         the context, add on a querystring to handle "next" redirecting.

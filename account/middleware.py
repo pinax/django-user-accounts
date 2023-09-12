@@ -24,7 +24,8 @@ class LocaleMiddleware(BaseMiddleware):
     (if the language is available, of course).
     """
 
-    def get_language_for_user(self, request):
+    @staticmethod
+    def get_language_for_user(request):
         if request.user.is_authenticated:
             try:
                 account = Account.objects.get(user=request.user)
@@ -37,7 +38,8 @@ class LocaleMiddleware(BaseMiddleware):
         translation.activate(self.get_language_for_user(request))
         request.LANGUAGE_CODE = translation.get_language()
 
-    def process_response(self, request, response):
+    @staticmethod
+    def process_response(request, response):
         patch_vary_headers(response, ("Accept-Language",))
         response["Content-Language"] = translation.get_language()
         translation.deactivate()
@@ -50,7 +52,8 @@ class TimezoneMiddleware(BaseMiddleware):
     templates to the user's timezone.
     """
 
-    def process_request(self, request):
+    @staticmethod
+    def process_request(request):
         try:
             account = getattr(request.user, "account", None)
         except Account.DoesNotExist:
