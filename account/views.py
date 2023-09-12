@@ -274,7 +274,7 @@ class SignupView(PasswordMixin, FormView):
             user.save()
         return user
 
-    def create_account(self, form):
+    def create_account(self, form):  # skipcq: PYL-W0613
         return Account.create(request=self.request, user=self.created_user, create_email=False)
 
     def generate_username(self, form):
@@ -283,7 +283,7 @@ class SignupView(PasswordMixin, FormView):
             "Override SignupView.generate_username in a subclass."
         )
 
-    def create_email_address(self, form, **kwargs):
+    def create_email_address(self, form, **kwargs):  # skipcq: PYL-W0613
         kwargs.setdefault("primary", True)
         kwargs.setdefault("verified", False)
         if self.signup_code:

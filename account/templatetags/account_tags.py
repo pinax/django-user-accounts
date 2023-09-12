@@ -25,7 +25,7 @@ class UserDisplayNode(template.Node):
 
 
 @register.tag(name="user_display")
-def do_user_display(parser, token):
+def do_user_display(parser, token):  # skipcq: PYL-W0613
     """
     Example usage::
 

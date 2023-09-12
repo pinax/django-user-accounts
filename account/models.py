@@ -90,7 +90,7 @@ class Account(models.Model):
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def user_post_save(sender, **kwargs):
+def user_post_save(*args, **kwargs):
     """
     After User.save is called we check to see if it was a created user. If so,
     we check if the User object wants account creation. If all passes we
