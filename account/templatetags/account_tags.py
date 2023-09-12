@@ -73,8 +73,7 @@ class URLNextNode(URLNode):
         if self.asvar:
             context[self.asvar] = url
             return ""
-        else:
-            return url
+        return url
 
 
 @register.tag

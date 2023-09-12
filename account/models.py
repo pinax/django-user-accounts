@@ -149,8 +149,7 @@ class SignupCode(models.Model):
     def __str__(self):
         if self.email:
             return "{0} [{1}]".format(self.email, self.code)
-        else:
-            return self.code
+        return self.code
 
     @classmethod
     def exists(cls, code=None, email=None):
