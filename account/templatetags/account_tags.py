@@ -57,7 +57,7 @@ class URLNextNode(URLNode):
         With both `redirect_field_name` and `redirect_field_value` available in
         the context, add on a querystring to handle "next" redirecting.
         """
-        if all([key in context for key in ["redirect_field_name", "redirect_field_value"]]):
+        if all(key in context for key in ["redirect_field_name", "redirect_field_value"]):
             if context["redirect_field_value"]:
                 url += "?" + urlencode({
                     context["redirect_field_name"]: context["redirect_field_value"],
