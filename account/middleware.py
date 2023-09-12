@@ -72,10 +72,10 @@ class ExpiredPasswordMiddleware(BaseMiddleware):
             # Authenticated users must be allowed to access
             # "change password" page and "log out" page.
             # even if password is expired.
-            if next_url not in [settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL,
-                                settings.ACCOUNT_LOGOUT_URL,
-                                ]:
-                if check_password_expired(request.user):
+            if next_url not in [
+                settings.ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL,
+                settings.ACCOUNT_LOGOUT_URL,
+            ] and check_password_expired(request.user):
                     signals.password_expired.send(sender=self, user=request.user)
                     messages.add_message(
                         request,
