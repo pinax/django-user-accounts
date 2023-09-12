@@ -141,6 +141,4 @@ def check_password_expired(user):
     now = timezone.now()
     expiration = latest.timestamp + datetime.timedelta(seconds=expiry)
 
-    if expiration < now:
-        return True
-    return False
+    return bool(expiration < now)
