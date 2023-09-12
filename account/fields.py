@@ -13,4 +13,4 @@ class TimeZoneField(models.CharField):
             "blank": True,
         }
         defaults.update(kwargs)
-        return super(TimeZoneField, self).__init__(*args, **defaults)
+        super(TimeZoneField, self).__init__(*args, **defaults)
