@@ -309,7 +309,7 @@ class EmailConfirmation(models.Model):
 
     email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
     created = models.DateTimeField(default=timezone.now)
-    sent = models.DateTimeField(null=True)
+    sent = models.DateTimeField(blank=True, null=True)
     key = models.CharField(max_length=64, unique=True)
 
     objects = EmailConfirmationManager()
