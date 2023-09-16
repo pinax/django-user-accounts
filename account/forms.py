@@ -81,9 +81,12 @@ class SignupForm(forms.Form):
         raise forms.ValidationError(_("A user is registered with this email address."))
 
     def clean(self):
-        if "password" in self.cleaned_data and "password_confirm" in self.cleaned_data:
-            if self.cleaned_data["password"] != self.cleaned_data["password_confirm"]:
-                raise forms.ValidationError(_("You must type the same password each time."))
+        if (
+            "password" in self.cleaned_data and
+            "password_confirm" in self.cleaned_data and
+            self.cleaned_data["password"] != self.cleaned_data["password_confirm"]
+        ):
+            raise forms.ValidationError(_("You must type the same password each time."))
         return self.cleaned_data
 
 

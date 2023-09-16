@@ -90,7 +90,7 @@ class Account(models.Model):
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def user_post_save(sender, **kwargs):
+def user_post_save(*args, **kwargs):
     """
     After User.save is called we check to see if it was a created user. If so,
     we check if the User object wants account creation. If all passes we
@@ -149,8 +149,7 @@ class SignupCode(models.Model):
     def __str__(self):
         if self.email:
             return "{0} [{1}]".format(self.email, self.code)
-        else:
-            return self.code
+        return self.code
 
     @classmethod
     def exists(cls, code=None, email=None):
@@ -310,7 +309,7 @@ class EmailConfirmation(models.Model):
 
     email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
     created = models.DateTimeField(default=timezone.now)
-    sent = models.DateTimeField(null=True)
+    sent = models.DateTimeField(blank=True, null=True)
     key = models.CharField(max_length=64, unique=True)
 
     objects = EmailConfirmationManager()
@@ -388,7 +387,7 @@ class AccountDeletion(models.Model):
 
     @classmethod
     def mark(cls, user):
-        account_deletion, created = cls.objects.get_or_create(user=user)
+        account_deletion, created = cls.objects.get_or_create(user=user)  # skipcq: PYL-W0612
         account_deletion.email = user.email
         account_deletion.save()
         hookset.account_delete_mark(account_deletion)

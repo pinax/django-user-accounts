@@ -39,7 +39,7 @@ from account.models import (
 from account.utils import default_redirect, get_form_data, is_ajax
 
 
-class PasswordMixin(object):
+class PasswordMixin:
     """
     Mixin handling common elements of password change.
 
@@ -274,7 +274,7 @@ class SignupView(PasswordMixin, FormView):
             user.save()
         return user
 
-    def create_account(self, form):
+    def create_account(self, form):  # skipcq: PYL-W0613
         return Account.create(request=self.request, user=self.created_user, create_email=False)
 
     def generate_username(self, form):
@@ -283,7 +283,7 @@ class SignupView(PasswordMixin, FormView):
             "Override SignupView.generate_username in a subclass."
         )
 
-    def create_email_address(self, form, **kwargs):
+    def create_email_address(self, form, **kwargs):  # skipcq: PYL-W0613
         kwargs.setdefault("primary", True)
         kwargs.setdefault("verified", False)
         if self.signup_code:
@@ -409,7 +409,8 @@ class LoginView(FormView):
         self.after_login(form)
         return redirect(self.get_success_url())
 
-    def after_login(self, form):
+    @staticmethod
+    def after_login(form):
         signals.user_logged_in.send(sender=LoginView, user=form.user, form=form)
 
     def get_success_url(self, fallback_url=None, **kwargs):
@@ -533,7 +534,8 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         except EmailConfirmation.DoesNotExist:
             raise Http404()
 
-    def get_queryset(self):
+    @staticmethod
+    def get_queryset():
         qs = EmailConfirmation.objects.all()
         qs = qs.select_related("email_address__user")
         return qs
@@ -550,7 +552,8 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
         return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
 
-    def after_confirmation(self, confirmation):
+    @staticmethod
+    def after_confirmation(confirmation):
         user = confirmation.email_address.user
         user.is_active = True
         user.save()
