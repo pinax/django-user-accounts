@@ -22,7 +22,8 @@ templates yourself.
 Login/Registration/Signup Templates
 -----------------------------------
 
-**account/login.html**
+``account/login.html``
+~~~~~~~~~~~~~~~~~~~~~~
 
 The template with the form to authenticate the user. The template has the
 following context:
@@ -32,16 +33,18 @@ following context:
 
 ``redirect_field_name``
     The name of the hidden field that will hold the url where to redirect the
-user after login.
+    user after login.
 
 ``redirect_field_value``
     The actual url where the user will be redirected after login.
 
-**account/logout.html**
+``account/logout.html``
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The default template shown after the user has been logged out.
 
-**account/signup.html**
+``account/signup.html``
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The template with the form to registrate a new user. The template has the
 following context:
@@ -51,12 +54,13 @@ following context:
 
 ``redirect_field_name``
     The name of the hidden field that will hold the url where to redirect the
-user after signing up.
+    user after signing up.
 
 ``redirect_field_value``
     The actual url where the user will be redirected after signing up.
 
-**account/signup_closed.html**
+``account/signup_closed.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template to inform the user that creating new users is not allowed (mainly
 because ``settings.ACCOUNT_OPEN_SIGNUP`` is ``False``).
@@ -64,7 +68,8 @@ because ``settings.ACCOUNT_OPEN_SIGNUP`` is ``False``).
 Email Confirmation Templates
 ----------------------------
 
-**account/email_confirm.html**
+``account/email_confirm.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template to confirm an email address. The template has the following context:
 
@@ -74,7 +79,8 @@ A template to confirm an email address. The template has the following context:
 ``confirmation``
     The EmailConfirmation instance to be confirmed.
 
-**account/email_confirmation_sent.html**
+``account/email_confirmation_sent.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The template shown after a new user has been created. It should tell the user
 that an activation link has been sent to his email address. The template has
@@ -85,9 +91,10 @@ the following context:
 
 ``success_url``
     A url where the user can be redirected from this page. For example to
-show a link to go back.
+    show a link to go back.
 
-**account/email_confirmed.html**
+``account/email_confirmed.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template shown after an email address has been confirmed. The template
 context is the same as in email_confirm.html.
@@ -98,7 +105,8 @@ context is the same as in email_confirm.html.
 Password Management Templates
 -----------------------------
 
-**account/password_change.html**
+``account/password_change.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The template that shows the form to change the user's password, when the user
 is authenticated. The template has the following context:
@@ -106,7 +114,8 @@ is authenticated. The template has the following context:
 ``form``
     The form to change the password.
 
-**account/password_reset.html**
+``account/password_reset.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template with a form to type an email address to reset a user's password.
 The template has the following context:
@@ -114,7 +123,8 @@ The template has the following context:
 ``form``
     The form to reset the password.
 
-**account/password_reset_sent.html**
+``account/password_reset_sent.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template to inform the user that his password has been reset and that he
 should receive an email with a link to create a new password. The template has
@@ -122,12 +132,13 @@ the following context:
 
 ``form``
     An instance of ``PasswordResetForm``. Usually the fields of this form
-must be hidden.
+    must be hidden.
 
 ``resend``
     If ``True`` it means that the reset link has been resent to the user.
 
-**account/password_reset_token.html**
+``account/password_reset_token.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The template that shows the form to change the user's password. The user should
 have come here following the link received to reset his password. The template
@@ -136,7 +147,8 @@ has the following context:
 ``form``
     The form to set the new password.
 
-**account/password_reset_token_fail.html**
+``account/password_reset_token_fail.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template to inform the user that he is not allowed to change the password,
 because the authentication token is wrong. The template has the following
@@ -148,7 +160,8 @@ context:
 Account Settings
 ----------------
 
-**account/settings.html**
+``account/settings.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A template with a form where the user may change his email address, time zone
 and preferred language. The template has the following context:
@@ -159,7 +172,8 @@ and preferred language. The template has the following context:
 Emails (actual emails themselves)
 ---------------------------------
 
-**account/email/email_confirmation_subject.txt**
+``account/email/email_confirmation_subject.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The subject line of the email that will be sent to the new user to validate the
 email address. It will be rendered as a single line. The template has the
@@ -180,12 +194,14 @@ following context:
 ``key``
     The confirmation key.
 
-**account/email/email_confirmation_message.txt**
+``account/email/email_confirmation_message.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The body of the activation email. It has the same context as the subject
 template (see above).
 
-**account/email/invite_user.txt**
+``account/email/invite_user.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The body of the invitation sent to somebody to join the site. The template has
 the following context:
@@ -199,12 +215,14 @@ the following context:
 ``signup_url``
     The link used to use the invitation and create a new account.
 
-**account/email/invite_user_subject.txt**
+``account/email/invite_user_subject.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The subject line of the invitation sent to somebody to join the site. The
 template has the same context as in invite_user.txt.
 
-**account/email/password_change.txt**
+``account/email/password_change.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The body of the email used to inform the user that his password has been
 changed. The template has the following context:
@@ -218,12 +236,14 @@ changed. The template has the following context:
 ``current_site``
     The instance of django.contrib.sites.models.Site that identifies the site.
 
-**account/email/password_change_subject.txt**
+``account/email/password_change_subject.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The subject line of the email used to inform the user that his password has
 been changed. The context is the same as in password_change.txt.
 
-**account/email/password_reset.txt**
+``account/email/password_reset.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The body of the email with a link to reset a user's password. The template has
 the following context:
@@ -238,7 +258,8 @@ the following context:
 ``password_reset_url``
     The link that the user needs to follow to set a new password.
 
-**account/email/password_reset_subject.txt**
+``account/email/password_reset_subject.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The subject line of the email with a link to reset a user's password. The
 context is the same as in password_reset.txt.
