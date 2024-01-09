@@ -35,6 +35,7 @@ class AccountAppConf(AppConf):
     PASSWORD_RESET_TOKEN_URL = "account_password_reset_token"
     PASSWORD_EXPIRY = 0
     PASSWORD_USE_HISTORY = False
+    ACCOUNT_APPROVAL_REQUIRED = False
     PASSWORD_STRIP = True
     REMEMBER_ME_EXPIRY = 60 * 60 * 24 * 365 * 10
     USER_DISPLAY = lambda user: user.username  # noqa

@@ -52,7 +52,7 @@ email_confirmed
 ---------------
 
 Triggered when a user confirmed an email. Providing argument
-``email_address``(EmailAddress instance).
+``email_address`` (EmailAddress instance).
 
 
 email_confirmation_sent

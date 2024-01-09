@@ -52,6 +52,8 @@ class SignupViewTestCase(TestCase):
             }
             response = self.client.post(reverse("account_signup"), data)
             self.assertEqual(response.status_code, 302)
+            u = User.objects.get(username=data['username'])
+            self.assertTrue(u.is_active)
 
     def test_invalid_code(self):
         with self.settings(ACCOUNT_OPEN_SIGNUP=False):
@@ -125,6 +127,23 @@ class SignupViewTestCase(TestCase):
         }
         response = self.client.post(reverse("account_signup"), data)
         self.assertRedirects(response, next_url, fetch_redirect_response=False)
+
+    def test_register_with_moderation(self):
+        signup_code = SignupCode.create()
+        signup_code.save()
+        with self.settings(ACCOUNT_OPEN_SIGNUP=True, ACCOUNT_APPROVAL_REQUIRED=True):
+            data = {
+                "username": "foo",
+                "password": "bar",
+                "password_confirm": "bar",
+                "email": "foobar@example.com",
+                "code": signup_code.code,
+            }
+            response = self.client.post(reverse("account_signup"), data)
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(self.client.session.get('_auth_user_id'))
+            u = User.objects.get(username=data['username'])
+            self.assertFalse(u.is_active)
 
 
 class LoginViewTestCase(TestCase):

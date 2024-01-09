@@ -131,6 +131,8 @@ class SignupView(PasswordMixin, FormView):
     template_name_email_confirmation_sent_ajax = "account/ajax/email_confirmation_sent.html"
     template_name_signup_closed = "account/signup_closed.html"
     template_name_signup_closed_ajax = "account/ajax/signup_closed.html"
+    template_name_admin_approval_sent = "account/admin_approval_sent.html"
+    template_name_admin_approval_sent_ajax = "account/ajax/admin_approval_sent.html"
     form_class = SignupForm
     form_kwargs = {}
     form_password_field = "password"
@@ -230,11 +232,15 @@ class SignupView(PasswordMixin, FormView):
         self.create_account(form)
         self.create_password_history(form, self.created_user)
         self.after_signup(form)
+        if settings.ACCOUNT_APPROVAL_REQUIRED:
+            # Notify site admins about the user wanting activation
+            self.created_user.is_active = False
+            self.created_user.save()
+            return self.account_approval_required_response()
         if settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL and not email_address.verified:
             self.send_email_confirmation(email_address)
         if settings.ACCOUNT_EMAIL_CONFIRMATION_REQUIRED and not email_address.verified:
             return self.email_confirmation_required_response()
-
         show_message = [
             settings.ACCOUNT_EMAIL_CONFIRMATION_EMAIL,
             self.messages.get("email_confirmation_sent"),
@@ -351,6 +357,22 @@ class SignupView(PasswordMixin, FormView):
         response_kwargs = {
             "request": self.request,
             "template": template_name,
+        }
+        return self.response_class(**response_kwargs)
+
+    def account_approval_required_response(self):
+        if is_ajax(self.request):
+            template_name = self.template_name_admin_approval_sent_ajax
+        else:
+            template_name = self.template_name_admin_approval_sent
+
+        response_kwargs = {
+            "request": self.request,
+            "template": template_name,
+            "context": {
+                "email": self.created_user.email,
+                "success_url": self.get_success_url(),
+            }
         }
         return self.response_class(**response_kwargs)
 
