@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 
@@ -8,17 +9,17 @@ source_suffix = ".rst"
 master_doc = "index"
 project = "django-user-accounts"
 copyright_holder = "James Tauber and contributors"
-copyright = "2014, {0}".format(copyright_holder)
+copyright = f"{datetime.datetime.now().year}, {copyright_holder}"
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
 html_theme = "default"
-htmlhelp_basename = "{0}doc".format(project)
+htmlhelp_basename = f"{project}doc"
 latex_documents = [
-  ("index", "{0}.tex".format(project), "{0} Documentation".format(project),
+  ("index", f"{project}.tex", f"{project} Documentation",
    "Pinax", "manual"),
 ]
 man_pages = [
-    ("index", project, "{0} Documentation".format(project),
+    ("index", project, f"{project} Documentation",
      ["Pinax"], 1)
 ]
 
