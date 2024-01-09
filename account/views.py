@@ -714,9 +714,9 @@ class SettingsView(LoginRequiredMixin, FormView):
         self.update_email(form)
         self.update_account(form)
         self.after_update_account()
-        
+
     def after_update_account(self):
-        signals.updated_account.send(sender=SettingsView, user=self.request.user, request=self.request)
+        signals.account_updated.send(sender=SettingsView, user=self.request.user, request=self.request)
 
     def update_email(self, form, confirm=None):
         user = self.request.user
