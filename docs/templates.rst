@@ -11,6 +11,7 @@ to build from. Note, this document assumes you have read the installation docs.
 .. _pinax-theme-bootstrap: https://github.com/pinax/pinax-theme-bootstrap
 .. _starting point: https://github.com/pinax/pinax-theme-bootstrap/tree/master/pinax_theme_bootstrap/templates/account
 
+
 Template Files
 ===============
 
@@ -107,7 +108,7 @@ A template to confirm an email address. The template has the following context:
     The EmailConfirmation instance to be confirmed.
 
 ``account/email_confirmation_sent.html``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The template shown after a new user has been created. It should tell the user
 that an activation link has been sent to his email address. The template has
@@ -184,6 +185,7 @@ context:
 ``url``
     The url to request a new reset token.
 
+
 Account Settings
 ----------------
 
@@ -195,6 +197,7 @@ and preferred language. The template has the following context:
 
 ``form``
     The form to change the settings.
+
 
 Emails (actual emails themselves)
 ---------------------------------
@@ -275,7 +278,6 @@ been changed. The context is the same as in password_change.txt.
 The body of the email with a link to reset a user's password. The template has
 the following context:
 
-
 ``user``
     The user whom the password belongs to.
 
@@ -290,6 +292,7 @@ the following context:
 
 The subject line of the email with a link to reset a user's password. The
 context is the same as in password_reset.txt.
+
 
 Template Tags
 =============
