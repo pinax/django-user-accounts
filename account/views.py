@@ -361,7 +361,7 @@ class SignupView(PasswordMixin, FormView):
         return self.response_class(**response_kwargs)
 
     def account_approval_required_response(self):
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             template_name = self.template_name_admin_approval_sent_ajax
         else:
             template_name = self.template_name_admin_approval_sent
