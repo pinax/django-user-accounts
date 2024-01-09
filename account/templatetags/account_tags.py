@@ -25,7 +25,7 @@ class UserDisplayNode(template.Node):
 
 
 @register.tag(name="user_display")
-def do_user_display(parser, token):
+def do_user_display(parser, token):  # skipcq: PYL-W0613
     """
     Example usage::
 
@@ -51,16 +51,18 @@ def do_user_display(parser, token):
 
 class URLNextNode(URLNode):
 
-    def add_next(self, url, context):
+    @staticmethod
+    def add_next(url, context):
         """
         With both `redirect_field_name` and `redirect_field_value` available in
         the context, add on a querystring to handle "next" redirecting.
         """
-        if all([key in context for key in ["redirect_field_name", "redirect_field_value"]]):
-            if context["redirect_field_value"]:
-                url += "?" + urlencode({
-                    context["redirect_field_name"]: context["redirect_field_value"],
-                })
+        if all(
+            key in context for key in ["redirect_field_name", "redirect_field_value"]
+        ) and context["redirect_field_value"]:
+            url += "?" + urlencode({
+                context["redirect_field_name"]: context["redirect_field_value"],
+            })
         return url
 
     def render(self, context):
@@ -72,8 +74,7 @@ class URLNextNode(URLNode):
         if self.asvar:
             context[self.asvar] = url
             return ""
-        else:
-            return url
+        return url
 
 
 @register.tag

@@ -26,7 +26,12 @@ from account.signals import signup_code_sent, signup_code_used
 
 class Account(models.Model):
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"), on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="account",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+    )
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(
         _("language"),
@@ -85,7 +90,7 @@ class Account(models.Model):
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def user_post_save(sender, **kwargs):
+def user_post_save(*args, **kwargs):
     """
     After User.save is called we check to see if it was a created user. If so,
     we check if the User object wants account creation. If all passes we
@@ -128,7 +133,7 @@ class SignupCode(models.Model):
         pass
 
     code = models.CharField(_("code"), max_length=64, unique=True)
-    max_uses = models.PositiveIntegerField(_("max uses"), default=0)
+    max_uses = models.PositiveIntegerField(_("max uses"), default=1)
     expiry = models.DateTimeField(_("expiry"), null=True, blank=True)
     inviter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     email = models.EmailField(max_length=254, blank=True)
@@ -144,8 +149,7 @@ class SignupCode(models.Model):
     def __str__(self):
         if self.email:
             return "{0} [{1}]".format(self.email, self.code)
-        else:
-            return self.code
+        return self.code
 
     @classmethod
     def exists(cls, code=None, email=None):
@@ -305,7 +309,7 @@ class EmailConfirmation(models.Model):
 
     email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
     created = models.DateTimeField(default=timezone.now)
-    sent = models.DateTimeField(null=True)
+    sent = models.DateTimeField(blank=True, null=True)
     key = models.CharField(max_length=64, unique=True)
 
     objects = EmailConfirmationManager()
@@ -383,7 +387,7 @@ class AccountDeletion(models.Model):
 
     @classmethod
     def mark(cls, user):
-        account_deletion, created = cls.objects.get_or_create(user=user)
+        account_deletion, created = cls.objects.get_or_create(user=user)  # skipcq: PYL-W0612
         account_deletion.email = user.email
         account_deletion.save()
         hookset.account_delete_mark(account_deletion)
@@ -407,5 +411,10 @@ class PasswordExpiry(models.Model):
     """
     Holds the password expiration period for a single user.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="password_expiry", verbose_name=_("user"), on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="password_expiry",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+    )
     expiry = models.PositiveIntegerField(default=0)

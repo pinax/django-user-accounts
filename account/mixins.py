@@ -4,7 +4,7 @@ from account.conf import settings
 from account.utils import handle_redirect_to_login
 
 
-class LoginRequiredMixin(object):
+class LoginRequiredMixin:
 
     redirect_field_name = REDIRECT_FIELD_NAME
     login_url = None

@@ -6,9 +6,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, QueryDict
 from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
 from django.utils.encoding import force_str
 
-import pytz
 from account.conf import settings
 
 from .models import PasswordHistory
@@ -39,19 +39,18 @@ def default_redirect(request, fallback_url, **kwargs):
     )
     if next_url and is_safe(next_url):
         return next_url
-    else:
-        try:
-            fallback_url = reverse(fallback_url)
-        except NoReverseMatch:
-            if callable(fallback_url):
-                raise
-            if "/" not in fallback_url and "." not in fallback_url:
-                raise
-        # assert the fallback URL is safe to return to caller. if it is
-        # determined unsafe then raise an exception as the fallback value comes
-        # from the a source the developer choose.
-        is_safe(fallback_url, raise_on_fail=True)
-        return fallback_url
+    try:
+        fallback_url = reverse(fallback_url)
+    except NoReverseMatch:
+        if callable(fallback_url):
+            raise
+        if "/" not in fallback_url and "." not in fallback_url:
+            raise
+    # assert the fallback URL is safe to return to caller. if it is
+    # determined unsafe then raise an exception as the fallback value comes
+    # from the a source the developer choose.
+    is_safe(fallback_url, raise_on_fail=True)
+    return fallback_url
 
 
 def user_display(user):
@@ -139,10 +138,7 @@ def check_password_expired(user):
     except PasswordHistory.DoesNotExist:
         return False
 
-    now = datetime.datetime.now(tz=pytz.UTC)
+    now = timezone.now()
     expiration = latest.timestamp + datetime.timedelta(seconds=expiry)
 
-    if expiration < now:
-        return True
-    else:
-        return False
+    return bool(expiration < now)

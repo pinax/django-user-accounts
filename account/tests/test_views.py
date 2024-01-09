@@ -276,7 +276,9 @@ class ConfirmEmailViewTestCase(TestCase):
             fetch_redirect_response=False
         )
 
-    @override_settings(ACCOUNT_EMAIL_CONFIRMATION_REQUIRED=False, ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/somewhere/")
+    @override_settings(
+        ACCOUNT_EMAIL_CONFIRMATION_REQUIRED=False, ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/somewhere/"
+    )
     def test_post_not_required_redirect_override(self):
         email_confirmation = self.signup()
         response = self.client.post(reverse("account_confirm_email", kwargs={"key": email_confirmation.key}), {})

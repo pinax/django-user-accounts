@@ -1,10 +1,13 @@
-include .coveragerc
+global-exclude *.py[cod]
 include CHANGELOG.md
 include LICENSE
-include tox.ini
 include README.md
-include runtests.py
 recursive-include account *.html
 recursive-include account *.txt
 recursive-include account/locale *
-recursive-include docs Makefile conf.py *.rst
+recursive-include account/migrations *.py
+recursive-include docs *.rst
+exclude tox.ini
+recursive-exclude django_user_accounts.egg-info *
+exclude docs/conf.py
+exclude docs/Makefile

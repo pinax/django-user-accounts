@@ -39,7 +39,7 @@ from account.models import (
 from account.utils import default_redirect, get_form_data, is_ajax
 
 
-class PasswordMixin(object):
+class PasswordMixin:
     """
     Mixin handling common elements of password change.
 
@@ -70,7 +70,10 @@ class PasswordMixin(object):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
@@ -199,8 +202,7 @@ class SignupView(PasswordMixin, FormView):
     def get_template_names(self):
         if is_ajax(self.request):
             return [self.template_name_ajax]
-        else:
-            return [self.template_name]
+        return [self.template_name]
 
     def get_form_kwargs(self):
         kwargs = super(SignupView, self).get_form_kwargs()
@@ -255,7 +257,7 @@ class SignupView(PasswordMixin, FormView):
         # attach form to self to maintain compatibility with login_user
         # API. this should only be relied on by d-u-a and it is not a stable
         # API for site developers.
-        self.form = form
+        self.form = form  # skipcq: PYL-W0201
         self.login_user()
         return redirect(self.get_success_url())
 
@@ -278,7 +280,7 @@ class SignupView(PasswordMixin, FormView):
             user.save()
         return user
 
-    def create_account(self, form):
+    def create_account(self, form):  # skipcq: PYL-W0613
         return Account.create(request=self.request, user=self.created_user, create_email=False)
 
     def generate_username(self, form):
@@ -287,7 +289,7 @@ class SignupView(PasswordMixin, FormView):
             "Override SignupView.generate_username in a subclass."
         )
 
-    def create_email_address(self, form, **kwargs):
+    def create_email_address(self, form, **kwargs):  # skipcq: PYL-W0613
         kwargs.setdefault("primary", True)
         kwargs.setdefault("verified", False)
         if self.signup_code:
@@ -320,16 +322,16 @@ class SignupView(PasswordMixin, FormView):
     def is_open(self):
         if self.signup_code:
             return True
-        else:
-            if self.signup_code_present:
-                if self.messages.get("invalid_signup_code"):
-                    messages.add_message(
-                        self.request,
-                        self.messages["invalid_signup_code"]["level"],
-                        self.messages["invalid_signup_code"]["text"].format(**{
-                            "code": self.get_code(),
-                        })
-                    )
+
+        if self.signup_code_present and self.messages.get("invalid_signup_code"):
+            messages.add_message(
+                self.request,
+                self.messages["invalid_signup_code"]["level"],
+                self.messages["invalid_signup_code"]["text"].format(**{
+                    "code": self.get_code(),
+                })
+            )
+
         return settings.ACCOUNT_OPEN_SIGNUP
 
     def email_confirmation_required_response(self):
@@ -397,15 +399,17 @@ class LoginView(FormView):
     def get_template_names(self):
         if is_ajax(self.request):
             return [self.template_name_ajax]
-        else:
-            return [self.template_name]
+        return [self.template_name]
 
     def get_context_data(self, **kwargs):
         ctx = super(LoginView, self).get_context_data(**kwargs)
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
@@ -427,7 +431,8 @@ class LoginView(FormView):
         self.after_login(form)
         return redirect(self.get_success_url())
 
-    def after_login(self, form):
+    @staticmethod
+    def after_login(form):
         signals.user_logged_in.send(sender=LoginView, user=form.user, form=form)
 
     def get_success_url(self, fallback_url=None, **kwargs):
@@ -470,7 +475,10 @@ class LogoutView(TemplateResponseMixin, View):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 
@@ -548,7 +556,8 @@ class ConfirmEmailView(TemplateResponseMixin, View):
         except EmailConfirmation.DoesNotExist:
             raise Http404()
 
-    def get_queryset(self):
+    @staticmethod
+    def get_queryset():
         qs = EmailConfirmation.objects.all()
         qs = qs.select_related("email_address__user")
         return qs
@@ -563,10 +572,10 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             if not settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL:
                 return settings.ACCOUNT_LOGIN_REDIRECT_URL
             return settings.ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL
-        else:
-            return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
+        return settings.ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL
 
-    def after_confirmation(self, confirmation):
+    @staticmethod
+    def after_confirmation(confirmation):
         user = confirmation.email_address.user
         user.is_active = True
         user.save()
@@ -611,9 +620,7 @@ class ChangePasswordView(PasswordMixin, FormView):
         return self.request.user
 
     def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instantiating the form.
-        """
+        """Returns the keyword arguments for instantiating the form."""
         kwargs = {"user": self.request.user, "initial": self.get_initial()}
         if self.request.method in ["POST", "PUT"]:
             kwargs.update({
@@ -663,11 +670,8 @@ class PasswordResetView(FormView):
         for user in User.objects.filter(pk__in=email_qs.values("user")):
             uid = int_to_base36(user.id)
             token = self.make_token(user)
-            password_reset_url = "{0}://{1}{2}".format(
-                protocol,
-                current_site.domain,
-                reverse(settings.ACCOUNT_PASSWORD_RESET_TOKEN_URL, kwargs=dict(uidb36=uid, token=token))
-            )
+            path = reverse(settings.ACCOUNT_PASSWORD_RESET_TOKEN_URL, kwargs=dict(uidb36=uid, token=token))
+            password_reset_url = f"{protocol}://{current_site.domain}{path}"
             ctx = {
                 "user": user,
                 "current_site": current_site,
@@ -812,7 +816,10 @@ class SettingsView(LoginRequiredMixin, FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(
+                redirect_field_name,
+                self.request.GET.get(redirect_field_name, ""),
+            ),
         })
         return ctx
 

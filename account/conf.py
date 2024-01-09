@@ -56,5 +56,6 @@ class AccountAppConf(AppConf):
     TIMEZONES = TIMEZONES
     LANGUAGES = LANGUAGES
 
-    def configure_hookset(self, value):
+    @staticmethod
+    def configure_hookset(value):
         return load_path_attr(value)()
