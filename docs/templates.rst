@@ -65,6 +65,33 @@ following context:
 A template to inform the user that creating new users is not allowed (mainly
 because ``settings.ACCOUNT_OPEN_SIGNUP`` is ``False``).
 
+
+Registration Approval Templates
+-------------------------------
+
+These templates are only used when ``settings.ACCOUNT_APPROVAL_REQUIRED`` is
+``True``.
+
+``account/admin_approval_sent.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The template shown after a new user has been created (with ``is_active`` set to
+``False``). It should explain that an administrator will need to approve their
+registration before they can use it. The template has the following context:
+
+``email``
+    The email address for the newly created user.
+
+``success_url``
+    The URL where the user will be directed to.
+
+``account/ajax/admin_approval_sent.html``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The same template as ``account/admin_approval_sent.html`` but for AJAX
+responses; is rendered with the same context.
+
+
 Email Confirmation Templates
 ----------------------------
 
