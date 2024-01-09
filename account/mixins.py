@@ -1,19 +1,19 @@
-from __future__ import unicode_literals
+from django.contrib.auth import REDIRECT_FIELD_NAME
 
 from account.conf import settings
 from account.utils import handle_redirect_to_login
 
 
-class LoginRequiredMixin(object):
+class LoginRequiredMixin:
 
-    redirect_field_name = "next"
+    redirect_field_name = REDIRECT_FIELD_NAME
     login_url = None
 
     def dispatch(self, request, *args, **kwargs):
         self.request = request
         self.args = args
         self.kwargs = kwargs
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
         return self.redirect_to_login()
 

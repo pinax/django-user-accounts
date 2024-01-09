@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-user-accounts"
+authors = [{name = "Pinax Team", email = "team@pinaxproject.com"}]
+description = "a Django user account app"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "Django>=3.2",
+    "django-appconf>=1.0.4",
+    "pytz>=2020.4",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "http://github.com/pinax/django-user-accounts"
+
+[tool.isort]
+profile = "hug"
+src_paths = ["account"]
+multi_line_output = 3
+known_django = "django"
+known_third_party = "account,six,mock,appconf,jsonfield,pytz"
+sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+skip_glob = "account/migrations/*,docs"
+include_trailing_comma = "True"
+
+[tool.pytest.ini_options]
+testpaths = ["account/tests"]
+DJANGO_SETTINGS_MODULE = "account.tests.settings"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.per-file-ignores]
+"account/migrations/**.py" = ["E501"]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.dynamic]
+version = {attr = "account.__version__"}
+
+[tool.setuptools.package-data]
+account = ["locale/*/LC_MESSAGES/*"]

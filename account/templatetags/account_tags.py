@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import template
 from django.template.base import kwarg_re
 from django.template.defaulttags import URLNode
@@ -7,7 +5,6 @@ from django.utils.html import conditional_escape
 from django.utils.http import urlencode
 
 from account.utils import user_display
-
 
 register = template.Library()
 
@@ -28,7 +25,7 @@ class UserDisplayNode(template.Node):
 
 
 @register.tag(name="user_display")
-def do_user_display(parser, token):
+def do_user_display(parser, token):  # skipcq: PYL-W0613
     """
     Example usage::
 
@@ -54,16 +51,18 @@ def do_user_display(parser, token):
 
 class URLNextNode(URLNode):
 
-    def add_next(self, url, context):
+    @staticmethod
+    def add_next(url, context):
         """
         With both `redirect_field_name` and `redirect_field_value` available in
         the context, add on a querystring to handle "next" redirecting.
         """
-        if all([key in context for key in ["redirect_field_name", "redirect_field_value"]]):
-            if context["redirect_field_value"]:
-                url += "?" + urlencode({
-                    context["redirect_field_name"]: context["redirect_field_value"],
-                })
+        if all(
+            key in context for key in ["redirect_field_name", "redirect_field_value"]
+        ) and context["redirect_field_value"]:
+            url += "?" + urlencode({
+                context["redirect_field_name"]: context["redirect_field_value"],
+            })
         return url
 
     def render(self, context):
@@ -75,8 +74,7 @@ class URLNextNode(URLNode):
         if self.asvar:
             context[self.asvar] = url
             return ""
-        else:
-            return url
+        return url
 
 
 @register.tag
@@ -95,11 +93,11 @@ def urlnext(parser, token):
     kwargs = {}
     asvar = None
     bits = bits[2:]
-    if len(bits) >= 2 and bits[-2] == 'as':
+    if len(bits) >= 2 and bits[-2] == "as":
         asvar = bits[-1]
         bits = bits[:-2]
 
-    if len(bits):
+    if len(bits) > 0:
         for bit in bits:
             match = kwarg_re.match(bit)
             if not match:

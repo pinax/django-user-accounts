@@ -1,18 +1,17 @@
-from __future__ import unicode_literals
-
+import datetime
 import functools
-try:
-    from urllib.parse import urlparse, urlunparse
-except ImportError:  # python 2
-    from urlparse import urlparse, urlunparse
-
-from django.core import urlresolvers
-from django.core.exceptions import SuspiciousOperation
-from django.http import HttpResponseRedirect, QueryDict
+from urllib.parse import urlparse, urlunparse
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import SuspiciousOperation
+from django.http import HttpResponseRedirect, QueryDict
+from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
+from django.utils.encoding import force_str
 
 from account.conf import settings
+
+from .models import PasswordHistory
 
 
 def get_user_lookup_kwargs(kwargs):
@@ -40,19 +39,18 @@ def default_redirect(request, fallback_url, **kwargs):
     )
     if next_url and is_safe(next_url):
         return next_url
-    else:
-        try:
-            fallback_url = urlresolvers.reverse(fallback_url)
-        except urlresolvers.NoReverseMatch:
-            if callable(fallback_url):
-                raise
-            if "/" not in fallback_url and "." not in fallback_url:
-                raise
-        # assert the fallback URL is safe to return to caller. if it is
-        # determined unsafe then raise an exception as the fallback value comes
-        # from the a source the developer choose.
-        is_safe(fallback_url, raise_on_fail=True)
-        return fallback_url
+    try:
+        fallback_url = reverse(fallback_url)
+    except NoReverseMatch:
+        if callable(fallback_url):
+            raise
+        if "/" not in fallback_url and "." not in fallback_url:
+            raise
+    # assert the fallback URL is safe to return to caller. if it is
+    # determined unsafe then raise an exception as the fallback value comes
+    # from the a source the developer choose.
+    is_safe(fallback_url, raise_on_fail=True)
+    return fallback_url
 
 
 def user_display(user):
@@ -86,13 +84,13 @@ def handle_redirect_to_login(request, **kwargs):
     if next_url is None:
         next_url = request.get_full_path()
     try:
-        login_url = urlresolvers.reverse(login_url)
-    except urlresolvers.NoReverseMatch:
+        login_url = reverse(login_url)
+    except NoReverseMatch:
         if callable(login_url):
             raise
         if "/" not in login_url and "." not in login_url:
             raise
-    url_bits = list(urlparse(login_url))
+    url_bits = list(urlparse(force_str(login_url)))
     if redirect_field_name:
         querystring = QueryDict(url_bits[4], mutable=True)
         querystring[redirect_field_name] = next_url
@@ -106,3 +104,41 @@ def get_form_data(form, field_name, default=None):
     else:
         key = field_name
     return form.data.get(key, default)
+
+
+# https://stackoverflow.com/a/70419609/6461688
+def is_ajax(request):
+    """
+    Return True if the request was sent with XMLHttpRequest, False otherwise.
+    """
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
+def check_password_expired(user):
+    """
+    Return True if password is expired and system is using
+    password expiration, False otherwise.
+    """
+    if not settings.ACCOUNT_PASSWORD_USE_HISTORY:
+        return False
+
+    if hasattr(user, "password_expiry"):
+        # user-specific value
+        expiry = user.password_expiry.expiry
+    else:
+        # use global value
+        expiry = settings.ACCOUNT_PASSWORD_EXPIRY
+
+    if expiry == 0:  # zero indicates no expiration
+        return False
+
+    try:
+        # get latest password info
+        latest = user.password_history.latest("timestamp")
+    except PasswordHistory.DoesNotExist:
+        return False
+
+    now = timezone.now()
+    expiration = latest.timestamp + datetime.timedelta(seconds=expiry)
+
+    return bool(expiration < now)

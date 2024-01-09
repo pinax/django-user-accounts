@@ -52,7 +52,7 @@ email_confirmed
 ---------------
 
 Triggered when a user confirmed an email. Providing argument
-``email_address``(EmailAddress instance).
+``email_address`` (EmailAddress instance).
 
 
 email_confirmation_sent
@@ -66,6 +66,13 @@ password_changed
 ----------------
 
 Triggered when a user changes his password. Providing argument ``user``
+(User instance).
+
+
+password_expired
+----------------
+
+Triggered when a user password is expired. Providing argument ``user``
 (User instance).
 
 

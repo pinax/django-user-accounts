@@ -1,14 +1,16 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from django.conf import settings
+from django.utils.translation import get_language_info
 
+"""
 # List of language code and languages local names.
 #
 # This list is output of code:
-# [
-#     (code, get_language_info(code).get("name_local"))
-#     for code, lang in settings.LANGUAGES
-# ]
-#
+
+[
+    (code, get_language_info(code).get("name_local"))
+    for code, lang in settings.LANGUAGES
+]
+"""
 
 LANGUAGES = [
     ("af", "Afrikaans"),
@@ -27,7 +29,7 @@ LANGUAGES = [
     ("de", "Deutsch"),
     ("el", "Ελληνικά"),
     ("en", "English"),
-    ("en-a", "Australian English"),
+    ("en-au", "Australian English"),
     ("en-gb", "British English"),
     ("eo", "Esperanto"),
     ("es", "español"),
@@ -36,7 +38,7 @@ LANGUAGES = [
     ("es-ni", "español de Nicaragua"),
     ("es-ve", "español de Venezuela"),
     ("et", "eesti"),
-    ("e", "Basque"),
+    ("eu", "Basque"),
     ("fa", "فارسی"),
     ("fi", "suomi"),
     ("fr", "français"),
@@ -46,7 +48,7 @@ LANGUAGES = [
     ("he", "עברית"),
     ("hi", "Hindi"),
     ("hr", "Hrvatski"),
-    ("h", "Magyar"),
+    ("hu", "Magyar"),
     ("ia", "Interlingua"),
     ("id", "Bahasa Indonesia"),
     ("io", "ido"),
@@ -76,7 +78,7 @@ LANGUAGES = [
     ("pt", "Português"),
     ("pt-br", "Português Brasileiro"),
     ("ro", "Română"),
-    ("r", "Русский"),
+    ("ru", "Русский"),
     ("sk", "slovenský"),
     ("sl", "Slovenščina"),
     ("sq", "shqip"),
@@ -98,3 +100,5 @@ LANGUAGES = [
     ("zh-hant", "繁體中文"),
     ("zh-tw", "繁體中文")
 ]
+
+DEFAULT_LANGUAGE = get_language_info(settings.LANGUAGE_CODE)["code"]

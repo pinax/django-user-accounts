@@ -41,7 +41,7 @@ defined in your project::
             super(SignupView, self).after_signup(form)
 
         def update_profile(self, form):
-            profile = self.created_user.profile  # replace with your reverse one-to-one profile attribute
+            profile = self.created_user.profile  # replace with your reverse one-to-one profile attribute only if you've defined a `related_name`.
             profile.some_attr = "some value"
             profile.save()
 
@@ -174,6 +174,7 @@ If you want to get rid of username you'll need to do some extra work:
        class SignupView(account.views.SignupView):
 
            form_class = myproject.forms.SignupForm
+           identifier_field = 'email'
 
            def generate_username(self, form):
                # do something to generate a unique username (required by the
@@ -254,3 +255,69 @@ file called lib/tests.py::
 And in your settings::
 
     TEST_RUNNER = "lib.tests.MyTestDiscoverRunner"
+
+Restricting views to authenticated users
+========================================
+
+``django.contrib.auth`` includes a convenient decorator and a mixin to restrict
+views to authenticated users. ``django-user-accounts`` includes a modified
+version of these decorator and mixin that should be used instead of the
+usual ones.
+
+If you want to restrict a function based view, use the decorator::
+
+    from account.decorators import login_required
+
+    @login_required
+    def restricted_view(request):
+        pass
+
+To do the same with class based views, use the mixin::
+
+    from account.mixins import LoginRequiredMixin
+
+    class RestrictedView(LoginRequiredMixin, View):
+        pass
+
+
+Defining a custom password checker
+==================================
+
+First add the path to the module which contains the
+`AccountDefaultHookSet` subclass to your settings::
+
+    ACCOUNT_HOOKSET = "scenemachine.hooks.AccountHookSet"
+
+Then define a custom `clean_password` method on the `AccountHookSet`
+class.
+
+Here is an example that harnesses the `VeryFacistCheck` dictionary
+checker from `cracklib`_.::
+
+    import cracklib
+
+    from django import forms from django.conf import settings from
+    django.template.defaultfilters import mark_safe from
+    django.utils.translation import gettext_lazy as _
+
+    from account.hooks import AccountDefaultHookSet
+
+
+    class AccountHookSet(AccountDefaultHookSet):
+
+        def clean_password(self, password_new, password_new_confirm):
+            password_new = super(AccountHookSet, self).clean_password(password_new, password_new_confirm)
+            try:
+                dictpath = "/usr/share/cracklib/pw_dict"
+                if dictpath:
+                    cracklib.VeryFascistCheck(password_new, dictpath=dictpath)
+                else:
+                    cracklib.VeryFascistCheck(password_new)
+                return password_new
+            except ValueError as e:
+                message = _(unicode(e))
+                raise forms.ValidationError, mark_safe(message)
+            return password_new
+
+
+.. _cracklib: https://pypi.python.org/pypi/cracklib/2.8.19

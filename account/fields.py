@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.db import models
 
 from account.conf import settings
@@ -15,4 +13,4 @@ class TimeZoneField(models.CharField):
             "blank": True,
         }
         defaults.update(kwargs)
-        return super(TimeZoneField, self).__init__(*args, **defaults)
+        super(TimeZoneField, self).__init__(*args, **defaults)
