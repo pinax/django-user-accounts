@@ -13,14 +13,12 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install lint dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ruff
-
       - name: Lint with ruff
-        run: |
-          ruff --format=github --target-version=py311 account
+        uses: chartboost/ruff-action@v1
+        with:
+          src: "./account"
+          version: 0.1.11
+          args: --target-version=py311
 
   test:
     name: Testing
