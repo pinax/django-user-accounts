@@ -216,7 +216,7 @@ msgstr "Sie haben {email} bestätigt."
 #: account/views.py:463
 #, python-brace-format
 msgid "Email confirmation for {email} has expired."
-msgstr "Die E-Mail-Bestätigung ist abgelaufen."
+msgstr "Die E-Mail-Bestätigung für {email} ist abgelaufen."
 
 #: account/views.py:729
 msgid "Account settings updated."
