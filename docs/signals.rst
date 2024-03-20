@@ -8,7 +8,7 @@ user_signed_up
 --------------
 
 Triggered when a user signs up successfully. Providing arguments ``user``
-(User instance) and ``form`` (form instance) as arguments.
+(User instance), ``form`` (form instance), and ``request`` as arguments.
 
 
 user_sign_up_attempt
@@ -74,3 +74,10 @@ password_expired
 
 Triggered when a user password is expired. Providing argument ``user``
 (User instance).
+
+
+account_updated
+---------------
+
+Triggered when a user updates their account. Provided ``user`` and ``request``
+as arguments.
